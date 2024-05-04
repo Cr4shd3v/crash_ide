@@ -7,7 +7,7 @@ impl Plugin for EditorStatePlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_state(EditorState::Loading)
-            .init_resource::<LoadingStatus>()
+            .init_resource::<EditorLoadStatus>()
             .add_systems(Update, check_loading_finished.run_if(in_state(EditorState::Loading)))
         ;
     }
@@ -24,12 +24,15 @@ pub enum EditorState {
 
 /// Loading status of the editor
 #[derive(Resource, Default)]
-pub struct LoadingStatus {
+pub struct EditorLoadStatus {
     pub config_loaded: bool,
 }
 
-fn check_loading_finished(loading_status: Res<LoadingStatus>, mut next_state: ResMut<NextState<EditorState>>) {
-    if loading_status.config_loaded {
-        next_state.set(EditorState::ProjectSelect);
+fn check_loading_finished(loading_status: Res<EditorLoadStatus>, mut next_state: ResMut<NextState<EditorState>>) {
+    if loading_status.is_changed() {
+        if loading_status.config_loaded {
+            next_state.set(EditorState::ProjectSelect);
+            println!("Loading finished, switching to project select...");
+        }
     }
 }

@@ -1540,6 +1540,7 @@ name = "editor_config"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "editor_state",
  "serde",
  "serde_json",
 ]
