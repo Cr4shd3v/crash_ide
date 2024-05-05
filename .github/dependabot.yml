@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    open-pull-requests-limit: 10
+    target-branch: master
+    schedule:
+      interval: daily
