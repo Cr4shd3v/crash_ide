@@ -15,10 +15,9 @@ impl Plugin for EditorStatePlugin {
 
 /// Global editor state
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, States)]
-
 pub enum EditorState {
     Loading,
-    ProjectSelect,
+    StartupScreen,
     Project,
 }
 
@@ -31,7 +30,7 @@ pub struct EditorLoadStatus {
 fn check_loading_finished(loading_status: Res<EditorLoadStatus>, mut next_state: ResMut<NextState<EditorState>>) {
     if loading_status.is_changed() {
         if loading_status.config_loaded {
-            next_state.set(EditorState::ProjectSelect);
+            next_state.set(EditorState::StartupScreen);
             println!("Loading finished, switching to project select...");
         }
     }

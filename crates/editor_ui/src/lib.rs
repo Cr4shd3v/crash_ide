@@ -1,15 +1,17 @@
+mod root;
+mod startup;
+
 use bevy::prelude::*;
+pub use root::*;
+use crate::startup::StartupScreenPlugin;
 
 pub struct EditorUiPlugin;
 
 impl Plugin for EditorUiPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Startup, setup_ui_cam)
+            .add_systems(PreStartup, setup_ui)
+            .add_plugins(StartupScreenPlugin)
         ;
     }
-}
-
-fn setup_ui_cam(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
 }
