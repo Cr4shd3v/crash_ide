@@ -7,3 +7,4 @@ edition = "2021"
 bevy = { workspace = true }
 editor_state = { workspace = true }
 editor_config = { workspace = true }
+editor_ui = { workspace = true }

@@ -1552,6 +1552,7 @@ dependencies = [
  "bevy",
  "editor_config",
  "editor_state",
+ "editor_ui",
 ]
 
 [[package]]
@@ -1559,6 +1560,14 @@ name = "editor_state"
 version = "0.1.0"
 dependencies = [
  "bevy",
+]
+
+[[package]]
+name = "editor_ui"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "editor_state",
 ]
 
 [[package]]

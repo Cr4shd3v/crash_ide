@@ -3,6 +3,7 @@ use bevy::window::WindowResolution;
 
 use editor_config::EditorConfigPlugin;
 use editor_state::EditorStatePlugin;
+use editor_ui::EditorUiPlugin;
 
 fn main() {
     let mut app = App::new();
@@ -18,6 +19,7 @@ fn main() {
 
     app.add_plugins(EditorStatePlugin);
     app.add_plugins(EditorConfigPlugin);
+    app.add_plugins(EditorUiPlugin);
 
     app.run();
 }
