@@ -8,8 +8,10 @@ pub(crate) fn startup_left_menu(builder: &mut ChildBuilder) {
             width: Val::Percent(20.0),
             flex_direction: FlexDirection::Column,
             justify_content: JustifyContent::Center,
+            border: UiRect::right(Val::Px(2.0)),
             ..default()
         },
+        border_color: BorderColor(Color::GRAY.with_a(0.16)),
         ..default()
     }).with_children(|parent| {
         startup_left_menu_entry(parent, StartupScreenState::ProjectSelect);
@@ -41,13 +43,10 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
         ..default()
     }, StartupLeftMenuEntry::new(next_state), Hoverable::new(Color::GRAY.with_a(0.2)),
     )).with_children(|parent| {
-        parent.spawn(TextBundle {
-            text: Text::from_section(next_state.title(), TextStyle {
-                font_size: 16.0,
-                ..default()
-            }),
+        parent.spawn(TextBundle::from_section(next_state.title(), TextStyle {
+            font_size: 16.0,
             ..default()
-        });
+        }));
     });
 }
 
