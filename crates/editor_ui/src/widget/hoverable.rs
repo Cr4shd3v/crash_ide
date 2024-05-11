@@ -31,15 +31,16 @@ fn init_hover(mut query: Query<(&mut Hoverable, &BackgroundColor), Added<Hoverab
 }
 
 fn on_hover(
-    mut interaction_query: Query<(&Interaction, &Hoverable, &mut BackgroundColor), Changed<Interaction>>,
+    mut interaction_query: Query<(&Interaction, &mut Hoverable, &mut BackgroundColor), Changed<Interaction>>,
     mut p_window_query: Query<&mut Window, With<PrimaryWindow>>,
 ) {
     let mut primary_window = p_window_query.single_mut();
     let mut is_hovered_this_run = false;
 
-    for (interaction, hoverable, mut background_color) in interaction_query.iter_mut() {
+    for (interaction, mut hoverable, mut background_color) in interaction_query.iter_mut() {
         match interaction {
             Interaction::Hovered => {
+                hoverable.saved_color = Some(background_color.0);
                 background_color.0 = hoverable.hover_color;
                 primary_window.cursor.icon = CursorIcon::Pointer;
                 is_hovered_this_run = true;

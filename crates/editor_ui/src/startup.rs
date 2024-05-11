@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use editor_state::EditorState;
 use crate::startup::project_select::ProjectSelectPlugin;
 use crate::startup::startup_settings::StartupSettingsPlugin;
-use crate::startup::startup_left_menu::{startup_left_menu, startup_left_menu_click};
+use crate::startup::startup_left_menu::{handle_left_menu_state_change, startup_left_menu, startup_left_menu_click};
 use crate::UiRoot;
 
 pub(crate) struct StartupScreenPlugin;
@@ -16,7 +16,7 @@ impl Plugin for StartupScreenPlugin {
         app
             .insert_state(StartupScreenState::None)
             .add_systems(OnEnter(EditorState::StartupScreen), spawn_startup_screen)
-            .add_systems(Update, startup_left_menu_click.run_if(in_state(EditorState::StartupScreen)))
+            .add_systems(Update, (startup_left_menu_click, handle_left_menu_state_change).run_if(in_state(EditorState::StartupScreen)))
             .add_plugins((ProjectSelectPlugin, StartupSettingsPlugin))
         ;
     }

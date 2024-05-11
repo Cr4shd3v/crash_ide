@@ -62,3 +62,22 @@ pub(crate) fn startup_left_menu_click(
         }
     }
 }
+
+pub(crate) fn handle_left_menu_state_change(
+    state: Res<State<StartupScreenState>>,
+    mut color_query: Query<(&mut BackgroundColor, &StartupLeftMenuEntry)>,
+) {
+    if !state.is_changed() {
+        return;
+    }
+
+    let active_title = state.title();
+
+    for (mut color, menu_entry) in color_query.iter_mut() {
+        if menu_entry.next_state.title() == active_title {
+            color.0 = Color::GRAY.with_a(0.4);
+        } else {
+            color.0 = Color::NONE;
+        }
+    }
+}
