@@ -4,6 +4,7 @@ resolver = "2"
 
 [workspace.dependencies]
 bevy = "0.13.2"
+bevy_file_dialog = "0.5.0"
 serde = "^1.0"
 serde_json = "^1.0"
 

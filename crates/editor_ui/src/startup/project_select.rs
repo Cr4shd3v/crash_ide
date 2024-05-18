@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use crate::startup::{StartupContentRoot, StartupScreenState};
+use crate::widget::button::{CreateProjectButton, OpenProjectButton};
 
 pub(crate) struct ProjectSelectPlugin;
 
@@ -10,12 +11,6 @@ impl Plugin for ProjectSelectPlugin {
         ;
     }
 }
-
-#[derive(Component)]
-pub(crate) struct CreateProjectButton;
-
-#[derive(Component)]
-pub(crate) struct OpenProjectButton;
 
 fn build_project_select(mut commands: Commands, content_parent: Query<Entity, With<StartupContentRoot>>) {
     let entity = content_parent.single();
