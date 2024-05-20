@@ -1,7 +1,7 @@
 use std::fs;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::load::default_load_config;
+use crate::load::{default_load_config, EditorConfig};
 
 #[derive(Serialize, Deserialize)]
 pub struct EditorProject {
@@ -14,4 +14,8 @@ pub struct EditorConfigProjects {
     pub projects: Vec<EditorProject>,
 }
 
-default_load_config!(load_projects_config, "projects.json", EditorConfigProjects, projects);
+impl EditorConfig for EditorConfigProjects {
+    const FILENAME: &'static str = "projects.json";
+}
+
+default_load_config!(load_projects_config, EditorConfigProjects, projects);

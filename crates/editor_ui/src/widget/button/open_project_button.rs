@@ -26,12 +26,13 @@ pub(super) fn open_project_button(
 
 pub(super) fn open_project_directory_picked(
     mut folder_picked: EventReader<DialogDirectoryPicked<OpenProjectDialog>>,
-    mut projects_config: Res<EditorConfigProjects>,
+    mut projects_config: ResMut<EditorConfigProjects>,
 ) {
     for picked in folder_picked.read() {
         projects_config.projects.push(EditorProject {
             path: picked.path.to_str().unwrap().to_string(),
             name: picked.path.file_name().unwrap().to_str().unwrap().to_string(),
         });
+        println!("Hello");
     }
 }
