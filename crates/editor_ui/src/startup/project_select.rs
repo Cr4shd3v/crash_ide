@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use editor_config::EditorConfigProjects;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
 
@@ -8,12 +9,23 @@ impl Plugin for ProjectSelectPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(OnEnter(StartupScreenState::ProjectSelect), build_project_select)
+            .add_systems(Update, build_project_select.run_if(resource_changed::<EditorConfigProjects>))
         ;
     }
 }
 
-fn build_project_select(mut commands: Commands, content_parent: Query<Entity, With<StartupContentRoot>>) {
-    let entity = content_parent.single();
+fn build_project_select(
+    mut commands: Commands,
+    content_parent: Query<Entity, With<StartupContentRoot>>,
+    projects: Res<EditorConfigProjects>,
+) {
+    let entity = match content_parent.get_single() {
+        Ok(entity) => entity,
+        Err(_) => {
+            return;
+        }
+    };
+
     commands.entity(entity).despawn_descendants().with_children(|parent| {
         parent.spawn(NodeBundle {
             style: Style {
@@ -58,7 +70,15 @@ fn build_project_select(mut commands: Commands, content_parent: Query<Entity, Wi
         });
 
         parent.spawn(NodeBundle {
+            style: Style {
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
             ..default()
+        }).with_children(|parent| {
+            for project in &projects.projects {
+                parent.spawn(TextBundle::from_section(&project.name, TextStyle::default()));
+            }
         });
     });
 }
