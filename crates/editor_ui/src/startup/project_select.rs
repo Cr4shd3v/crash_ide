@@ -72,12 +72,31 @@ fn build_project_select(
         parent.spawn(NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
+                padding: UiRect::horizontal(Val::Vw(2.0)),
                 ..default()
             },
             ..default()
         }).with_children(|parent| {
             for project in &projects.projects {
-                parent.spawn(TextBundle::from_section(&project.name, TextStyle::default()));
+                parent.spawn(NodeBundle {
+                    style: Style {
+                        flex_direction: FlexDirection::Column,
+                        padding: UiRect::vertical(Val::Vh(1.0)),
+                        ..default()
+                    },
+                    ..default()
+                }).with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(&project.name, TextStyle {
+                        font_size: 20.0,
+                        color: Color::WHITE,
+                        ..default()
+                    }));
+                    parent.spawn(TextBundle::from_section(&project.path, TextStyle {
+                        font_size: 13.0,
+                        color: Color::GRAY,
+                        ..default()
+                    }));
+                });
             }
         });
     });
