@@ -3,9 +3,9 @@ use editor_config::EditorConfigProjects;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
 
-pub(crate) struct ProjectSelectPlugin;
+pub(crate) struct StartupProjectSelectPlugin;
 
-impl Plugin for ProjectSelectPlugin {
+impl Plugin for StartupProjectSelectPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(OnEnter(StartupScreenState::ProjectSelect), build_project_select)

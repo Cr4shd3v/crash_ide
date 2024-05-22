@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 use bevy_file_dialog::{DialogDirectoryPicked, FileDialogExt};
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
-use crate::file_dialog::OpenProjectDialog;
 
 #[derive(Component)]
 pub(crate) struct OpenProjectButton;
+
+pub struct OpenProjectDialog;
 
 pub(super) fn open_project_button(
     mut commands: Commands,
@@ -33,6 +34,5 @@ pub(super) fn open_project_directory_picked(
             path: picked.path.to_str().unwrap().to_string(),
             name: picked.path.file_name().unwrap().to_str().unwrap().to_string(),
         });
-        println!("Hello");
     }
 }

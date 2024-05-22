@@ -2,14 +2,13 @@ mod root;
 mod startup;
 mod widget;
 mod button;
-mod file_dialog;
 
 use bevy::prelude::*;
 use bevy_file_dialog::FileDialogPlugin;
 pub use root::*;
 use crate::button::button_cursor;
-use crate::file_dialog::OpenProjectDialog;
 use crate::startup::StartupScreenPlugin;
+use crate::widget::button::OpenProjectDialog;
 use crate::widget::WidgetPlugin;
 
 pub struct EditorUiPlugin;
