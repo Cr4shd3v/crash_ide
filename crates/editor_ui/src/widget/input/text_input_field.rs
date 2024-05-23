@@ -468,11 +468,19 @@ fn focus_text_input(
     mut commands: Commands,
     query: Query<(Entity, &Interaction, Option<&TextInputFocused>), (Changed<Interaction>, With<TextInputValue>)>,
     current_focus: Query<Entity, With<TextInputFocused>>,
+    buttons: Res<ButtonInput<MouseButton>>,
 ) {
     let current_focus_entity = current_focus.get_single();
+    let mut click_on_text = false;
 
     for (entity, interaction, focused) in query.iter() {
-        if focused.is_some() || *interaction != Interaction::Pressed {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        click_on_text = true;
+
+        if focused.is_some() {
             continue;
         }
 
@@ -481,6 +489,12 @@ fn focus_text_input(
         }
 
         commands.entity(entity).insert(TextInputFocused);
+    }
+
+    if !click_on_text && buttons.any_just_pressed([MouseButton::Left, MouseButton::Right, MouseButton::Middle]) {
+        if let Ok(current_focus_entity) = current_focus_entity {
+            commands.entity(current_focus_entity).remove::<TextInputFocused>();
+        }
     }
 }
 
