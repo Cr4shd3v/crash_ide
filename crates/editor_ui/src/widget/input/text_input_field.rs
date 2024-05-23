@@ -27,6 +27,7 @@ impl Plugin for TextInputPlugin {
                 show_hide_cursor,
                 update_style,
                 show_hide_placeholder,
+                focus_text_input,
             ))
         ;
     }
@@ -69,6 +70,9 @@ pub struct TextInputInactive(pub bool);
 #[derive(Component, Default)]
 pub struct TextInputCursorPos(pub usize);
 
+#[derive(Component, Default)]
+pub struct TextInputFocused;
+
 impl Default for TextInputCursorTimer {
     fn default() -> Self {
         Self {
@@ -108,9 +112,11 @@ pub struct TextInputSubmitEvent {
 }
 
 fn keyboard(
+    mut commands: Commands,
     mut events: EventReader<KeyboardInput>,
     mut text_input_query: Query<(
         Entity,
+        Option<&TextInputFocused>,
         &TextInputInactive,
         &mut TextInputValue,
         &mut TextInputCursorPos,
@@ -122,10 +128,10 @@ fn keyboard(
         return;
     }
 
-    for (input_entity, inactive, mut text_input, mut cursor_pos, mut cursor_timer) in
-    &mut text_input_query
+    for (input_entity, focused, inactive, mut text_input,
+        mut cursor_pos, mut cursor_timer) in &mut text_input_query
     {
-        if inactive.0 {
+        if inactive.0 || focused.is_none() {
             continue;
         }
 
@@ -176,8 +182,13 @@ fn keyboard(
                     }
                 }
                 KeyCode::Enter => {
-                    submitted_value = Some(std::mem::take(&mut text_input.0));
-                    cursor_pos.0 = 0;
+                    submitted_value = Some(text_input.0.clone());
+                    commands.entity(input_entity).remove::<TextInputFocused>();
+
+                    continue;
+                }
+                KeyCode::Tab => {
+                    commands.entity(input_entity).remove::<TextInputFocused>();
 
                     continue;
                 }
@@ -247,10 +258,18 @@ fn update_value(
 
 fn create_text_input(
     mut commands: Commands,
-    query: Query<(Entity, &TextInputValue, &TextInputTextStyle, &TextInputPlaceholder, &TextInputCursorPos, &TextInputInactive), Added<TextInputValue>>,
+    query: Query<(
+        Entity,
+        &TextInputValue,
+        &TextInputTextStyle,
+        &TextInputPlaceholder,
+        &TextInputCursorPos,
+        &TextInputInactive,
+        Option<&TextInputFocused>,
+    ), Added<TextInputValue>>,
 ) {
     for (entity, value, style, placeholder,
-        cursor_pos, inactive) in query.iter() {
+        cursor_pos, inactive, focused) in query.iter() {
         let mut sections = vec![
             // Pre-cursor
             TextSection {
@@ -261,7 +280,7 @@ fn create_text_input(
             TextSection {
                 style: TextStyle {
                     font: CURSOR_HANDLE,
-                    color: if inactive.0 {
+                    color: if inactive.0 || !focused.is_some() {
                         Color::NONE
                     } else {
                         style.0.color
@@ -332,21 +351,37 @@ fn create_text_input(
 }
 
 fn show_hide_cursor(
-    mut input_query: Query<(Entity, &TextInputTextStyle, &mut TextInputCursorTimer, &TextInputInactive), Changed<TextInputInactive>>,
+    mut input_query: Query<(
+        Entity,
+        &TextInputTextStyle,
+        &mut TextInputCursorTimer,
+        &TextInputInactive,
+        Option<&TextInputFocused>,
+    ), Changed<TextInputInactive>>,
     mut inner_text: InnerText,
+    mut removed: RemovedComponents<TextInputFocused>,
 ) {
-    for (entity, style, mut cursor_timer, inactive) in input_query.iter_mut() {
+    for (entity, style, mut cursor_timer,
+        inactive, focused) in input_query.iter_mut() {
         let Some(mut text) = inner_text.get_mut(entity) else {
             continue;
         };
 
-        text.sections[1].style.color = if inactive.0 {
+        text.sections[1].style.color = if inactive.0 || focused.is_none() {
             Color::NONE
         } else {
             style.0.color
         };
 
         cursor_timer.timer.reset();
+    }
+
+    for entity in removed.read() {
+        let Some(mut text) = inner_text.get_mut(entity) else {
+            continue;
+        };
+
+        text.sections[1].style.color = Color::NONE;
     }
 }
 
@@ -357,12 +392,13 @@ fn blink_cursor(
         &TextInputTextStyle,
         &mut TextInputCursorTimer,
         Ref<TextInputInactive>,
+        Option<Ref<TextInputFocused>>,
     )>,
     mut inner_text: InnerText,
     time: Res<Time>,
 ) {
-    for (entity, style, mut cursor_timer, inactive) in &mut input_query {
-        if inactive.0 {
+    for (entity, style, mut cursor_timer, inactive, focused) in &mut input_query {
+        if inactive.0 || focused.is_none() {
             continue;
         }
 
@@ -425,6 +461,26 @@ fn update_style(
             ..style.0.clone()
         };
         text.sections[2].style = style.0.clone();
+    }
+}
+
+fn focus_text_input(
+    mut commands: Commands,
+    query: Query<(Entity, &Interaction, Option<&TextInputFocused>), (Changed<Interaction>, With<TextInputValue>)>,
+    current_focus: Query<Entity, With<TextInputFocused>>,
+) {
+    let current_focus_entity = current_focus.get_single();
+
+    for (entity, interaction, focused) in query.iter() {
+        if focused.is_some() || *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        if let Ok(current_focus_entity) = current_focus_entity {
+            commands.entity(current_focus_entity).remove::<TextInputFocused>();
+        }
+
+        commands.entity(entity).insert(TextInputFocused);
     }
 }
 
