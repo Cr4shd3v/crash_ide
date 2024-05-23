@@ -61,8 +61,17 @@ pub struct TextInputCursorTimer {
     should_reset: bool,
 }
 
-#[derive(Component, Default)]
+#[derive(Component)]
 pub struct TextInputTextStyle(pub TextStyle);
+
+impl Default for TextInputTextStyle {
+    fn default() -> Self {
+        Self(TextStyle {
+            font_size: 20.0,
+            ..default()
+        })
+    }
+}
 
 #[derive(Component, Default)]
 pub struct TextInputInactive(pub bool);
@@ -303,6 +312,10 @@ fn create_text_input(
                 text: Text {
                     linebreak_behavior: BreakLineOn::NoWrap,
                     sections,
+                    ..default()
+                },
+                style: Style {
+                    margin: UiRect::all(Val::Px(5.0)),
                     ..default()
                 },
                 ..default()
