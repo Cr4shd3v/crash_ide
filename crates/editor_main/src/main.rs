@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::window::WindowResolution;
+use bevy::window::{ExitCondition, WindowResolution};
 
 use editor_config::EditorConfigPlugin;
 use editor_state::EditorStatePlugin;
@@ -14,6 +14,7 @@ fn main() {
             title: String::from("Crash Editor"),
             ..default()
         }),
+        exit_condition: ExitCondition::OnPrimaryClosed,
         ..default()
     }));
 
