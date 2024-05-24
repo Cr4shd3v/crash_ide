@@ -14,14 +14,13 @@ pub(crate) fn button_cursor(
                 }
                 is_hovered_this_run = true;
             }
-            Interaction::None => {
+            _ => {
                 if !is_hovered_this_run {
                     for mut window in windows_query.iter_mut() {
                         window.cursor.icon = CursorIcon::Default;
                     }
                 }
             }
-            _ => {}
         }
     }
 }
