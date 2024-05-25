@@ -1,0 +1,26 @@
+name: Mark stale issues and pull requests
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs once a day
+
+permissions:
+  contents: write # only for delete-branch option
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: 'This issue has been marked as "stale" because it has not had activity for 30 days.'
+          stale-pr-message: 'This pull request has been marked as "stale" because it has not had activity for 30 days.'
+          days-before-stale: 30
+          days-before-close: 360
+          stale-issue-label: 'Stale'
+          stale-pr-label: 'Stale'
+          close-issue-label: 'Closed for Stale'
+          close-pr-label: 'Closed for Stale'
