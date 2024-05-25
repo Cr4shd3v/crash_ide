@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
 use bevy::window::{WindowRef, WindowResolution};
+use editor_config::HomeDir;
+use crate::widget::input::{TextInputBundle, TextInputValue};
 
 #[derive(Component)]
 pub struct CreateProjectButton;
@@ -14,10 +16,16 @@ pub struct CreateProjectWindowCamera;
 #[derive(Component)]
 pub struct CreateProjectRoot;
 
+const DEFAULT_NEW_PROJECT_NAME: &'static str = "untitled";
+
+#[derive(Component)]
+struct ProjectPathInput;
+
 pub(super) fn create_project_button(
     mut commands: Commands,
     interaction_query: Query<&Interaction, (With<CreateProjectButton>, Changed<Interaction>)>,
     mut create_project_window_query: Query<&mut Window, With<CreateProjectWindow>>,
+    home_dir: Res<HomeDir>,
 ) {
     for interaction in interaction_query.iter() {
         match interaction {
@@ -56,7 +64,21 @@ pub(super) fn create_project_button(
                         TargetCamera(camera),
                         CreateProjectRoot,
                     )).with_children(|parent| {
-                        parent.spawn(TextBundle::from_section("test", TextStyle::default()));
+                        parent.spawn(TextBundle::from_section("Project Path", TextStyle::default()));
+                        parent.spawn((
+                            TextInputBundle {
+                                text_input_value: TextInputValue(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
+                                ..default()
+                            },
+                            NodeBundle {
+                                style: Style {
+                                    width: Val::Vw(80.0),
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                            ProjectPathInput,
+                        ));
                     });
                 }
             }

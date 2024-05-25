@@ -38,7 +38,7 @@ const CURSOR_HANDLE: Handle<Font> = Handle::weak_from_u128(0x20e04b82bf39401aaf9
 
 #[derive(Bundle, Default)]
 pub struct TextInputBundle {
-    pub text_input_field: TextInputValue,
+    pub text_input_value: TextInputValue,
     pub text_input_placeholder: TextInputPlaceholder,
     pub text_input_cursor_timer: TextInputCursorTimer,
     pub text_input_cursor_pos: TextInputCursorPos,
@@ -48,7 +48,7 @@ pub struct TextInputBundle {
 }
 
 #[derive(Component, Default)]
-pub struct TextInputValue(String);
+pub struct TextInputValue(pub String);
 
 #[derive(Component, Default)]
 pub struct TextInputPlaceholder {
@@ -68,7 +68,7 @@ pub struct TextInputTextStyle(pub TextStyle);
 impl Default for TextInputTextStyle {
     fn default() -> Self {
         Self(TextStyle {
-            font_size: 20.0,
+            font_size: 18.0,
             ..default()
         })
     }
@@ -268,18 +268,19 @@ fn update_value(
 
 fn create_text_input(
     mut commands: Commands,
-    query: Query<(
+    mut query: Query<(
         Entity,
         &TextInputValue,
         &TextInputTextStyle,
         &TextInputPlaceholder,
-        &TextInputCursorPos,
+        &mut TextInputCursorPos,
         &TextInputInactive,
         Option<&TextInputFocused>,
     ), Added<TextInputValue>>,
+    mut style_query: Query<(&mut Style, &mut BorderColor)>
 ) {
     for (entity, value, style, placeholder,
-        cursor_pos, inactive, focused) in query.iter() {
+        mut cursor_pos, inactive, focused) in query.iter_mut() {
         let mut sections = vec![
             // Pre-cursor
             TextSection {
@@ -305,6 +306,8 @@ fn create_text_input(
                 ..default()
             }
         ];
+
+        cursor_pos.0 = value.0.len();
 
         set_section_values(&*value.0, cursor_pos.0, &mut sections);
 
@@ -358,6 +361,10 @@ fn create_text_input(
             },
             ..default()
         }).id();
+
+        let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
+        style.border = UiRect::all(Val::Px(1.0));
+        border_color.0 = Color::GRAY;
 
         commands.entity(overflow_container).add_child(text);
         commands.entity(entity).push_children(&[overflow_container, placeholder_text]);
@@ -487,7 +494,7 @@ fn focus_text_input(
 ) {
     let current_focus_entity = current_focus.get_single();
     let mut click_on_text = false;
-    let mut primary_window = windows.get_single_mut().unwrap();
+    let Ok(mut primary_window) = windows.get_single_mut() else { return };
 
     for (entity, interaction, focused) in query.iter() {
         if *interaction == Interaction::None {
