@@ -30,8 +30,14 @@ pub(super) fn open_project_directory_picked(
     mut projects_config: ResMut<EditorConfigProjects>,
 ) {
     for picked in folder_picked.read() {
+        let picked_path = picked.path.to_str().unwrap().to_string();
+
+        if projects_config.projects.iter().any(|project| project.path == picked_path) {
+            continue;
+        }
+
         projects_config.projects.push(EditorProject {
-            path: picked.path.to_str().unwrap().to_string(),
+            path: picked_path,
             name: picked.path.file_name().unwrap().to_str().unwrap().to_string(),
         });
     }
