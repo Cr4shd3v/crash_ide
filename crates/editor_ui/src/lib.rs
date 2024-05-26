@@ -6,6 +6,7 @@ mod root;
 mod startup;
 pub mod widget;
 mod button;
+mod window;
 
 use bevy::prelude::*;
 use bevy_file_dialog::FileDialogPlugin;
@@ -14,6 +15,7 @@ use crate::root::setup_ui;
 use crate::startup::StartupScreenPlugin;
 use crate::widget::button::OpenProjectDialog;
 use crate::widget::WidgetPlugin;
+use crate::window::update_active_window;
 
 /// Plugin implementing UI for the editor
 pub struct EditorUiPlugin;
@@ -22,6 +24,7 @@ impl Plugin for EditorUiPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(PreStartup, setup_ui)
+            .add_systems(PreUpdate, update_active_window)
             .add_systems(Update, button_cursor)
             .add_plugins((StartupScreenPlugin, WidgetPlugin))
             .add_plugins(
