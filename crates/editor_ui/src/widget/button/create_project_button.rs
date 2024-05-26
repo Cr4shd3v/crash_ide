@@ -21,6 +21,9 @@ const DEFAULT_NEW_PROJECT_NAME: &'static str = "untitled";
 #[derive(Component)]
 struct ProjectPathInput;
 
+#[derive(Component)]
+struct CreateProjectConfirmButton;
+
 pub(super) fn create_project_button(
     mut commands: Commands,
     interaction_query: Query<&Interaction, (With<CreateProjectButton>, Changed<Interaction>)>,
@@ -57,6 +60,7 @@ pub(super) fn create_project_button(
                         NodeBundle {
                             style: Style {
                                 flex_direction: FlexDirection::Column,
+                                padding: UiRect::axes(Val::Percent(10.0), Val::Percent(5.0)),
                                 ..default()
                             },
                             ..default()
@@ -79,6 +83,32 @@ pub(super) fn create_project_button(
                             },
                             ProjectPathInput,
                         ));
+
+                        parent.spawn(NodeBundle {
+                            style: Style {
+                                flex_direction: FlexDirection::RowReverse,
+                                ..default()
+                            },
+                            ..default()
+                        }).with_children(|parent| {
+                            parent.spawn((
+                                ButtonBundle {
+                                    style: Style {
+                                        padding: UiRect::all(Val::Px(5.0)),
+                                        margin: UiRect::top(Val::Vh(2.5)),
+                                        ..default()
+                                    },
+                                    background_color: BackgroundColor(Color::hex("#578AF2").unwrap()),
+                                    ..default()
+                                },
+                                CreateProjectConfirmButton,
+                            )).with_children(|parent| {
+                                parent.spawn(TextBundle::from_section("Create", TextStyle {
+                                    font_size: 16.0,
+                                    ..default()
+                                }));
+                            });
+                        });
                     });
                 }
             }
