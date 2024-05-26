@@ -17,8 +17,8 @@ impl Plugin for StartupScreenPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_state(StartupScreenState::None)
-            .add_systems(OnEnter(EditorState::StartupScreen), spawn_startup_screen)
-            .add_systems(Update, (startup_left_menu_click, handle_left_menu_state_change).run_if(in_state(EditorState::StartupScreen)))
+            .add_systems(OnEnter(EditorState::Loaded), spawn_startup_screen)
+            .add_systems(Update, (startup_left_menu_click, handle_left_menu_state_change))
             .add_plugins((StartupProjectSelectPlugin, StartupSettingsPlugin, StartupProjectCreatePlugin))
         ;
     }

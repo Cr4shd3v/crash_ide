@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use crate::widget::screen::CreateProjectWindow;
+use crate::window::ActiveWindow;
 
 #[derive(Component)]
 pub struct CreateProjectButton;
@@ -9,6 +10,7 @@ pub(super) fn create_project_button(
     mut commands: Commands,
     interaction_query: Query<&Interaction, (With<CreateProjectButton>, Changed<Interaction>)>,
     mut create_project_window_query: Query<&mut Window, With<CreateProjectWindow>>,
+    current_window_query: Query<Entity, With<ActiveWindow>>,
 ) {
     for interaction in interaction_query.iter() {
         match interaction {
@@ -22,7 +24,9 @@ pub(super) fn create_project_button(
                             resolution: WindowResolution::new(1000.0, 700.0),
                             ..default()
                         },
-                        CreateProjectWindow,
+                        CreateProjectWindow {
+                            base_window: Some(current_window_query.single()),
+                        },
                     ));
                 }
             }

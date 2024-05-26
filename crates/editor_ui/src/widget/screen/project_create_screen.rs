@@ -1,19 +1,26 @@
+use std::fs;
+use std::path::PathBuf;
+use std::str::FromStr;
 use bevy::prelude::*;
-use editor_config::HomeDir;
+use bevy::window::WindowResolution;
+use bevy::winit::WinitWindows;
+use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
 use crate::widget::input::{TextInputBundle, TextInputValue};
-use crate::window::WindowUiRoot;
+use crate::window::{ProjectWindow, StartupWindow, WindowCamera, WindowUiRoot};
 
 /// Marker component for the create project dialog
-#[derive(Component)]
-pub struct CreateProjectWindow;
+#[derive(Component, Default)]
+pub struct CreateProjectWindow {
+    pub(crate) base_window: Option<Entity>,
+}
 
 const DEFAULT_NEW_PROJECT_NAME: &'static str = "untitled";
 
 #[derive(Component)]
-struct ProjectPathInput;
+pub(super) struct ProjectPathInput;
 
 #[derive(Component)]
-struct CreateProjectConfirmButton;
+pub(super) struct CreateProjectConfirmButton;
 
 pub(super) fn spawn_project_create_screen(
     mut commands: Commands,
@@ -73,5 +80,69 @@ pub(super) fn spawn_project_create_screen(
                 });
             });
         });
+    }
+}
+
+pub(super) fn create_project_confirm(
+    mut commands: Commands,
+    interaction_query: Query<&Interaction, (With<CreateProjectConfirmButton>, Changed<Interaction>)>,
+    window_query: Query<(Entity, &CreateProjectWindow, &WindowUiRoot, &WindowCamera)>,
+    path_input_query: Query<&TextInputValue, With<ProjectPathInput>>,
+    mut projects: ResMut<EditorConfigProjects>,
+    winit_windows: NonSend<WinitWindows>,
+    mut window_query_resize: Query<&mut Window>,
+) {
+    for interaction in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let (entity, create_project_window,
+            ui_root, window_camera) = window_query.single();
+        let path = path_input_query.single().0.clone();
+
+        if projects.projects.iter().any(|project| project.path == path) {
+            // Todo: Error message
+            return;
+        }
+
+        if fs::metadata(&path).is_err() {
+            if let Err(_) = fs::create_dir_all(&path) {
+                // Todo: Error message
+            };
+        }
+
+        let config = EditorProject {
+            name: PathBuf::from_str(&*path).unwrap().file_name().unwrap().to_str().unwrap().to_string(),
+            path,
+        };
+
+        projects.projects.push(config.clone());
+
+        commands.entity(entity).despawn();
+        commands.entity(ui_root.root).despawn_recursive();
+        commands.entity(window_camera.camera).despawn();
+
+        let monitor_size = winit_windows.get_window(entity).unwrap().current_monitor().unwrap().size();
+        let new_resolution = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32);
+
+        if let Some(window) = create_project_window.base_window {
+            commands.entity(window).remove::<StartupWindow>().insert(ProjectWindow {
+                project_editor_config: config,
+            });
+
+            window_query_resize.get_mut(window).unwrap().resolution = new_resolution;
+        } else {
+            commands.spawn((
+                Window {
+                    title: config.name.clone(),
+                    resolution: new_resolution,
+                    ..default()
+                },
+                ProjectWindow {
+                    project_editor_config: config,
+                }
+            ));
+        }
     }
 }

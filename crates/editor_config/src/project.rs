@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::load::{default_load_config, EditorConfig};
 
 /// Saved project for the editor
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct EditorProject {
     /// Name of the project.
     ///
