@@ -5,11 +5,11 @@ mod startup_project_create;
 
 use bevy::prelude::*;
 use editor_state::EditorState;
+use crate::root::MainUiRoot;
 use crate::startup::startup_project_select::StartupProjectSelectPlugin;
 use crate::startup::startup_settings::StartupSettingsPlugin;
 use crate::startup::startup_left_menu::{handle_left_menu_state_change, startup_left_menu, startup_left_menu_click};
 use crate::startup::startup_project_create::StartupProjectCreatePlugin;
-use crate::UiRoot;
 
 pub(crate) struct StartupScreenPlugin;
 
@@ -46,7 +46,7 @@ impl StartupScreenState {
 #[derive(Component)]
 pub(crate) struct StartupContentRoot;
 
-fn spawn_startup_screen(mut commands: Commands, mut ui_root: ResMut<UiRoot>, mut startup_state: ResMut<NextState<StartupScreenState>>) {
+fn spawn_startup_screen(mut commands: Commands, mut ui_root: ResMut<MainUiRoot>, mut startup_state: ResMut<NextState<StartupScreenState>>) {
     commands.entity(ui_root.root).despawn_recursive();
 
     ui_root.root = commands.spawn(NodeBundle {

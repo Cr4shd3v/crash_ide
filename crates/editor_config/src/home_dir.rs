@@ -2,9 +2,12 @@ use std::fs;
 use std::path::PathBuf;
 use bevy::prelude::{Commands, Resource};
 
+/// Resource containing the config and project path
 #[derive(Resource)]
 pub struct HomeDir {
+    /// Path to config files
     pub config_path: PathBuf,
+    /// Default path to projects
     pub projects_path: PathBuf,
 }
 

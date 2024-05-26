@@ -1,3 +1,7 @@
+//! Crate implementing global state of the editor
+
+#![warn(missing_docs)]
+
 use bevy::prelude::*;
 
 /// Initializes the global editor state
@@ -16,14 +20,20 @@ impl Plugin for EditorStatePlugin {
 /// Global editor state
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, States)]
 pub enum EditorState {
+    /// Editor is in loading state, initializing resources
     Loading,
+    /// Startup screen
     StartupScreen,
+    /// In a project
     Project,
 }
 
 /// Loading status of the editor
+///
+/// If all fields are true, the editor will enter [EditorState::StartupScreen] in system [check_loading_finished]
 #[derive(Resource, Default)]
 pub struct EditorLoadStatus {
+    /// All configs are loaded
     pub config_loaded: bool,
 }
 

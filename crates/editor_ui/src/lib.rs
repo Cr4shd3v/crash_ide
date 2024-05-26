@@ -1,16 +1,21 @@
+//! UI crate of editor
+
+#![warn(missing_docs)]
+
 mod root;
 mod startup;
-mod widget;
+pub mod widget;
 mod button;
 
 use bevy::prelude::*;
 use bevy_file_dialog::FileDialogPlugin;
-pub use root::*;
 use crate::button::button_cursor;
+use crate::root::setup_ui;
 use crate::startup::StartupScreenPlugin;
 use crate::widget::button::OpenProjectDialog;
 use crate::widget::WidgetPlugin;
 
+/// Plugin implementing UI for the editor
 pub struct EditorUiPlugin;
 
 impl Plugin for EditorUiPlugin {

@@ -1,3 +1,7 @@
+//! Crate implementing configurations for the editor
+
+#![warn(missing_docs)]
+
 mod project;
 mod home_dir;
 mod load;
@@ -8,6 +12,7 @@ pub(crate) use load::*;
 use bevy::prelude::*;
 use editor_state::EditorState;
 
+/// Plugin implementing configuration
 pub struct EditorConfigPlugin;
 
 impl Plugin for EditorConfigPlugin {

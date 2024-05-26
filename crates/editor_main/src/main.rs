@@ -1,3 +1,7 @@
+//! Starting point of the editor
+
+#![warn(missing_docs)]
+
 use bevy::prelude::*;
 use bevy::window::{ExitCondition, WindowResolution};
 

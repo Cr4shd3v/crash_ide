@@ -36,32 +36,53 @@ impl Plugin for TextInputPlugin {
 
 const CURSOR_HANDLE: Handle<Font> = Handle::weak_from_u128(0x20e04b82bf39401aaf9ae6a01a7a11b7);
 
+/// Bundle representing a text input.
+///
+/// This bundle requires that [Style] and [BorderColor] are present at the same entity (use [NodeBundle]).
 #[derive(Bundle, Default)]
 pub struct TextInputBundle {
+    /// The initial value of the text input.
     pub text_input_value: TextInputValue,
+    /// The placeholder which is placed
     pub text_input_placeholder: TextInputPlaceholder,
+    /// Cursor timing for blinking effect
     pub text_input_cursor_timer: TextInputCursorTimer,
-    pub text_input_cursor_pos: TextInputCursorPos,
+    /// Cursor position
+    ///
+    /// Defaults to the end of the text
+    pub text_input_cursor_pos: TextInputInitialCursorPos,
+    /// Wrapped [TextStyle] for the input field
     pub text_input_text_style: TextInputTextStyle,
+    /// [Interaction] component to detect hover/presses
     pub interaction: Interaction,
+    /// Whether the text input is disabled or not
     pub text_input_inactive: TextInputInactive,
 }
 
+/// Value of the text input
 #[derive(Component, Default)]
 pub struct TextInputValue(pub String);
 
+/// Placeholder of the text input
 #[derive(Component, Default)]
 pub struct TextInputPlaceholder {
+    /// Placeholder text
     pub placeholder: String,
+    /// Style of the placeholder.
+    ///
+    /// By default, this is the [TextInputTextStyle] with text color alpha * 0.25
     pub text_style: Option<TextStyle>,
 }
 
+/// Timer for blinking cursor inside text field
 #[derive(Component)]
 pub struct TextInputCursorTimer {
+    /// The [Timer]
     pub timer: Timer,
     should_reset: bool,
 }
 
+/// [TextStyle] of the text input
 #[derive(Component)]
 pub struct TextInputTextStyle(pub TextStyle);
 
@@ -74,12 +95,25 @@ impl Default for TextInputTextStyle {
     }
 }
 
+/// Text input inactive or not
 #[derive(Component, Default)]
 pub struct TextInputInactive(pub bool);
 
+/// Initial cursor position
+#[derive(Component, Default)]
+pub enum TextInputInitialCursorPos {
+    /// Text cursor starts at the end of the text
+    #[default]
+    EndOfText,
+    /// Text cursor starts at the specified index
+    AtIndex(usize),
+}
+
+/// Current text cursor position
 #[derive(Component, Default)]
 pub struct TextInputCursorPos(pub usize);
 
+/// Marker component if a text input is focused
 #[derive(Component, Default)]
 pub struct TextInputFocused;
 
@@ -113,6 +147,7 @@ impl<'w, 's> InnerText<'w, 's> {
     }
 }
 
+/// Event when text input is submitted
 #[derive(Event)]
 pub struct TextInputSubmitEvent {
     /// The text input that triggered the event.
@@ -268,19 +303,19 @@ fn update_value(
 
 fn create_text_input(
     mut commands: Commands,
-    mut query: Query<(
+    query: Query<(
         Entity,
         &TextInputValue,
         &TextInputTextStyle,
         &TextInputPlaceholder,
-        &mut TextInputCursorPos,
+        &TextInputInitialCursorPos,
         &TextInputInactive,
         Option<&TextInputFocused>,
     ), Added<TextInputValue>>,
     mut style_query: Query<(&mut Style, &mut BorderColor)>
 ) {
     for (entity, value, style, placeholder,
-        mut cursor_pos, inactive, focused) in query.iter_mut() {
+        initial_cursor_pos, inactive, focused) in query.iter() {
         let mut sections = vec![
             // Pre-cursor
             TextSection {
@@ -307,7 +342,10 @@ fn create_text_input(
             }
         ];
 
-        cursor_pos.0 = value.0.len();
+        let cursor_pos = TextInputCursorPos(match *initial_cursor_pos {
+            TextInputInitialCursorPos::EndOfText => value.0.len(),
+            TextInputInitialCursorPos::AtIndex(index) => index,
+        });
 
         set_section_values(&*value.0, cursor_pos.0, &mut sections);
 
@@ -367,7 +405,7 @@ fn create_text_input(
         border_color.0 = Color::GRAY;
 
         commands.entity(overflow_container).add_child(text);
-        commands.entity(entity).push_children(&[overflow_container, placeholder_text]);
+        commands.entity(entity).insert(cursor_pos).push_children(&[overflow_container, placeholder_text]);
     }
 }
 

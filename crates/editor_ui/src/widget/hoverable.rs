@@ -8,6 +8,9 @@ impl Plugin for HoverablePlugin {
     }
 }
 
+/// This component marks an ui element as hoverable.
+///
+/// When hovered, the background color of the element will become the `hover_color`.
 #[derive(Component)]
 pub struct Hoverable {
     hover_color: Color,
@@ -15,6 +18,7 @@ pub struct Hoverable {
 }
 
 impl Hoverable {
+    /// Creates a new [Hoverable] component with a given `hover_color`
     pub fn new(hover_color: Color) -> Self {
         Self {
             hover_color,

@@ -1,3 +1,5 @@
+//! This module contains reusable widgets.
+
 mod hoverable;
 pub mod button;
 pub mod input;
