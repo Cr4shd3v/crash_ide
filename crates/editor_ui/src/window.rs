@@ -34,6 +34,11 @@ pub struct WindowCamera {
     pub camera: Entity,
 }
 
+#[derive(Component)]
+pub struct WindowUiRoot {
+    pub root: Entity,
+}
+
 pub(super) fn initial_window(mut commands: Commands) {
     commands.spawn((Window {
         resolution: WindowResolution::new(1280.0, 720.0),
@@ -42,7 +47,7 @@ pub(super) fn initial_window(mut commands: Commands) {
     }, StartupWindow));
 }
 
-pub(super) fn spawn_camera(mut commands: Commands, spawned_windows: Query<Entity, Added<Window>>) {
+pub(super) fn process_new_window(mut commands: Commands, spawned_windows: Query<Entity, Added<Window>>) {
     for window_entity in spawned_windows.iter() {
         let camera_id = commands.spawn(Camera2dBundle {
             camera: Camera {
@@ -52,7 +57,23 @@ pub(super) fn spawn_camera(mut commands: Commands, spawned_windows: Query<Entity
             ..default()
         }).id();
 
-        commands.entity(window_entity).insert(WindowCamera {camera: camera_id});
+        let ui_root = commands.spawn((
+            TargetCamera(camera_id),
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                ..default()
+            },
+        )).id();
+
+        commands.entity(window_entity).insert((
+            WindowCamera { camera: camera_id },
+            WindowUiRoot { root: ui_root },
+        ));
     }
 }
 

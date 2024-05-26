@@ -5,12 +5,11 @@ mod startup_project_create;
 
 use bevy::prelude::*;
 use editor_state::EditorState;
-use crate::root::UiRoot;
 use crate::startup::startup_project_select::StartupProjectSelectPlugin;
 use crate::startup::startup_settings::StartupSettingsPlugin;
 use crate::startup::startup_left_menu::{handle_left_menu_state_change, startup_left_menu, startup_left_menu_click};
 use crate::startup::startup_project_create::StartupProjectCreatePlugin;
-use crate::window::{StartupWindow, WindowCamera};
+use crate::window::{StartupWindow, WindowUiRoot};
 
 pub(crate) struct StartupScreenPlugin;
 
@@ -49,33 +48,33 @@ pub(crate) struct StartupContentRoot;
 
 fn spawn_startup_screen(
     mut commands: Commands,
-    mut ui_root: ResMut<UiRoot>,
     mut startup_state: ResMut<NextState<StartupScreenState>>,
-    window_query: Query<&WindowCamera, With<StartupWindow>>
+    window_query: Query<&WindowUiRoot, With<StartupWindow>>
 ) {
-    commands.entity(ui_root.root).despawn_recursive();
-
-    ui_root.root = commands.spawn((NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            flex_direction: FlexDirection::Row,
-            padding: UiRect::all(Val::Percent(2.0)),
-            ..default()
-        },
-        ..default()
-    }, TargetCamera(window_query.single().camera))).with_children(|parent| {
-        startup_left_menu(parent);
-        parent.spawn((StartupContentRoot, NodeBundle {
+    let ui_root = window_query.single();
+    commands.entity(ui_root.root).despawn_descendants().with_children(|parent| {
+        parent.spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(80.0),
-                flex_direction: FlexDirection::Column,
-                padding: UiRect::all(Val::Percent(1.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Row,
+                padding: UiRect::all(Val::Percent(2.0)),
                 ..default()
             },
             ..default()
-        }));
-    }).id();
+        }).with_children(|parent| {
+            startup_left_menu(parent);
+            parent.spawn((StartupContentRoot, NodeBundle {
+                style: Style {
+                    width: Val::Percent(80.0),
+                    flex_direction: FlexDirection::Column,
+                    padding: UiRect::all(Val::Percent(1.0)),
+                    ..default()
+                },
+                ..default()
+            }));
+        });
+    });
 
     startup_state.set(StartupScreenState::ProjectSelect);
 }

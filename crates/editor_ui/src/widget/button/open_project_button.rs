@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_file_dialog::{DialogDirectoryPicked, FileDialogExt};
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
+use editor_state::EditorState;
 
 #[derive(Component)]
 pub(crate) struct OpenProjectButton;
@@ -28,9 +29,12 @@ pub(super) fn open_project_button(
 pub(super) fn open_project_directory_picked(
     mut folder_picked: EventReader<DialogDirectoryPicked<OpenProjectDialog>>,
     mut projects_config: ResMut<EditorConfigProjects>,
+    mut next_state: ResMut<NextState<EditorState>>,
 ) {
     for picked in folder_picked.read() {
         let picked_path = picked.path.to_str().unwrap().to_string();
+
+        next_state.set(EditorState::Project);
 
         if projects_config.projects.iter().any(|project| project.path == picked_path) {
             continue;
