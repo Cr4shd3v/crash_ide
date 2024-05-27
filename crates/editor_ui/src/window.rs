@@ -4,10 +4,22 @@ use bevy::render::camera::RenderTarget;
 use bevy::window::{WindowRef, WindowResolution};
 use editor_config::EditorProject;
 
+pub(super) struct EditorWindowPlugin;
+
+impl Plugin for EditorWindowPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_systems(PreStartup, initial_window)
+            .add_systems(PreUpdate, (update_active_window, process_new_window))
+            .add_systems(PostUpdate, check_for_exit)
+        ;
+    }
+}
+
 #[derive(Component)]
 pub struct ActiveWindow;
 
-pub(super) fn update_active_window(
+fn update_active_window(
     mut commands: Commands,
     mut window_focused_event_reader: EventReader<CursorEntered>,
     current_query: Query<Entity, With<ActiveWindow>>,
@@ -39,7 +51,7 @@ pub struct WindowUiRoot {
     pub root: Entity,
 }
 
-pub(super) fn initial_window(mut commands: Commands) {
+fn initial_window(mut commands: Commands) {
     commands.spawn((Window {
         resolution: WindowResolution::new(1280.0, 720.0),
         title: String::from("Crash Editor"),
@@ -47,7 +59,7 @@ pub(super) fn initial_window(mut commands: Commands) {
     }, StartupWindow));
 }
 
-pub(super) fn process_new_window(mut commands: Commands, spawned_windows: Query<Entity, Added<Window>>) {
+fn process_new_window(mut commands: Commands, spawned_windows: Query<Entity, Added<Window>>) {
     for window_entity in spawned_windows.iter() {
         let camera_id = commands.spawn(Camera2dBundle {
             camera: Camera {
@@ -77,7 +89,7 @@ pub(super) fn process_new_window(mut commands: Commands, spawned_windows: Query<
     }
 }
 
-pub(super) fn check_for_exit(
+fn check_for_exit(
     mut app_exit: EventWriter<AppExit>,
     window_query: Query<(), Or<(With<StartupWindow>, With<ProjectWindow>)>>
 ) {
