@@ -2,6 +2,7 @@
 
 #![warn(missing_docs)]
 
+use std::env::current_dir;
 use bevy::prelude::*;
 use bevy::window::ExitCondition;
 
@@ -15,6 +16,9 @@ fn main() {
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: None,
         exit_condition: ExitCondition::DontExit,
+        ..default()
+    }).set(AssetPlugin {
+        file_path: format!("{}/assets", current_dir().unwrap().to_str().unwrap()),
         ..default()
     }));
 
