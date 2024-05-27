@@ -21,7 +21,7 @@ pub(super) fn spawn_main_editor_screen(
 
             parent.spawn(NodeBundle {
                 style: Style {
-                    height: Val::Vh(76.0),
+                    height: Val::Vh(66.0),
                     width: Val::Vw(100.0),
                     flex_direction: FlexDirection::Row,
                     ..default()
@@ -58,7 +58,7 @@ pub(super) fn spawn_main_editor_screen(
 
             parent.spawn(NodeBundle {
                 style: Style {
-                    height: Val::Vh(20.0),
+                    height: Val::Vh(30.0),
                     width: Val::Vw(100.0),
                     ..default()
                 },
