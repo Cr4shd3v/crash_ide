@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::fonts::DefaultFonts;
 use crate::startup::StartupScreenState;
 use crate::widget::Hoverable;
 
@@ -45,6 +46,7 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(next_state.title(), TextStyle {
             font_size: 16.0,
+            font: DefaultFonts::ROBOTO_REGULAR,
             ..default()
         }));
     });

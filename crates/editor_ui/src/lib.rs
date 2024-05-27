@@ -7,11 +7,13 @@ pub mod widget;
 mod button;
 mod window;
 mod editor;
+mod fonts;
 
 use bevy::prelude::*;
 use bevy_file_dialog::FileDialogPlugin;
 use crate::button::button_cursor;
 use crate::editor::EditorPlugin;
+use crate::fonts::DefaultFontsPlugin;
 use crate::startup::StartupScreenPlugin;
 use crate::widget::button::OpenProjectDialog;
 use crate::widget::WidgetPlugin;
@@ -27,7 +29,7 @@ impl Plugin for EditorUiPlugin {
             .add_systems(PreUpdate, (update_active_window, process_new_window))
             .add_systems(Update, button_cursor)
             .add_systems(PostUpdate, check_for_exit)
-            .add_plugins((StartupScreenPlugin, WidgetPlugin, EditorPlugin))
+            .add_plugins((StartupScreenPlugin, WidgetPlugin, EditorPlugin, DefaultFontsPlugin))
             .add_plugins(
                 FileDialogPlugin::new()
                     .with_pick_directory::<OpenProjectDialog>(),

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use editor_config::EditorConfigProjects;
+use crate::fonts::DefaultFonts;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
 
@@ -43,11 +44,12 @@ fn build_project_select(
                     justify_content: JustifyContent::Center,
                     ..default()
                 },
-                background_color: BackgroundColor(Color::GRAY),
+                background_color: BackgroundColor(Color::hex("#578AF2").unwrap()),
                 ..default()
             }, CreateProjectButton)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("New Project", TextStyle {
                     font_size: 14.0,
+                    font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
                 }));
             });
@@ -59,11 +61,12 @@ fn build_project_select(
                     margin: UiRect::right(Val::Vw(2.0)),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::GRAY),
+                background_color: BackgroundColor(Color::hex("#578AF2").unwrap()),
                 ..default()
             }, OpenProjectButton)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Open", TextStyle {
                     font_size: 14.0,
+                    font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
                 }));
             });
@@ -89,12 +92,12 @@ fn build_project_select(
                     parent.spawn(TextBundle::from_section(&project.name, TextStyle {
                         font_size: 20.0,
                         color: Color::WHITE,
-                        ..default()
+                        font: DefaultFonts::ROBOTO_REGULAR,
                     }));
                     parent.spawn(TextBundle::from_section(&project.path, TextStyle {
                         font_size: 13.0,
                         color: Color::GRAY,
-                        ..default()
+                        font: DefaultFonts::ROBOTO_REGULAR,
                     }));
                 });
             }

@@ -3,6 +3,7 @@ use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::text::BreakLineOn;
+use crate::fonts::DefaultFonts;
 use crate::window::ActiveWindow;
 
 pub(super) struct TextInputPlugin;
@@ -12,7 +13,7 @@ impl Plugin for TextInputPlugin {
         load_internal_binary_asset!(
             app,
             CURSOR_HANDLE,
-            "../../../assets/Cursor.ttf",
+            "../../../assets/fonts/Cursor.ttf",
             |bytes: &[u8], _path: String| {
                 Font::try_from_bytes(bytes.to_vec()).unwrap()
             }
@@ -90,6 +91,7 @@ impl Default for TextInputTextStyle {
     fn default() -> Self {
         Self(TextStyle {
             font_size: 18.0,
+            font: DefaultFonts::ROBOTO_REGULAR,
             ..default()
         })
     }

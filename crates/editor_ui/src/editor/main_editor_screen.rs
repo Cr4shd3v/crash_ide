@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::fonts::DefaultFonts;
 use crate::window::{ProjectWindow, WindowUiRoot};
 
 pub(super) fn spawn_main_editor_screen(
@@ -9,7 +10,10 @@ pub(super) fn spawn_main_editor_screen(
         commands.entity(ui_root.root).despawn_descendants().with_children(|parent| {
             parent.spawn(TextBundle::from_section(
                 format!("Editor at {}", project_window.project_editor_config.path),
-                TextStyle::default(),
+                TextStyle {
+                    font: DefaultFonts::ROBOTO_REGULAR,
+                    ..default()
+                },
             ));
         });
     }

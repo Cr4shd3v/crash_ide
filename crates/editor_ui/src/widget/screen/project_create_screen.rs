@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy::winit::WinitWindows;
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
+use crate::fonts::DefaultFonts;
 use crate::widget::input::{TextInputBundle, TextInputValue};
 use crate::window::{ProjectWindow, StartupWindow, WindowCamera, WindowUiRoot};
 
@@ -37,7 +38,10 @@ pub(super) fn spawn_project_create_screen(
                 },
                 ..default()
             }).with_children(|parent| {
-                parent.spawn(TextBundle::from_section("Project Path", TextStyle::default()));
+                parent.spawn(TextBundle::from_section("Project Path", TextStyle {
+                    font: DefaultFonts::ROBOTO_REGULAR,
+                    ..default()
+                }));
                 parent.spawn((
                     TextInputBundle {
                         text_input_value: TextInputValue(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
@@ -74,6 +78,7 @@ pub(super) fn spawn_project_create_screen(
                     )).with_children(|parent| {
                         parent.spawn(TextBundle::from_section("Create", TextStyle {
                             font_size: 16.0,
+                            font: DefaultFonts::ROBOTO_REGULAR,
                             ..default()
                         }));
                     });
