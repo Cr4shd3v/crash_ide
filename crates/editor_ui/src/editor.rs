@@ -1,4 +1,5 @@
 mod main_editor_screen;
+mod editor_left_menu;
 
 use bevy::prelude::*;
 use crate::editor::main_editor_screen::MainEditorScreenPlugin;
