@@ -135,6 +135,6 @@ fn handle_row_click(
 
         let editor_project = projects.projects.get(&row.path).unwrap();
 
-        event_writer.send(OpenProjectEvent::new(editor_project.clone(), Some(window_entity), window_entity));
+        event_writer.send(OpenProjectEvent::new(editor_project.clone(), Some(window_entity)));
     }
 }

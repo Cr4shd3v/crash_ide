@@ -51,6 +51,6 @@ pub(super) fn open_project_directory_picked(
 
         let window_entity = window_query.single();
 
-        event_writer.send(OpenProjectEvent::new(config, Some(window_entity), window_entity));
+        event_writer.send(OpenProjectEvent::new(config, Some(window_entity)));
     }
 }

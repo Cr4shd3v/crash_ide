@@ -129,6 +129,6 @@ pub(super) fn create_project_confirm(
         commands.entity(ui_root.root).despawn_recursive();
         commands.entity(window_camera.camera).despawn();
 
-        event_writer.send(OpenProjectEvent::new(config, create_project_window.base_window, entity));
+        event_writer.send(OpenProjectEvent::new(config, create_project_window.base_window));
     }
 }
