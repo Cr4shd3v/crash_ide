@@ -3,6 +3,7 @@ use editor_config::EditorConfigProjects;
 use crate::fonts::DefaultFonts;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
+use crate::window::StartupWindow;
 
 pub(crate) struct StartupProjectSelectPlugin;
 
@@ -19,7 +20,13 @@ fn build_project_select(
     mut commands: Commands,
     content_parent: Query<Entity, With<StartupContentRoot>>,
     projects: Res<EditorConfigProjects>,
+    window_query: Query<&Window, With<StartupWindow>>,
 ) {
+    // Check if the window still exists
+    if window_query.get_single().is_err() {
+        return;
+    }
+
     let entity = match content_parent.get_single() {
         Ok(entity) => entity,
         Err(_) => {

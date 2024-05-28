@@ -1,13 +1,15 @@
 use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
+
 use bevy::prelude::*;
-use bevy::window::WindowResolution;
-use bevy::winit::WinitWindows;
+
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
+
 use crate::fonts::DefaultFonts;
+use crate::open_project::OpenProjectEvent;
 use crate::widget::input::{TextInputBundle, TextInputValue};
-use crate::window::{ProjectWindow, StartupWindow, WindowCamera, WindowUiRoot};
+use crate::window::{WindowCamera, WindowUiRoot};
 
 /// Marker component for the create project dialog
 #[derive(Component, Default)]
@@ -94,8 +96,7 @@ pub(super) fn create_project_confirm(
     window_query: Query<(Entity, &CreateProjectWindow, &WindowUiRoot, &WindowCamera)>,
     path_input_query: Query<&TextInputValue, With<ProjectPathInput>>,
     mut projects: ResMut<EditorConfigProjects>,
-    winit_windows: NonSend<WinitWindows>,
-    mut window_query_resize: Query<&mut Window>,
+    mut event_writer: EventWriter<OpenProjectEvent>,
 ) {
     for interaction in interaction_query.iter() {
         if *interaction != Interaction::Pressed {
@@ -128,26 +129,6 @@ pub(super) fn create_project_confirm(
         commands.entity(ui_root.root).despawn_recursive();
         commands.entity(window_camera.camera).despawn();
 
-        let monitor_size = winit_windows.get_window(entity).unwrap().current_monitor().unwrap().size();
-        let new_resolution = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32);
-
-        if let Some(window) = create_project_window.base_window {
-            commands.entity(window).remove::<StartupWindow>().insert(ProjectWindow {
-                project_editor_config: config,
-            });
-
-            window_query_resize.get_mut(window).unwrap().resolution = new_resolution;
-        } else {
-            commands.spawn((
-                Window {
-                    title: config.name.clone(),
-                    resolution: new_resolution,
-                    ..default()
-                },
-                ProjectWindow {
-                    project_editor_config: config,
-                }
-            ));
-        }
+        event_writer.send(OpenProjectEvent::new(config, create_project_window.base_window, entity));
     }
 }

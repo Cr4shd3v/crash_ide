@@ -2,6 +2,16 @@ use bevy::prelude::*;
 use crate::fonts::DefaultFonts;
 use crate::window::{ProjectWindow, WindowUiRoot};
 
+pub struct MainEditorScreenPlugin;
+
+impl Plugin for MainEditorScreenPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_systems(Update, spawn_main_editor_screen)
+        ;
+    }
+}
+
 pub(super) fn spawn_main_editor_screen(
     mut commands: Commands,
     window_query: Query<(&WindowUiRoot, &ProjectWindow), Added<ProjectWindow>>,
