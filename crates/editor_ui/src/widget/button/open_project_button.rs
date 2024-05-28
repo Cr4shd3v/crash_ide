@@ -36,16 +36,15 @@ pub(super) fn open_project_directory_picked(
     for picked in folder_picked.read() {
         let picked_path = picked.path.to_str().unwrap().to_string();
 
-        let config = if let Some(config) = projects_config.projects.iter()
-            .find(|project| project.path == picked_path) {
+        let config = if let Some(config) = projects_config.projects.get(&picked_path) {
             config.clone()
         } else {
             let config = EditorProject {
-                path: picked_path,
                 name: picked.path.file_name().unwrap().to_str().unwrap().to_string(),
+                path: picked_path.clone(),
             };
 
-            projects_config.projects.push(config.clone());
+            projects_config.projects.insert(picked_path, config.clone());
 
             config
         };

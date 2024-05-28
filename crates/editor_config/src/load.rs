@@ -7,7 +7,7 @@ macro_rules! default_load_config {
                 fs::write(&projects_config_path, serde_json::to_vec(&config).unwrap()).unwrap();
                 config
             } else {
-                serde_json::from_slice::<$struct_type>(fs::read(&projects_config_path).unwrap().as_slice()).unwrap()
+                serde_json::from_slice::<$struct_type>(fs::read(&projects_config_path).unwrap().as_slice()).unwrap_or(<$struct_type>::default())
             };
 
             commands.insert_resource(projects_config);

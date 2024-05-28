@@ -87,7 +87,7 @@ fn build_project_select(
             },
             ..default()
         }).with_children(|parent| {
-            for project in &projects.projects {
+            for (path, project) in &projects.projects {
                 parent.spawn(NodeBundle {
                     style: Style {
                         flex_direction: FlexDirection::Column,
@@ -101,7 +101,7 @@ fn build_project_select(
                         color: Color::WHITE,
                         font: DefaultFonts::ROBOTO_REGULAR,
                     }));
-                    parent.spawn(TextBundle::from_section(&project.path, TextStyle {
+                    parent.spawn(TextBundle::from_section(path, TextStyle {
                         font_size: 13.0,
                         color: Color::GRAY,
                         font: DefaultFonts::ROBOTO_REGULAR,

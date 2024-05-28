@@ -107,7 +107,7 @@ pub(super) fn create_project_confirm(
             ui_root, window_camera) = window_query.single();
         let path = path_input_query.single().0.clone();
 
-        if projects.projects.iter().any(|project| project.path == path) {
+        if projects.projects.contains_key(&path) {
             // Todo: Error message
             return;
         }
@@ -120,10 +120,10 @@ pub(super) fn create_project_confirm(
 
         let config = EditorProject {
             name: PathBuf::from_str(&*path).unwrap().file_name().unwrap().to_str().unwrap().to_string(),
-            path,
+            path: path.clone(),
         };
 
-        projects.projects.push(config.clone());
+        projects.projects.insert(path, config.clone());
 
         commands.entity(entity).despawn();
         commands.entity(ui_root.root).despawn_recursive();
