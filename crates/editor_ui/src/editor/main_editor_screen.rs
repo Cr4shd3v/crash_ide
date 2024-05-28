@@ -53,7 +53,7 @@ pub(super) fn spawn_main_editor_screen(
                         width: Val::Percent(80.0),
                         ..default()
                     },
-                    background_color: BackgroundColor(Color::GOLD),
+                    background_color: BackgroundColor(Color::BLACK),
                     ..default()
                 }).with_children(|parent| {
                     parent.spawn(TextBundle::from_section(

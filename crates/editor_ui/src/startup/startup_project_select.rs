@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 use editor_config::EditorConfigProjects;
 use crate::fonts::DefaultFonts;
+use crate::open_project::OpenProjectEvent;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
+use crate::widget::Hoverable;
 use crate::window::StartupWindow;
 
 pub(crate) struct StartupProjectSelectPlugin;
@@ -12,8 +14,14 @@ impl Plugin for StartupProjectSelectPlugin {
         app
             .add_systems(OnEnter(StartupScreenState::ProjectSelect), build_project_select)
             .add_systems(Update, build_project_select.run_if(resource_changed::<EditorConfigProjects>))
+            .add_systems(Update, handle_row_click)
         ;
     }
+}
+
+#[derive(Component)]
+struct ProjectRow {
+    path: String,
 }
 
 fn build_project_select(
@@ -82,20 +90,20 @@ fn build_project_select(
         parent.spawn(NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
-                padding: UiRect::horizontal(Val::Vw(2.0)),
                 ..default()
             },
             ..default()
         }).with_children(|parent| {
             for (path, project) in &projects.projects {
-                parent.spawn(NodeBundle {
+                parent.spawn((ButtonBundle {
                     style: Style {
                         flex_direction: FlexDirection::Column,
-                        padding: UiRect::vertical(Val::Vh(1.0)),
+                        padding: UiRect::axes(Val::Vw(2.0), Val::Vh(1.0)),
                         ..default()
                     },
+                    background_color: BackgroundColor(Color::NONE),
                     ..default()
-                }).with_children(|parent| {
+                }, Hoverable::new(Color::BLACK.with_a(0.2)), ProjectRow { path: path.clone() })).with_children(|parent| {
                     parent.spawn(TextBundle::from_section(&project.name, TextStyle {
                         font_size: 20.0,
                         color: Color::WHITE,
@@ -110,4 +118,23 @@ fn build_project_select(
             }
         });
     });
+}
+
+fn handle_row_click(
+    query: Query<(&Interaction, &ProjectRow), Changed<Interaction>>,
+    mut event_writer: EventWriter<OpenProjectEvent>,
+    projects: Res<EditorConfigProjects>,
+    window: Query<Entity, With<StartupWindow>>,
+) {
+    for (interaction, row) in query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let Ok(window_entity) = window.get_single() else { continue; };
+
+        let editor_project = projects.projects.get(&row.path).unwrap();
+
+        event_writer.send(OpenProjectEvent::new(editor_project.clone(), Some(window_entity), window_entity));
+    }
 }
