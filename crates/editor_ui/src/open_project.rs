@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use editor_config::EditorProject;
+use editor_config::{EditorProject, LoadedEditorProject};
 use crate::widget::screen::CreateProjectWindow;
 use crate::window::{DefaultWindowResolution, ProjectWindow, StartupWindow};
 
@@ -36,9 +36,13 @@ fn on_open_project(
     default_window_resolution: Res<DefaultWindowResolution>,
 ) {
     for open_project_event in event_reader.read() {
+        let project = commands.spawn(LoadedEditorProject {
+            editor_project: open_project_event.editor_project.clone(),
+        }).id();
+
         if let Some(window) = open_project_event.base_window {
             commands.entity(window).remove::<(StartupWindow, CreateProjectWindow, ProjectWindow)>().insert(ProjectWindow {
-                project_editor_config: open_project_event.editor_project.clone(),
+                project_editor_config: project,
             });
 
             window_query_resize.get_mut(window).unwrap().resolution = default_window_resolution.0.clone();
@@ -50,7 +54,7 @@ fn on_open_project(
                     ..default()
                 },
                 ProjectWindow {
-                    project_editor_config: open_project_event.editor_project.clone(),
+                    project_editor_config: project,
                 }
             ));
         }

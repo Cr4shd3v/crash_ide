@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use editor_config::{LoadedEditorProject, ProjectRef};
 use crate::fonts::DefaultFonts;
 use crate::window::{ProjectWindow, WindowUiRoot};
 
@@ -27,6 +28,7 @@ pub struct EditorBottomMenu;
 pub(super) fn spawn_main_editor_screen(
     mut commands: Commands,
     window_query: Query<(&WindowUiRoot, &ProjectWindow), Added<ProjectWindow>>,
+    project_query: Query<&LoadedEditorProject>,
 ) {
     for (ui_root, project_window) in window_query.iter() {
         commands.entity(ui_root.root).despawn_descendants().with_children(|parent| {
@@ -58,7 +60,7 @@ pub(super) fn spawn_main_editor_screen(
                     },
                     background_color: BackgroundColor(Color::GREEN),
                     ..default()
-                }, EditorLeftMenu));
+                }, EditorLeftMenu, ProjectRef(project_window.project_editor_config)));
                 parent.spawn((NodeBundle {
                     style: Style {
                         height: Val::Percent(100.0),
@@ -69,7 +71,7 @@ pub(super) fn spawn_main_editor_screen(
                     ..default()
                 }, EditorFileView)).with_children(|parent| {
                     parent.spawn(TextBundle::from_section(
-                        format!("Editor at {}", project_window.project_editor_config.path),
+                        format!("Editor at {}", project_query.get(project_window.project_editor_config).unwrap().editor_project.path),
                         TextStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
                             ..default()
