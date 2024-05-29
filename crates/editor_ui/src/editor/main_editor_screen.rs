@@ -56,9 +56,10 @@ pub(super) fn spawn_main_editor_screen(
                     style: Style {
                         height: Val::Percent(100.0),
                         width: Val::Percent(20.0),
+                        flex_direction: FlexDirection::Column,
                         ..default()
                     },
-                    background_color: BackgroundColor(Color::GREEN),
+                    background_color: BackgroundColor(Color::hex("#21252B").unwrap()),
                     ..default()
                 }, EditorLeftMenu, ProjectRef(project_window.project_editor_config)));
                 parent.spawn((NodeBundle {
@@ -67,7 +68,7 @@ pub(super) fn spawn_main_editor_screen(
                         width: Val::Percent(80.0),
                         ..default()
                     },
-                    background_color: BackgroundColor(Color::BLACK),
+                    background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
                     ..default()
                 }, EditorFileView)).with_children(|parent| {
                     parent.spawn(TextBundle::from_section(
