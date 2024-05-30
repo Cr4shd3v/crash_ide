@@ -1,3 +1,5 @@
+use std::fs;
+use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use editor_config::FindProjectInParents;
 use crate::editor::main_editor_screen::EditorLeftMenu;
@@ -19,7 +21,8 @@ impl Plugin for FilesystemMenuPlugin {
 
 #[derive(Component)]
 pub struct ProjectRoot {
-    base_path: String,
+    display_path: String,
+    full_path: String,
 }
 
 #[derive(Component)]
@@ -56,20 +59,21 @@ fn spawn_left_menu(
     for entity in query.iter() {
         let project = find_project.find(entity);
 
-        let mut base_path = project.editor_project.path.clone();
+        let full_path = project.editor_project.path.clone();
+        let mut display_path = full_path.clone();
 
         // Linux: Change /home/<user>/ to ~/
         #[cfg(target_os = "linux")]
         {
-            if base_path.starts_with("/home") {
-                base_path = format!("~/{}", base_path.split("/").skip(3).collect::<Vec<&str>>().join("/"));
+            if display_path.starts_with("/home") {
+                display_path = format!("~/{}", display_path.split("/").skip(3).collect::<Vec<&str>>().join("/"));
             }
         }
 
         commands.entity(entity).despawn_descendants().with_children(|parent| {
             parent.spawn((
                 FileDisplay::new(project.editor_project.name.clone(), false, 0),
-                ProjectRoot { base_path: base_path.clone() },
+                ProjectRoot { display_path, full_path },
             ));
         });
     }
@@ -96,18 +100,29 @@ fn spawn_all_rows(
                 },
                 ..default()
             }, SelfFileRow)).with_children(|parent| {
-                parent.spawn((ImageBundle {
-                    image: UiImage {
-                        texture: icons.right.clone(),
+                if file_display.is_file {
+                    parent.spawn(NodeBundle {
+                        style: Style {
+                            height: Val::Px(20.0),
+                            margin: UiRect::left(Val::Px(20.0 + 20.0 * file_display.level as f32)),
+                            ..default()
+                        },
                         ..default()
-                    },
-                    style: Style {
-                        height: Val::Px(22.5),
-                        margin: UiRect::left(Val::Px(8.0 * file_display.level as f32)),
+                    });
+                } else {
+                    parent.spawn((ImageBundle {
+                        image: UiImage {
+                            texture: icons.right.clone(),
+                            ..default()
+                        },
+                        style: Style {
+                            height: Val::Px(20.0),
+                            margin: UiRect::left(Val::Px(20.0 * file_display.level as f32)),
+                            ..default()
+                        },
                         ..default()
-                    },
-                    ..default()
-                }, ExpandDirIcon, Interaction::None));
+                    }, ExpandDirIcon, Interaction::None));
+                }
 
                 parent.spawn(ImageBundle {
                     image: UiImage {
@@ -140,7 +155,7 @@ fn spawn_all_rows(
 
                 if let Some(root) = root {
                     parent.spawn(TextBundle {
-                        text: Text::from_section(root.base_path.clone(), TextStyle {
+                        text: Text::from_section(root.display_path.clone(), TextStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
                             font_size: 14.0,
                             color: Color::GRAY.with_a(0.5),
@@ -189,10 +204,82 @@ fn directory_expand_icon(
     }
 }
 
+#[derive(SystemParam)]
+struct FilePath<'w, 's> {
+    query: Query<'w, 's, (&'static Parent, &'static FileDisplay, Option<&'static ProjectRoot>)>,
+}
+
+impl<'w, 's> FilePath<'w, 's> {
+    fn get_full_path(&self, row_entity: Entity) -> String {
+        let mut entity = row_entity;
+        let mut path = vec![];
+
+        loop {
+            let (parent, file_display, root) = self.query.get(entity).unwrap();
+
+            if let Some(root) = root {
+                path.reverse();
+                return format!("{}/{}", root.full_path, path.join("/"));
+            } else {
+                path.push(file_display.filename.clone());
+            }
+
+            entity = parent.get();
+        }
+    }
+}
+
 fn expand_directory(
+    mut commands: Commands,
     mut event_reader: EventReader<ExpandDirEvent>,
+    query: Query<(Option<&DirectoryExpanded>, &Children)>,
+    children_query: Query<&Children>,
+    mut image_query: Query<&mut UiImage>,
+    icons: Res<DefaultIcons>,
+    file_display_query: Query<Option<&FileDisplay>>,
+    file_path: FilePath,
 ) {
     for event in event_reader.read() {
+        let (expanded, children) = query.get(event.row_entity).unwrap();
+        let is_expanded = expanded.is_some();
 
+        if is_expanded == event.expand {
+            println!("Directory already expanded");
+            continue;
+        }
+
+        let self_row = children.first().unwrap().clone();
+        let expand_icon = children_query.get(self_row).unwrap().first().unwrap().clone();
+        let mut ui_image = image_query.get_mut(expand_icon).unwrap();
+
+        if is_expanded {
+            ui_image.texture = icons.right.clone();
+            commands.entity(event.row_entity).remove::<DirectoryExpanded>();
+            for entity in children.iter() {
+                let file_display = file_display_query.get(entity.clone()).unwrap();
+                if file_display.is_some() {
+                    commands.entity(entity.clone()).despawn_recursive();
+                }
+            }
+        } else {
+            ui_image.texture = icons.down.clone();
+            commands.entity(event.row_entity).insert(DirectoryExpanded);
+
+            let file_display = file_display_query.get(event.row_entity).unwrap().unwrap();
+            let dir_path = file_path.get_full_path(event.row_entity);
+            let mut entities = vec![];
+
+            for dir_entry in fs::read_dir(&dir_path).unwrap() {
+                let Ok(dir_entry) = dir_entry else {continue;};
+
+                entities.push(commands.spawn(FileDisplay {
+                    filename: dir_entry.file_name().to_str().unwrap().to_string(),
+                    level: file_display.level + 1,
+                    is_file: dir_entry.file_type().unwrap().is_file(),
+                }).id());
+            }
+
+            commands.entity(event.row_entity).push_children(entities.as_slice());
+        }
     }
 }
