@@ -10,6 +10,9 @@ impl Plugin for FilesystemMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, (spawn_left_menu, spawn_all_rows).chain())
+            .add_systems(Update, (directory_expand_icon, expand_directory).chain())
+            .add_event::<ExpandDirEvent>()
+            .add_event::<OpenFileEvent>()
         ;
     }
 }
@@ -25,6 +28,15 @@ pub struct FileDisplay {
     is_file: bool,
     level: u16,
 }
+
+#[derive(Component)]
+struct SelfFileRow;
+
+#[derive(Component)]
+struct ExpandDirIcon;
+
+#[derive(Component)]
+struct DirectoryExpanded;
 
 impl FileDisplay {
     pub fn new(filename: String, is_file: bool, level: u16) -> Self {
@@ -76,15 +88,15 @@ fn spawn_all_rows(
             },
             ..default()
         }).with_children(|parent| {
-            parent.spawn(NodeBundle {
+            parent.spawn((NodeBundle {
                 style: Style {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     ..default()
                 },
                 ..default()
-            }).with_children(|parent| {
-                parent.spawn(ImageBundle {
+            }, SelfFileRow)).with_children(|parent| {
+                parent.spawn((ImageBundle {
                     image: UiImage {
                         texture: icons.right.clone(),
                         ..default()
@@ -95,7 +107,7 @@ fn spawn_all_rows(
                         ..default()
                     },
                     ..default()
-                });
+                }, ExpandDirIcon, Interaction::None));
 
                 parent.spawn(ImageBundle {
                     image: UiImage {
@@ -142,5 +154,45 @@ fn spawn_all_rows(
                 }
             });
         });
+    }
+}
+
+#[derive(Event)]
+pub struct ExpandDirEvent {
+    row_entity: Entity,
+    expand: bool,
+}
+
+#[derive(Event)]
+pub struct OpenFileEvent {
+    row_entity: Entity,
+}
+
+fn directory_expand_icon(
+    query: Query<(&Interaction, &Parent), (Changed<Interaction>, With<ExpandDirIcon>)>,
+    mut event_writer: EventWriter<ExpandDirEvent>,
+    parent_query: Query<&Parent>,
+    expanded_query: Query<Option<&DirectoryExpanded>>,
+) {
+    for (interaction, parent) in query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let row_entity = parent_query.get(parent.get()).unwrap().get();
+        let expanded = expanded_query.get(row_entity).unwrap().is_some();
+
+        event_writer.send(ExpandDirEvent {
+            row_entity,
+            expand: !expanded,
+        });
+    }
+}
+
+fn expand_directory(
+    mut event_reader: EventReader<ExpandDirEvent>,
+) {
+    for event in event_reader.read() {
+
     }
 }
