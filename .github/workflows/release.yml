@@ -1,4 +1,4 @@
-name: Build Editor release
+name: Build Editor Release 🚀
 
 on:
   release:
@@ -11,6 +11,10 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
@@ -19,15 +23,15 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
+      - name: 🔄 Checkout repository
         uses: actions/checkout@v2
 
-      - name: Mold and Clang
+      - name: 🔧 Mold and Clang
         if: startsWith(matrix.os, 'ubuntu-')
         run: |
           sh setup.sh
 
-      - name: 📁 Cache Cargo and Build Outputs
+      - name: 🗃️ Cache Cargo and Build Outputs
         uses: actions/cache@v2
         with:
           path: |
@@ -37,16 +41,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: 📦 Setup Rust
+      - name: 🛠️ Setup Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable # TODO: maybe change to nightly @Cr4shd3v
           override: true
 
-      - name: 🛠️ Build
+      - name: 🏗️ Build
         run: cargo build --release
 
-      - name: ☁ Upload
+      - name: ☁️ Upload
         uses: actions/upload-artifact@v2
         with:
           name: editor
