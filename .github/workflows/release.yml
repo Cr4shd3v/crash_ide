@@ -30,6 +30,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu-')
         run: |
           sh setup.sh
+          apt-get install -y alsa-lib-dev
 
       - name: 🗃️ Cache Cargo and Build Outputs
         uses: actions/cache@v2
