@@ -3,8 +3,10 @@ name: Build Editor release
 on:
   release:
     types: [created]
+  push:
+    branches: ["master"]
   pull_request:
-    branches: [prerelease]
+    branches: ["master"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,9 +15,9 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-  
-    runs-on: ${{ matrix.os }}  
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
