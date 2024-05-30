@@ -22,6 +22,25 @@ impl<'w, 's> Projects<'w, 's> {
     }
 }
 
+/// System param to obtain a [LoadedEditorProject] from a ui node
+#[derive(SystemParam)]
+pub struct FindProjectInParents<'w, 's> {
+    query: Query<'w, 's, (&'static Parent, Option<&'static ProjectRef>)>,
+    projects: Projects<'w, 's>,
+}
+
+impl<'w, 's> FindProjectInParents<'w, 's> {
+    /// Find the closest [ProjectRef] in the parents
+    pub fn find(&self, entity: Entity) -> &LoadedEditorProject {
+        let (parent, project_ref) = self.query.get(entity).unwrap();
+        if let Some(project_ref) = project_ref {
+            self.projects.get_by_ref(project_ref)
+        } else {
+            self.find(parent.get())
+        }
+    }
+}
+
 /// Saved project for the editor
 #[derive(Serialize, Deserialize, Clone)]
 pub struct EditorProject {

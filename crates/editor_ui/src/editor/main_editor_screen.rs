@@ -41,9 +41,9 @@ pub(super) fn spawn_main_editor_screen(
                 },
                 background_color: BackgroundColor(Color::RED),
                 ..default()
-            }, EditorTopMenu));
+            }, EditorTopMenu, ProjectRef(project_window.project_editor_config)));
 
-            parent.spawn(NodeBundle {
+            parent.spawn((NodeBundle {
                 style: Style {
                     height: Val::Vh(66.0),
                     width: Val::Vw(100.0),
@@ -51,7 +51,7 @@ pub(super) fn spawn_main_editor_screen(
                     ..default()
                 },
                 ..default()
-            }).with_children(|parent| {
+            }, ProjectRef(project_window.project_editor_config))).with_children(|parent| {
                 parent.spawn((NodeBundle {
                     style: Style {
                         height: Val::Percent(100.0),
@@ -61,7 +61,7 @@ pub(super) fn spawn_main_editor_screen(
                     },
                     background_color: BackgroundColor(Color::hex("#21252B").unwrap()),
                     ..default()
-                }, EditorLeftMenu, ProjectRef(project_window.project_editor_config)));
+                }, EditorLeftMenu));
                 parent.spawn((NodeBundle {
                     style: Style {
                         height: Val::Percent(100.0),
@@ -89,7 +89,7 @@ pub(super) fn spawn_main_editor_screen(
                 },
                 background_color: BackgroundColor(Color::BLUE),
                 ..default()
-            }, EditorBottomMenu));
+            }, EditorBottomMenu, ProjectRef(project_window.project_editor_config)));
         });
     }
 }
