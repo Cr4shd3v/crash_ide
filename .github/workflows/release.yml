@@ -3,10 +3,8 @@ name: Build Editor Release 🚀
 on:
   release:
     types: [created]
-  # push:
-  #   branches: ["master"]
-  # pull_request:
-  #   branches: ["master"]
+  push:
+    branches: ["feature/51"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -45,7 +43,7 @@ jobs:
       - name: 🛠️ Setup Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable # TODO: maybe change to nightly @Cr4shd3v
+          toolchain: nightly
           override: true
 
       - name: 🏗️ Build
