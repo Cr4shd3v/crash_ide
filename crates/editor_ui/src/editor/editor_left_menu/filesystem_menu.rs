@@ -12,9 +12,8 @@ pub struct FilesystemMenuPlugin;
 impl Plugin for FilesystemMenuPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, (spawn_left_menu, spawn_all_rows).chain())
-            .add_systems(Update, (directory_expand_icon, expand_directory).chain())
-            .add_systems(Update, (double_click_row, highlight_clicked_row))
+            .add_systems(Update, (spawn_left_menu, expand_directory, spawn_all_rows).chain())
+            .add_systems(Update, (directory_expand_icon, double_click_row, highlight_clicked_row))
             .add_event::<ExpandDirEvent>()
             .add_event::<OpenFileEvent>()
         ;
