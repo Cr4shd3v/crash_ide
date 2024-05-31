@@ -3,7 +3,6 @@ use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
 use bevy::window::{WindowCreated, WindowRef, WindowResolution};
 use bevy::winit::WinitWindows;
-use editor_config::EditorProject;
 
 pub(super) struct EditorWindowPlugin;
 
@@ -40,7 +39,7 @@ pub struct StartupWindow;
 
 #[derive(Component)]
 pub struct ProjectWindow {
-    pub project_editor_config: EditorProject,
+    pub project_editor_config: Entity,
 }
 
 #[derive(Component)]
