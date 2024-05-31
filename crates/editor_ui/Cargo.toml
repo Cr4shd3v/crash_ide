@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { workspace = true }
+bevy = { workspace = true, features = ["bevy_ui", "bevy_winit", "png"] }
 bevy_file_dialog = { workspace = true }
 editor_state = { workspace = true }
 editor_config = { workspace = true }

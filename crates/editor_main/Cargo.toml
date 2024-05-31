@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { workspace = true }
+bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
 editor_state = { workspace = true }
 editor_config = { workspace = true }
 editor_ui = { workspace = true }
