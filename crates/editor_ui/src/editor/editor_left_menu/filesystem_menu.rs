@@ -5,6 +5,7 @@ use editor_config::FindProjectInParents;
 use crate::editor::main_editor_screen::EditorLeftMenu;
 use crate::fonts::DefaultFonts;
 use crate::icons::DefaultIcons;
+use crate::widget::button::{DoubleClickButton, DoubleClicked};
 
 pub struct FilesystemMenuPlugin;
 
@@ -13,6 +14,7 @@ impl Plugin for FilesystemMenuPlugin {
         app
             .add_systems(Update, (spawn_left_menu, spawn_all_rows).chain())
             .add_systems(Update, (directory_expand_icon, expand_directory).chain())
+            .add_systems(Update, (double_click_row, highlight_clicked_row))
             .add_event::<ExpandDirEvent>()
             .add_event::<OpenFileEvent>()
         ;
@@ -99,7 +101,7 @@ fn spawn_all_rows(
                     ..default()
                 },
                 ..default()
-            }, SelfFileRow)).with_children(|parent| {
+            }, SelfFileRow, DoubleClickButton::default(), Interaction::None)).with_children(|parent| {
                 if file_display.is_file {
                     parent.spawn(NodeBundle {
                         style: Style {
@@ -201,6 +203,61 @@ fn directory_expand_icon(
             row_entity,
             expand: !expanded,
         });
+    }
+}
+
+#[derive(Component)]
+struct HighlightedFileRow;
+
+fn highlight_clicked_row(
+    mut commands: Commands,
+    query: Query<(Entity, &Interaction), (Changed<Interaction>, With<DoubleClickButton>)>,
+    mut background_color_query: Query<&mut BackgroundColor>,
+    current_button_query: Query<Entity, With<HighlightedFileRow>>,
+) {
+    for (entity, interaction) in query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let mut background_color = background_color_query.get_mut(entity).unwrap();
+        background_color.0 = Color::BLUE;
+
+        for current_entity in current_button_query.iter() {
+            if current_entity == entity {
+                continue;
+            }
+
+            commands.entity(current_entity).remove::<HighlightedFileRow>();
+            let mut background_color = background_color_query.get_mut(current_entity).unwrap();
+            background_color.0 = Color::NONE;
+        }
+
+        commands.entity(entity).insert(HighlightedFileRow);
+        break;
+    }
+}
+
+fn double_click_row(
+    query: Query<&Parent, Added<DoubleClicked>>,
+    file_display_query: Query<(&FileDisplay, Option<&DirectoryExpanded>)>,
+    mut dir_event_writer: EventWriter<ExpandDirEvent>,
+    mut file_event_writer: EventWriter<OpenFileEvent>,
+) {
+    for parent in query.iter() {
+        let entity = parent.get();
+        let (file_display, expanded) = file_display_query.get(entity).unwrap();
+
+        if file_display.is_file {
+            file_event_writer.send(OpenFileEvent {
+                row_entity: entity,
+            });
+        } else {
+            dir_event_writer.send(ExpandDirEvent {
+                row_entity: entity,
+                expand: expanded.is_none(),
+            });
+        }
     }
 }
 
