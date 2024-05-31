@@ -33,18 +33,20 @@ pub(super) fn spawn_main_editor_screen(
         commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
             parent.spawn((NodeBundle {
                 style: Style {
-                    height: Val::Vh(4.0),
+                    height: Val::Vh(3.5),
                     width: Val::Vw(100.0),
                     flex_direction: FlexDirection::Row,
+                    border: UiRect::bottom(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::RED),
+                background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
+                border_color: BorderColor(Color::GRAY.with_a(0.1)),
                 ..default()
             }, EditorTopMenu, ProjectRef(project_window.project_editor_config)));
 
             parent.spawn((NodeBundle {
                 style: Style {
-                    height: Val::Vh(66.0),
+                    height: Val::Vh(66.5),
                     width: Val::Vw(100.0),
                     flex_direction: FlexDirection::Row,
                     ..default()

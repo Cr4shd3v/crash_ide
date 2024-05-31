@@ -34,12 +34,11 @@ fn init_hover(mut query: Query<(&mut Hoverable, &BackgroundColor), Added<Hoverab
 }
 
 fn on_hover(
-    mut interaction_query: Query<(&Interaction, &mut Hoverable, &mut BackgroundColor), Changed<Interaction>>,
+    mut interaction_query: Query<(&Interaction, &Hoverable, &mut BackgroundColor), Changed<Interaction>>,
 ) {
-    for (interaction, mut hoverable, mut background_color) in interaction_query.iter_mut() {
+    for (interaction, hoverable, mut background_color) in interaction_query.iter_mut() {
         match interaction {
             Interaction::Hovered => {
-                hoverable.saved_color = Some(background_color.0);
                 background_color.0 = hoverable.hover_color;
             }
             Interaction::None => {
