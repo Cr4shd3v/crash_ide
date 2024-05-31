@@ -30,13 +30,18 @@ pub struct FindProjectInParents<'w, 's> {
 }
 
 impl<'w, 's> FindProjectInParents<'w, 's> {
-    /// Find the closest [ProjectRef] in the parents
+    /// Find the closest [ProjectRef] in the parents and retrieves the corresponding [LoadedEditorProject]
     pub fn find(&self, entity: Entity) -> &LoadedEditorProject {
+        self.projects.get_by_ref(self.find_project_ref(entity))
+    }
+
+    /// Find the closest [ProjectRef] in the parents
+    pub fn find_project_ref(&self, entity: Entity) -> &ProjectRef {
         let (parent, project_ref) = self.query.get(entity).unwrap();
         if let Some(project_ref) = project_ref {
-            self.projects.get_by_ref(project_ref)
+            project_ref
         } else {
-            self.find(parent.get())
+            self.find_project_ref(parent.get())
         }
     }
 }

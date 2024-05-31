@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::utils::HashMap;
 use editor_config::ProjectRef;
 use crate::window::{AllWindows, ProjectWindow};
 
@@ -8,6 +9,7 @@ impl Plugin for MainEditorScreenPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, spawn_main_editor_screen)
+            .init_resource::<ProjectsFileViews>()
         ;
     }
 }
@@ -24,10 +26,24 @@ pub struct EditorFileView;
 #[derive(Component)]
 pub struct EditorBottomMenu;
 
+#[derive(Resource, Default)]
+pub struct ProjectsFileViews {
+    /// Maps project [Entity] to file view [Entity]
+    map: HashMap<Entity, Entity>,
+}
+
+impl ProjectsFileViews {
+    /// Returns the [EditorFileView](EditorFileView) [Entity] for a [ProjectRef]
+    pub fn get(&self, project_ref: &ProjectRef) -> Entity {
+        self.map.get(&project_ref.0).unwrap().clone()
+    }
+}
+
 pub(super) fn spawn_main_editor_screen(
     mut commands: Commands,
     window_query: Query<(Entity, &ProjectWindow), Added<ProjectWindow>>,
     all_windows: Res<AllWindows>,
+    mut project_file_views: ResMut<ProjectsFileViews>,
 ) {
     for (window_entity, project_window) in window_query.iter() {
         commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
@@ -64,7 +80,7 @@ pub(super) fn spawn_main_editor_screen(
                     ..default()
                 }, EditorLeftMenu));
 
-                parent.spawn((NodeBundle {
+                let view_id = parent.spawn((NodeBundle {
                     style: Style {
                         height: Val::Percent(100.0),
                         width: Val::Percent(80.0),
@@ -72,7 +88,9 @@ pub(super) fn spawn_main_editor_screen(
                     },
                     background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
                     ..default()
-                }, EditorFileView));
+                }, EditorFileView)).id();
+
+                project_file_views.map.insert(project_window.project_editor_config, view_id);
             });
 
             parent.spawn((NodeBundle {

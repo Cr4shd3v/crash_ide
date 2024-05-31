@@ -1,7 +1,7 @@
 mod filesystem_menu;
 
 use bevy::prelude::*;
-use crate::editor::editor_left_menu::filesystem_menu::FilesystemMenuPlugin;
+pub use filesystem_menu::*;
 
 pub struct EditorLeftMenuPlugin;
 

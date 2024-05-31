@@ -176,13 +176,13 @@ fn spawn_all_rows(
 
 #[derive(Event)]
 pub struct ExpandDirEvent {
-    row_entity: Entity,
-    expand: bool,
+    pub row_entity: Entity,
+    pub expand: bool,
 }
 
 #[derive(Event)]
 pub struct OpenFileEvent {
-    row_entity: Entity,
+    pub row_entity: Entity,
 }
 
 fn directory_expand_icon(
@@ -262,12 +262,12 @@ fn double_click_row(
 }
 
 #[derive(SystemParam)]
-struct FilePath<'w, 's> {
+pub struct FilePath<'w, 's> {
     query: Query<'w, 's, (&'static Parent, &'static FileDisplay, Option<&'static ProjectRoot>)>,
 }
 
 impl<'w, 's> FilePath<'w, 's> {
-    fn get_full_path(&self, row_entity: Entity) -> String {
+    pub fn get_full_path(&self, row_entity: Entity) -> String {
         let mut entity = row_entity;
         let mut path = vec![];
 
