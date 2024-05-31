@@ -12,6 +12,7 @@ homedir = "^0.2"
 editor_state = { path = "crates/editor_state" }
 editor_config = { path = "crates/editor_config" }
 editor_ui = { path = "crates/editor_ui" }
+editor_widget = { path = "crates/editor_widget" }
 
 [profile.dev]
 opt-level = 1

@@ -10,27 +10,10 @@ impl Plugin for EditorWindowPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(PreStartup, initial_window)
-            .add_systems(PreUpdate, (update_active_window, process_new_window, save_resolution))
+            .add_systems(PreUpdate, (process_new_window, save_resolution))
             .add_systems(PostUpdate, check_for_exit)
             .init_resource::<DefaultWindowResolution>()
         ;
-    }
-}
-
-#[derive(Component)]
-pub struct ActiveWindow;
-
-fn update_active_window(
-    mut commands: Commands,
-    mut window_focused_event_reader: EventReader<CursorEntered>,
-    current_query: Query<Entity, With<ActiveWindow>>,
-) {
-    for window_focused in window_focused_event_reader.read() {
-        if let Ok(current_entity) = current_query.get_single() {
-            commands.entity(current_entity).remove::<ActiveWindow>();
-        }
-
-        commands.entity(window_focused.window).insert(ActiveWindow);
     }
 }
 

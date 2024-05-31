@@ -2,10 +2,10 @@ use std::fs;
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use editor_config::FindProjectInParents;
+use editor_widget::{DoubleClickButton, DoubleClicked};
 use crate::editor::main_editor_screen::EditorLeftMenu;
 use crate::fonts::DefaultFonts;
 use crate::icons::DefaultIcons;
-use crate::widget::button::{DoubleClickButton, DoubleClicked};
 
 pub struct FilesystemMenuPlugin;
 

@@ -1762,6 +1762,14 @@ dependencies = [
  "bevy_file_dialog",
  "editor_config",
  "editor_state",
+ "editor_widget",
+]
+
+[[package]]
+name = "editor_widget"
+version = "0.1.0"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]
