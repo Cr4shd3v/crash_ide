@@ -57,6 +57,8 @@ pub struct TextInputBundle {
     pub interaction: Interaction,
     /// Whether the text input is disabled or not
     pub text_input_inactive: TextInputInactive,
+    /// Settings for the text input
+    pub text_input_settings: TextInputSettings,
 }
 
 /// Value of the text input
@@ -334,11 +336,13 @@ fn create_text_input(
         &TextInputInitialCursorPos,
         &TextInputInactive,
         Option<&TextInputFocused>,
+        &TextInputSettings,
     ), Added<TextInputValue>>,
     mut style_query: Query<(&mut Style, &mut BorderColor)>
 ) {
     for (entity, value, style, placeholder,
-        initial_cursor_pos, inactive, focused) in query.iter() {
+        initial_cursor_pos, inactive, focused,
+        settings) in query.iter() {
         let mut sections = vec![
             // Pre-cursor
             TextSection {
@@ -423,9 +427,11 @@ fn create_text_input(
             ..default()
         }).id();
 
-        let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
-        style.border = UiRect::all(Val::Px(1.0));
-        border_color.0 = Color::GRAY;
+        if settings.with_border {
+            let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
+            style.border = UiRect::all(Val::Px(1.0));
+            border_color.0 = Color::GRAY;
+        }
 
         commands.entity(overflow_container).add_child(text);
         commands.entity(entity).insert(cursor_pos).push_children(&[overflow_container, placeholder_text]);
