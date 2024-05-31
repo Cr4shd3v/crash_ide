@@ -96,6 +96,7 @@ impl Default for TextInputTextStyle {
 }
 
 impl TextInputTextStyle {
+    /// Helper method to use a custom font for this text field
     pub fn with_font(mut self, font: Handle<Font>) -> Self {
         self.0.font = font;
         self
@@ -129,6 +130,21 @@ impl Default for TextInputCursorTimer {
         Self {
             timer: Timer::from_seconds(0.5, TimerMode::Repeating),
             should_reset: false,
+        }
+    }
+}
+
+/// Some settings for a text field.
+#[derive(Component)]
+pub struct TextInputSettings {
+    /// Should a border be automatically added
+    pub with_border: bool,
+}
+
+impl Default for TextInputSettings {
+    fn default() -> Self {
+        Self {
+            with_border: true,
         }
     }
 }

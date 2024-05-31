@@ -1,11 +1,15 @@
 use std::time::Instant;
 use bevy::prelude::*;
 
+/// Marks an element to be double-clickable.
+///
+/// When double-clicked, the component will temporarily get a [DoubleClicked] component.
 #[derive(Component, Default)]
 pub struct DoubleClickButton {
     last_click: Option<Instant>,
 }
 
+/// Component that marks this node a double-clicked.
 #[derive(Component)]
 pub struct DoubleClicked;
 

@@ -8,6 +8,9 @@ impl Plugin for WindowPlugin {
     }
 }
 
+/// Marks the active window.
+///
+/// Active means, that this is the window where the cursor is right now.
 #[derive(Component)]
 pub struct ActiveWindow;
 

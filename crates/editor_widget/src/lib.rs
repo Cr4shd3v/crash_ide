@@ -1,3 +1,7 @@
+//! Contains reusable, independent widgets for bevy.
+
+#![warn(missing_docs)]
+
 mod hoverable;
 mod input;
 mod button;
@@ -9,6 +13,7 @@ pub use input::*;
 pub use button::*;
 pub use window::*;
 
+/// Plugin adding all widget systems.
 pub struct WidgetPlugin;
 
 impl Plugin for WidgetPlugin {
