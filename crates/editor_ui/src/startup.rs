@@ -7,7 +7,7 @@ use editor_state::EditorState;
 use crate::startup::startup_project_select::StartupProjectSelectPlugin;
 use crate::startup::startup_settings::StartupSettingsPlugin;
 use crate::startup::startup_left_menu::{handle_left_menu_state_change, startup_left_menu, startup_left_menu_click};
-use crate::window::{StartupWindow, WindowUiRoot};
+use crate::window::{AllWindows, StartupWindow};
 
 pub(crate) struct StartupScreenPlugin;
 
@@ -45,10 +45,11 @@ pub(crate) struct StartupContentRoot;
 fn spawn_startup_screen(
     mut commands: Commands,
     mut startup_state: ResMut<NextState<StartupScreenState>>,
-    window_query: Query<&WindowUiRoot, With<StartupWindow>>
+    window_query: Query<Entity, With<StartupWindow>>,
+    all_windows: Res<AllWindows>,
 ) {
-    let ui_root = window_query.single();
-    commands.entity(ui_root.root).despawn_descendants().with_children(|parent| {
+    let window_entity = window_query.single();
+    commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
         parent.spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),

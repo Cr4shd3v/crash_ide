@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use editor_config::{LoadedEditorProject, ProjectRef};
 use crate::fonts::DefaultFonts;
-use crate::window::{ProjectWindow, WindowUiRoot};
+use crate::window::{AllWindows, ProjectWindow};
 
 pub struct MainEditorScreenPlugin;
 
@@ -27,11 +27,12 @@ pub struct EditorBottomMenu;
 
 pub(super) fn spawn_main_editor_screen(
     mut commands: Commands,
-    window_query: Query<(&WindowUiRoot, &ProjectWindow), Added<ProjectWindow>>,
+    window_query: Query<(Entity, &ProjectWindow), Added<ProjectWindow>>,
     project_query: Query<&LoadedEditorProject>,
+    all_windows: Res<AllWindows>,
 ) {
-    for (ui_root, project_window) in window_query.iter() {
-        commands.entity(ui_root.root).despawn_descendants().with_children(|parent| {
+    for (window_entity, project_window) in window_query.iter() {
+        commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
             parent.spawn((NodeBundle {
                 style: Style {
                     height: Val::Vh(4.0),

@@ -1,6 +1,7 @@
 use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
+use bevy::utils::HashMap;
 use bevy::window::{WindowCreated, WindowRef, WindowResolution};
 use bevy::winit::WinitWindows;
 
@@ -11,8 +12,9 @@ impl Plugin for EditorWindowPlugin {
         app
             .add_systems(PreStartup, initial_window)
             .add_systems(PreUpdate, (process_new_window, save_resolution))
-            .add_systems(PostUpdate, check_for_exit)
+            .add_systems(PostUpdate, (despawn_window, check_for_exit))
             .init_resource::<DefaultWindowResolution>()
+            .init_resource::<AllWindows>()
         ;
     }
 }
@@ -25,14 +27,20 @@ pub struct ProjectWindow {
     pub project_editor_config: Entity,
 }
 
-#[derive(Component)]
-pub struct WindowCamera {
-    pub camera: Entity,
+#[derive(Resource, Default)]
+pub struct AllWindows {
+    window_data: HashMap<Entity, WindowData>,
 }
 
-#[derive(Component)]
-pub struct WindowUiRoot {
-    pub root: Entity,
+impl AllWindows {
+    pub fn get(&self, window: &Entity) -> &WindowData {
+        self.window_data.get(window).unwrap()
+    }
+}
+
+pub struct WindowData {
+    pub ui_root: Entity,
+    pub camera: Entity,
 }
 
 fn initial_window(mut commands: Commands) {
@@ -57,7 +65,11 @@ fn save_resolution(
     }
 }
 
-fn process_new_window(mut commands: Commands, spawned_windows: Query<Entity, Added<Window>>) {
+fn process_new_window(
+    mut commands: Commands,
+    spawned_windows: Query<Entity, Added<Window>>,
+    mut all_windows: ResMut<AllWindows>,
+) {
     for window_entity in spawned_windows.iter() {
         let camera_id = commands.spawn(Camera2dBundle {
             camera: Camera {
@@ -80,10 +92,19 @@ fn process_new_window(mut commands: Commands, spawned_windows: Query<Entity, Add
             },
         )).id();
 
-        commands.entity(window_entity).insert((
-            WindowCamera { camera: camera_id },
-            WindowUiRoot { root: ui_root },
-        ));
+        all_windows.window_data.insert(window_entity, WindowData { ui_root, camera: camera_id });
+    }
+}
+
+fn despawn_window(
+    mut commands: Commands,
+    mut all_windows: ResMut<AllWindows>,
+    mut removed_windows: RemovedComponents<Window>,
+) {
+    for removed in removed_windows.read() {
+        let data = all_windows.window_data.remove(&removed).unwrap();
+        commands.entity(data.ui_root).despawn_recursive();
+        commands.entity(data.camera).despawn();
     }
 }
 

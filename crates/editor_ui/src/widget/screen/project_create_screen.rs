@@ -9,7 +9,7 @@ use editor_widget::{TextInputBundle, TextInputTextStyle, TextInputValue};
 
 use crate::fonts::DefaultFonts;
 use crate::open_project::OpenProjectEvent;
-use crate::window::{WindowCamera, WindowUiRoot};
+use crate::window::AllWindows;
 
 /// Marker component for the create project dialog
 #[derive(Component, Default)]
@@ -27,11 +27,12 @@ pub(super) struct CreateProjectConfirmButton;
 
 pub(super) fn spawn_project_create_screen(
     mut commands: Commands,
-    query: Query<&WindowUiRoot, Added<CreateProjectWindow>>,
+    query: Query<Entity, Added<CreateProjectWindow>>,
     home_dir: Res<HomeDir>,
+    all_windows: Res<AllWindows>,
 ) {
     for window_ui_root in query.iter() {
-        commands.entity(window_ui_root.root).despawn_descendants().with_children(|parent| {
+        commands.entity(all_windows.get(&window_ui_root).ui_root).despawn_descendants().with_children(|parent| {
             parent.spawn(NodeBundle {
                 style: Style {
                     flex_direction: FlexDirection::Column,
@@ -94,7 +95,7 @@ pub(super) fn spawn_project_create_screen(
 pub(super) fn create_project_confirm(
     mut commands: Commands,
     interaction_query: Query<&Interaction, (With<CreateProjectConfirmButton>, Changed<Interaction>)>,
-    window_query: Query<(Entity, &CreateProjectWindow, &WindowUiRoot, &WindowCamera)>,
+    window_query: Query<(Entity, &CreateProjectWindow)>,
     path_input_query: Query<&TextInputValue, With<ProjectPathInput>>,
     mut projects: ResMut<EditorConfigProjects>,
     mut event_writer: EventWriter<OpenProjectEvent>,
@@ -104,8 +105,7 @@ pub(super) fn create_project_confirm(
             continue;
         }
 
-        let (entity, create_project_window,
-            ui_root, window_camera) = window_query.single();
+        let (entity, create_project_window) = window_query.single();
         let path = path_input_query.single().0.clone();
 
         if projects.projects.contains_key(&path) {
@@ -127,8 +127,6 @@ pub(super) fn create_project_confirm(
         projects.projects.insert(path, config.clone());
 
         commands.entity(entity).despawn();
-        commands.entity(ui_root.root).despawn_recursive();
-        commands.entity(window_camera.camera).despawn();
 
         event_writer.send(OpenProjectEvent::new(config, create_project_window.base_window));
     }
