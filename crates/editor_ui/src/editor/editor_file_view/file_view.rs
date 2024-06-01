@@ -6,6 +6,11 @@ use crate::editor::editor_left_menu::{FilePath, OpenFileEvent};
 use crate::editor::main_editor_screen::ProjectsFileViews;
 use crate::fonts::DefaultFonts;
 
+#[derive(Component)]
+pub(super) struct FileViewInstance {
+    path: String,
+}
+
 pub(super) fn spawn_file_view(
     mut commands: Commands,
     mut event_reader: EventReader<OpenFileEvent>,
@@ -18,7 +23,7 @@ pub(super) fn spawn_file_view(
         let project = find_project_in_parents.find_project_ref(event.row_entity);
         let view = projects_file_views.get(project);
 
-        let content = fs::read_to_string(path).unwrap();
+        let content = fs::read_to_string(&path).unwrap();
 
         commands.entity(view).despawn_descendants().with_children(|parent| {
             parent.spawn((TextInputBundle {
@@ -39,7 +44,17 @@ pub(super) fn spawn_file_view(
                     ..default()
                 },
                 ..default()
+            }, FileViewInstance {
+                path,
             }));
         });
+    }
+}
+
+pub(super) fn save_edited_content(
+    query: Query<(&TextInputValue, &FileViewInstance), Changed<TextInputValue>>
+) {
+    for (input_value, view_instance) in query.iter() {
+        fs::write(&view_instance.path, &input_value.0).unwrap();
     }
 }
