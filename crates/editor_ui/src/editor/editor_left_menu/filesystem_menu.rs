@@ -84,9 +84,10 @@ fn spawn_all_rows(
     mut commands: Commands,
     query: Query<(Entity, &FileDisplay, Option<&ProjectRoot>), Added<FileDisplay>>,
     icons: Res<DefaultIcons>,
+    mut event_writer: EventWriter<ExpandDirEvent>,
 ) {
     for (entity, file_display, root) in query.iter() {
-        commands.entity(entity).insert(NodeBundle {
+        let row_entity = commands.entity(entity).insert(NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
                 ..default()
@@ -169,7 +170,14 @@ fn spawn_all_rows(
                     });
                 }
             });
-        });
+        }).id();
+
+        if root.is_some() {
+            event_writer.send(ExpandDirEvent {
+                row_entity,
+                expand: true,
+            });
+        }
     }
 }
 
