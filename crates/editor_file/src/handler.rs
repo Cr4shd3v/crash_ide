@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
-use crate::RawOpenFileEvent;
+use crate::{OpenFileEvent, RawOpenFileEvent};
 
 /// Resource containing all [FileHandler]
 #[derive(Resource, Default)]
@@ -35,7 +35,7 @@ pub trait FileHandler: Sync + Send + 'static {
     /// Returns all file extension this [FileHandler] should be used
     fn get_file_extensions(&self) -> Vec<&'static str>;
 
-    /// Generates an [OpenFileEvent](crate::OpenFileEvent) for this type
+    /// Generates an [OpenFileEvent] for this type
     fn create_event(&self, commands: &mut Commands, raw_event: &RawOpenFileEvent);
 }
 
@@ -61,4 +61,23 @@ macro_rules! default_file_handler_impl {
             }
         }
     };
+}
+
+/// Helper trait to register a file handler with a single call on [App]
+pub trait FileHandlerAppExtension {
+    /// Register a [FileHandler] with a single call
+    fn register_file_handler<T: FileHandler>(&mut self) -> &mut Self;
+}
+
+impl FileHandlerAppExtension for App {
+    fn register_file_handler<T: FileHandler>(&mut self) -> &mut Self {
+        self.add_event::<OpenFileEvent<T>>()
+            .add_systems(Startup, default_register_handler::<T>())
+    }
+}
+
+fn default_register_handler<T: FileHandler>() -> impl FnMut(ResMut<FileHandlerManager>) {
+    move |mut handler_manager: ResMut<FileHandlerManager>| {
+        handler_manager.register_handler::<T>();
+    }
 }

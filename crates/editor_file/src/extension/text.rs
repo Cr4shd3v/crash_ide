@@ -4,16 +4,14 @@ use std::fs;
 use bevy::prelude::*;
 use editor_assets::DefaultFonts;
 use editor_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
-use crate::{default_file_handler_impl, FileViewInstance, OpenFileEvent};
-use crate::handler::FileHandlerManager;
+use crate::{default_file_handler_impl, FileHandlerAppExtension, FileViewInstance, OpenFileEvent};
 
 pub(super) struct TextPlugin;
 
 impl Plugin for TextPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_event::<OpenFileEvent<TextFile>>()
-            .add_systems(Startup, register_handler)
+            .register_file_handler::<TextFile>()
             .add_systems(Update, (spawn_file_view, save_edited_content))
         ;
     }
@@ -24,10 +22,6 @@ pub struct TextFile;
 
 use crate as editor_file;
 default_file_handler_impl!(TextFile, ["txt"]);
-
-fn register_handler(mut handler_manager: ResMut<FileHandlerManager>) {
-    handler_manager.register_handler::<TextFile>();
-}
 
 fn spawn_file_view(
     mut commands: Commands,
