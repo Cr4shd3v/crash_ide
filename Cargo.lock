@@ -1513,11 +1513,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "editor_file"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "editor_config",
+ "editor_widget",
+]
+
+[[package]]
 name = "editor_main"
 version = "0.1.0"
 dependencies = [
  "bevy",
  "editor_config",
+ "editor_file",
  "editor_state",
  "editor_ui",
 ]
@@ -1536,6 +1546,7 @@ dependencies = [
  "bevy",
  "bevy_file_dialog",
  "editor_config",
+ "editor_file",
  "editor_state",
  "editor_widget",
 ]

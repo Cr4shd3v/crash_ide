@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/editor_config/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/editor_ui/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/editor_widget/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/editor_file/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

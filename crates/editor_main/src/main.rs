@@ -7,6 +7,7 @@ use bevy::prelude::*;
 use bevy::window::ExitCondition;
 
 use editor_config::EditorConfigPlugin;
+use editor_file::EditorFilePlugin;
 use editor_state::EditorStatePlugin;
 use editor_ui::EditorUiPlugin;
 
@@ -25,6 +26,7 @@ fn main() {
     app.add_plugins(EditorStatePlugin);
     app.add_plugins(EditorConfigPlugin);
     app.add_plugins(EditorUiPlugin);
+    app.add_plugins(EditorFilePlugin);
 
     app.run();
 }
