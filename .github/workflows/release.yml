@@ -54,11 +54,8 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: 🏗️ Build
-        run: cargo deb --release
+        run: cargo deb
         continue-on-error: true
-
-      - name: List output
-        run: ls -al target/release
 
       - name: ☁️ Upload
         if: success()
