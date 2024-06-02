@@ -1,8 +1,22 @@
 [package]
-name = "editor_main"
+name = "crash_ide"
 version = "0.1.0"
 edition = "2021"
 authors = ["https://github.com/Cr4shd3v"]
+readme = "Readme.md"
+repository = "https://github.com/Cr4shd3v/editor"
+homepage = "https://github.com/Cr4shd3v/editor"
+description = "An IDE written in rust with bevy"
+license = "GPL-3"
+
+[package.metadata.deb]
+revision = ""
+assets = [
+    ["target/release/crash_ide", "usr/bin/", "755"],
+    ["assets/*/*", "/var/lib/crash-ide", "644"],
+]
+license-file = "LICENSE"
+section = "devel"
 
 [dependencies]
 bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
@@ -12,15 +26,6 @@ editor_ui = { workspace = true }
 editor_widget = { workspace = true }
 editor_file = { workspace = true }
 editor_assets = { workspace = true }
-
-[package.metadata.appimage]
-assets = ["assets"]
-auto_link = true
-auto_link_exclude_list = [
-    "libc.so*",
-    "libdl.so*",
-    "libpthread.so*",
-]
 
 [workspace]
 members = ["crates/*"]

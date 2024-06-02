@@ -1414,6 +1414,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "crash_ide"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "editor_assets",
+ "editor_config",
+ "editor_file",
+ "editor_state",
+ "editor_ui",
+ "editor_widget",
+]
+
+[[package]]
 name = "crc32fast"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1528,19 +1541,6 @@ dependencies = [
  "editor_config",
  "editor_widget",
  "open",
-]
-
-[[package]]
-name = "editor_main"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "editor_assets",
- "editor_config",
- "editor_file",
- "editor_state",
- "editor_ui",
- "editor_widget",
 ]
 
 [[package]]

@@ -19,6 +19,10 @@ fn main() {
         primary_window: None,
         exit_condition: ExitCondition::DontExit,
         ..default()
+    }).set(AssetPlugin {
+        #[cfg(all(not(debug_assertions), target_os = "linux"))]
+        file_path: "/var/lib/crash-ide".to_string(),
+        ..default()
     }));
 
     app.add_plugins(EditorStatePlugin);
