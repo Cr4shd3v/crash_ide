@@ -15,14 +15,6 @@ jobs:
       - name: 🔄 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☁️ Upload RPM
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: Readme.md
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          overwrite: true
-
       - name: 🛠️ Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
