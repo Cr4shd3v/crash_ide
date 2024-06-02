@@ -1,3 +1,4 @@
+use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 
@@ -126,7 +127,8 @@ fn spawn_all_rows(
                     image: UiImage {
                         texture: if file_display.is_file {
                             let data = extension_manager.get_data(
-                                &PathBuf::from(&file_display.filename).extension().unwrap().to_str().unwrap().to_string()
+                                &PathBuf::from(&file_display.filename).extension()
+                                    .unwrap_or(&OsStr::new("")).to_str().unwrap().to_string()
                             );
                             if let Some(data) = data {
                                 data.get_icon().clone()
