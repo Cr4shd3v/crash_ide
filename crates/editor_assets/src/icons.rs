@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub(super) struct IconPlugin;
+pub struct IconPlugin;
 
 impl Plugin for IconPlugin {
     fn build(&self, app: &mut App) {

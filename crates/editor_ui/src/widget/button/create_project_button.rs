@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use editor_widget::ActiveWindow;
 use crate::widget::screen::CreateProjectWindow;
-use crate::window::ActiveWindow;
 
 #[derive(Component)]
 pub struct CreateProjectButton;

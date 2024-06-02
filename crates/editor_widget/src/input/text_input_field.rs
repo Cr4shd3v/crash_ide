@@ -3,8 +3,7 @@ use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::text::BreakLineOn;
-use crate::fonts::DefaultFonts;
-use crate::window::ActiveWindow;
+use crate::ActiveWindow;
 
 pub(super) struct TextInputPlugin;
 
@@ -13,14 +12,13 @@ impl Plugin for TextInputPlugin {
         load_internal_binary_asset!(
             app,
             CURSOR_HANDLE,
-            "../../../assets/fonts/Cursor.ttf",
+            "../../assets/fonts/Cursor.ttf",
             |bytes: &[u8], _path: String| {
                 Font::try_from_bytes(bytes.to_vec()).unwrap()
             }
         );
 
         app
-            .add_event::<TextInputSubmitEvent>()
             .add_systems(Update, (
                 create_text_input,
                 keyboard,
@@ -58,6 +56,8 @@ pub struct TextInputBundle {
     pub interaction: Interaction,
     /// Whether the text input is disabled or not
     pub text_input_inactive: TextInputInactive,
+    /// Settings for the text input
+    pub text_input_settings: TextInputSettings,
 }
 
 /// Value of the text input
@@ -91,9 +91,16 @@ impl Default for TextInputTextStyle {
     fn default() -> Self {
         Self(TextStyle {
             font_size: 18.0,
-            font: DefaultFonts::ROBOTO_REGULAR,
             ..default()
         })
+    }
+}
+
+impl TextInputTextStyle {
+    /// Helper method to use a custom font for this text field
+    pub fn with_font(mut self, font: Handle<Font>) -> Self {
+        self.0.font = font;
+        self
     }
 }
 
@@ -128,6 +135,24 @@ impl Default for TextInputCursorTimer {
     }
 }
 
+/// Some settings for a text field.
+#[derive(Component)]
+pub struct TextInputSettings {
+    /// Should a border be automatically added
+    pub with_border: bool,
+    /// Accept multiline input
+    pub multiline: bool,
+}
+
+impl Default for TextInputSettings {
+    fn default() -> Self {
+        Self {
+            with_border: true,
+            multiline: false,
+        }
+    }
+}
+
 #[derive(Component)]
 struct TextInputInner;
 
@@ -149,15 +174,6 @@ impl<'w, 's> InnerText<'w, 's> {
     }
 }
 
-/// Event when text input is submitted
-#[derive(Event)]
-pub struct TextInputSubmitEvent {
-    /// The text input that triggered the event.
-    pub entity: Entity,
-    /// The string contained in the text input at the time of the event.
-    pub value: String,
-}
-
 fn keyboard(
     mut commands: Commands,
     mut events: EventReader<KeyboardInput>,
@@ -165,35 +181,31 @@ fn keyboard(
         Entity,
         Option<&TextInputFocused>,
         &TextInputInactive,
+        &TextInputSettings,
         &mut TextInputValue,
         &mut TextInputCursorPos,
         &mut TextInputCursorTimer,
     )>,
-    mut submit_writer: EventWriter<TextInputSubmitEvent>,
 ) {
     if events.is_empty() {
         return;
     }
 
-    for (input_entity, focused, inactive, mut text_input,
-        mut cursor_pos, mut cursor_timer) in &mut text_input_query
+    for (input_entity, focused, inactive, settings,
+        mut text_input, mut cursor_pos, mut cursor_timer) in &mut text_input_query
     {
         if inactive.0 || focused.is_none() {
             continue;
         }
-
-        let mut submitted_value = None;
 
         for event in events.read() {
             if !event.state.is_pressed() {
                 continue;
             };
 
-            let pos = cursor_pos.bypass_change_detection().0;
-
             match event.key_code {
                 KeyCode::ArrowLeft => {
-                    if pos > 0 {
+                    if cursor_pos.0 > 0 {
                         cursor_pos.0 -= 1;
 
                         cursor_timer.should_reset = true;
@@ -201,15 +213,84 @@ fn keyboard(
                     }
                 }
                 KeyCode::ArrowRight => {
-                    if pos < text_input.0.len() {
+                    if cursor_pos.0 < text_input.0.len() {
                         cursor_pos.0 += 1;
 
                         cursor_timer.should_reset = true;
                         continue;
                     }
                 }
+                KeyCode::ArrowUp => {
+                    if !settings.multiline {
+                        continue;
+                    }
+
+                    let pre_cursor_text = &text_input.0[..cursor_pos.0];
+                    let cursor_lines_before = pre_cursor_text.lines().collect::<Vec<&str>>();
+
+                    if pre_cursor_text.contains("\n") {
+                        let empty_line = pre_cursor_text.ends_with("\n");
+                        let line_index = cursor_lines_before.len() - if empty_line { 1 } else { 2 };
+                        let mut line_offset = cursor_lines_before[..line_index].join("\n").len();
+                        if line_offset != 0 {
+                            line_offset += 1;
+                        }
+
+                        if let Some(prev_line) = cursor_lines_before.get(cursor_lines_before.len() - if empty_line { 1 } else { 2 }) {
+                            let text_before_cursor = cursor_lines_before.last().unwrap();
+                            if prev_line.len() >= text_before_cursor.len() {
+                                line_offset += text_before_cursor.len();
+                            } else {
+                                line_offset += prev_line.len();
+                            }
+                        }
+
+                        cursor_pos.0 = line_offset;
+                    } else {
+                        cursor_pos.0 = 0;
+                    }
+
+                    continue;
+                }
+                KeyCode::ArrowDown => {
+                    if !settings.multiline {
+                        continue;
+                    }
+
+                    let pre_cursor_text = &text_input.0[..cursor_pos.0];
+                    let post_cursor_text = &text_input.0[cursor_pos.0..];
+                    let cursor_lines_before = pre_cursor_text.lines().collect::<Vec<&str>>();
+                    let lines = text_input.0.lines().collect::<Vec<&str>>();
+
+                    if post_cursor_text.contains("\n") {
+                        let empty_line = pre_cursor_text.ends_with("\n") || pre_cursor_text.is_empty();
+                        let line_index = cursor_lines_before.len() - if empty_line { 0 } else { 1 };
+                        let mut line_offset = cursor_lines_before[..line_index].join("\n").len();
+                        if line_offset != 0 {
+                            line_offset += 1;
+                        }
+
+                        let current_line = lines.get(cursor_lines_before.len() - if empty_line { 0 } else { 1 }).unwrap();
+                        line_offset += current_line.len() + 1;
+
+                        if let Some(next_line) = lines.get(cursor_lines_before.len() + if empty_line { 1 } else { 0 }) {
+                            let text_before_cursor = if empty_line { &"" } else { cursor_lines_before.last().unwrap_or(&"") };
+                            if next_line.len() >= text_before_cursor.len() {
+                                line_offset += text_before_cursor.len();
+                            } else {
+                                line_offset += next_line.len();
+                            }
+                        }
+
+                        cursor_pos.0 = line_offset;
+                    } else {
+                        cursor_pos.0 = text_input.0.len();
+                    }
+
+                    continue;
+                }
                 KeyCode::Backspace => {
-                    if pos > 0 {
+                    if cursor_pos.0 > 0 {
                         cursor_pos.0 -= 1;
                         text_input.0 = remove_char_at(&text_input.0, cursor_pos.0);
 
@@ -218,7 +299,7 @@ fn keyboard(
                     }
                 }
                 KeyCode::Delete => {
-                    if pos < text_input.0.len() {
+                    if cursor_pos.0 < text_input.0.len() {
                         text_input.0 = remove_char_at(&text_input.0, cursor_pos.0);
 
                         // Ensure that the cursor isn't reset
@@ -229,18 +310,23 @@ fn keyboard(
                     }
                 }
                 KeyCode::Enter => {
-                    submitted_value = Some(text_input.0.clone());
-                    commands.entity(input_entity).remove::<TextInputFocused>();
+                    if settings.multiline {
+                        text_input.0.insert(cursor_pos.0, '\n');
+                        cursor_pos.0 += 1;
+                    } else {
+                        commands.entity(input_entity).remove::<TextInputFocused>();
+                    }
 
                     continue;
                 }
                 KeyCode::Tab => {
-                    commands.entity(input_entity).remove::<TextInputFocused>();
-
-                    continue;
+                    if !settings.multiline {
+                        commands.entity(input_entity).remove::<TextInputFocused>();
+                        continue;
+                    }
                 }
                 KeyCode::Space => {
-                    text_input.0.insert(pos, ' ');
+                    text_input.0.insert(cursor_pos.0, ' ');
                     cursor_pos.0 += 1;
 
                     cursor_timer.should_reset = true;
@@ -258,13 +344,6 @@ fn keyboard(
 
                 cursor_timer.should_reset = true;
             }
-        }
-
-        if let Some(value) = submitted_value {
-            submit_writer.send(TextInputSubmitEvent {
-                entity: input_entity,
-                value,
-            });
         }
     }
 }
@@ -313,11 +392,13 @@ fn create_text_input(
         &TextInputInitialCursorPos,
         &TextInputInactive,
         Option<&TextInputFocused>,
+        &TextInputSettings,
     ), Added<TextInputValue>>,
     mut style_query: Query<(&mut Style, &mut BorderColor)>
 ) {
     for (entity, value, style, placeholder,
-        initial_cursor_pos, inactive, focused) in query.iter() {
+        initial_cursor_pos, inactive, focused,
+        settings) in query.iter() {
         let mut sections = vec![
             // Pre-cursor
             TextSection {
@@ -402,9 +483,11 @@ fn create_text_input(
             ..default()
         }).id();
 
-        let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
-        style.border = UiRect::all(Val::Px(1.0));
-        border_color.0 = Color::GRAY;
+        if settings.with_border {
+            let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
+            style.border = UiRect::all(Val::Px(1.0));
+            border_color.0 = Color::GRAY;
+        }
 
         commands.entity(overflow_container).add_child(text);
         commands.entity(entity).insert(cursor_pos).push_children(&[overflow_container, placeholder_text]);

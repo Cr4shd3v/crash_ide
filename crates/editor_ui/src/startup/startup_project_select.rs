@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use editor_config::EditorConfigProjects;
-use crate::fonts::DefaultFonts;
+use editor_widget::Hoverable;
+use editor_assets::DefaultFonts;
 use crate::open_project::OpenProjectEvent;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
-use crate::widget::Hoverable;
 use crate::window::StartupWindow;
 
 pub(crate) struct StartupProjectSelectPlugin;

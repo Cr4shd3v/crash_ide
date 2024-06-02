@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::window::ActiveWindow;
+use editor_widget::ActiveWindow;
 
 pub(crate) fn button_cursor(
     btn_query: Query<&Interaction, (With<Button>, Changed<Interaction>)>,

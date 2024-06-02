@@ -5,8 +5,6 @@ on:
     types: [created]
   push:
     branches: ["feature/51"]
-  pull_request:
-    branches: ["master"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -46,7 +44,7 @@ jobs:
       - name: 🛠️ Setup Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable # TODO: maybe change to nightly @Cr4shd3v
+          toolchain: nightly
           override: true
 
       - name: 🏗️ Build

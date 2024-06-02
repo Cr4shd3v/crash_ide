@@ -1,6 +1,5 @@
-//! This module contains input widgets.
-
 mod text_input_field;
+
 pub use text_input_field::*;
 
 use bevy::prelude::*;

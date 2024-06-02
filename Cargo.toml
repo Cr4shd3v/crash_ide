@@ -1,16 +1,53 @@
+[package]
+name = "crash_ide"
+version = "0.1.0"
+edition = "2021"
+authors = ["https://github.com/Cr4shd3v"]
+readme = "Readme.md"
+repository = "https://github.com/Cr4shd3v/editor"
+homepage = "https://github.com/Cr4shd3v/editor"
+description = "An IDE written in rust with bevy"
+license = "GPL-3"
+
+[package.metadata.deb]
+revision = ""
+assets = [
+    ["target/release/crash_ide", "usr/bin/", "755"],
+    ["build/linux/crash_ide.desktop", "usr/share/applications/", "644"],
+    ["Readme.md", "usr/share/doc/crash-ide/README", "644"],
+    ["assets/**/*", "var/lib/crash-ide", "644"],
+]
+license-file = "LICENSE"
+section = "devel"
+
+[dependencies]
+bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
+editor_state = { workspace = true }
+editor_config = { workspace = true }
+editor_ui = { workspace = true }
+editor_widget = { workspace = true }
+editor_file = { workspace = true }
+editor_assets = { workspace = true }
+
 [workspace]
 members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
-bevy = "0.13.2"
+bevy = { version = "0.13.2", default-features = false }
 bevy_file_dialog = "0.5.0"
 serde = "^1.0"
 serde_json = "^1.0"
+homedir = "^0.2"
+open = "^5.1"
+image = "^0.24"
 
 editor_state = { path = "crates/editor_state" }
 editor_config = { path = "crates/editor_config" }
 editor_ui = { path = "crates/editor_ui" }
+editor_widget = { path = "crates/editor_widget" }
+editor_file = { path = "crates/editor_file" }
+editor_assets = { path = "crates/editor_assets" }
 
 [profile.dev]
 opt-level = 1

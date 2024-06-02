@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_file_dialog::{DialogDirectoryPicked, FileDialogExt};
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
+use editor_widget::ActiveWindow;
 use crate::open_project::OpenProjectEvent;
-use crate::window::ActiveWindow;
 
 #[derive(Component)]
 pub(crate) struct OpenProjectButton;
