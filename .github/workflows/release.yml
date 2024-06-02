@@ -28,13 +28,12 @@ jobs:
           nproc
 
       - name: 🔄 Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: 🛠️ Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: nightly
-          override: true
 
       - name: 🔧 Setup dependencies
         if: startsWith(matrix.os, 'ubuntu-')
