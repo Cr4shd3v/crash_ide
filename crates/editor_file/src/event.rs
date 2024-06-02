@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 use std::path::PathBuf;
 use bevy::prelude::*;
 use crate::{FileHandlerManager, FileViewInstance};
+use crate::text::TextFile;
 
 /// Contains common event data for [RawOpenFileEvent] and [OpenFileEvent]
 #[derive(Clone)]
@@ -47,6 +48,7 @@ pub(super) fn handle_raw_file_event(
     mut commands: Commands,
     mut event_reader: EventReader<RawOpenFileEvent>,
     handler_manager: Res<FileHandlerManager>,
+    mut event_writer: EventWriter<OpenFileEvent<TextFile>>
 ) {
     for event in event_reader.read() {
         let handler = handler_manager.get_handler(
@@ -59,6 +61,8 @@ pub(super) fn handle_raw_file_event(
 
         if let Some(handler) = handler {
             handler.create_event(&mut commands, event);
+        } else {
+            event_writer.send(event.to_type_event());
         }
     }
 }

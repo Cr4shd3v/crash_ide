@@ -29,12 +29,16 @@ fn register_handler(mut handler_manager: ResMut<FileHandlerManager>) {
     handler_manager.register_handler::<TextFile>();
 }
 
-pub(super) fn spawn_file_view(
+fn spawn_file_view(
     mut commands: Commands,
     mut event_reader: EventReader<OpenFileEvent<TextFile>>,
 ) {
     for event in event_reader.read() {
-        let content = fs::read_to_string(&event.event_data.path).unwrap();
+        // Since TextFile is the default handler, we have to ensure that we can handle non-utf-8 files via OS default
+        let Ok(content) = fs::read_to_string(&event.event_data.path) else {
+            open::that_detached(&event.event_data.path).unwrap();
+            continue;
+        };
 
         commands.entity(event.event_data.view_entity).despawn_descendants().with_children(|parent| {
             parent.spawn((TextInputBundle {
@@ -62,7 +66,7 @@ pub(super) fn spawn_file_view(
     }
 }
 
-pub(super) fn save_edited_content(
+fn save_edited_content(
     query: Query<(&TextInputValue, &FileViewInstance), Changed<TextInputValue>>
 ) {
     for (input_value, view_instance) in query.iter() {
