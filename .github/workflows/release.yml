@@ -30,31 +30,32 @@ jobs:
       - name: 🔄 Checkout repository
         uses: actions/checkout@v2
 
-      - name: 🔧 Mold and Clang
-        if: startsWith(matrix.os, 'ubuntu-')
-        run: |
-          chmod +x setup.sh
-          ./setup.sh
-
-      - name: 🗃️ Cache Cargo and Build Outputs
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
       - name: 🛠️ Setup Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           override: true
 
+      - name: 🔧 Setup dependencies
+        if: startsWith(matrix.os, 'ubuntu-')
+        run: |
+          chmod +x setup.sh
+          ./setup.sh
+
       - name: 🏗️ Build
         run: cargo build --release
         continue-on-error: true
+
+      - name: 🗃️ Cache Cargo and Build Outputs
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: List output
         run: ls -al target/release
