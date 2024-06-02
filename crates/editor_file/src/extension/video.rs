@@ -19,7 +19,7 @@ impl Plugin for VideoPlugin {
 /// [FileHandler](crate::FileHandler) for video files
 pub struct VideoFile;
 
-default_file_handler_impl!(VideoFile, ["mp4", "mkv", "gif", "wmv", "mov"]);
+default_file_handler_impl!(VideoFile, ["mp4", "mkv", "gif", "wmv", "mov"], "video.png");
 
 fn open_video_file(mut event_reader: EventReader<OpenFileEvent<VideoFile>>) {
     for event in event_reader.read() {

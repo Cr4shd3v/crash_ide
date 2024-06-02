@@ -19,7 +19,7 @@ impl Plugin for SoundPlugin {
 /// [FileHandler](crate::FileHandler) for sound files
 pub struct SoundFile;
 
-default_file_handler_impl!(SoundFile, ["mp3", "wav", "flac", "ogg", "oga", "mogg"]);
+default_file_handler_impl!(SoundFile, ["mp3", "wav", "flac", "ogg", "oga", "mogg"], "sound.png");
 
 fn open_sound_file(mut event_reader: EventReader<OpenFileEvent<SoundFile>>) {
     for event in event_reader.read() {

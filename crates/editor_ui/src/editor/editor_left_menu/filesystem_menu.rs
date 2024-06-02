@@ -1,12 +1,15 @@
 use std::fs;
 use std::path::PathBuf;
+
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-use editor_config::FindProjectInParents;
-use editor_file::{FileEventData, RawOpenFileEvent};
-use editor_widget::{DoubleClickButton, DoubleClicked};
-use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
+
 use editor_assets::{DefaultFonts, DefaultIcons};
+use editor_config::FindProjectInParents;
+use editor_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
+use editor_widget::{DoubleClickButton, DoubleClicked};
+
+use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
 
 pub struct FilesystemMenuPlugin;
 
@@ -85,6 +88,7 @@ fn spawn_all_rows(
     query: Query<(Entity, &FileDisplay, Option<&ProjectRoot>), Added<FileDisplay>>,
     icons: Res<DefaultIcons>,
     mut event_writer: EventWriter<ExpandDirEvent>,
+    extension_manager: Res<FileExtensionManager>,
 ) {
     for (entity, file_display, root) in query.iter() {
         let row_entity = commands.entity(entity).insert(NodeBundle {
@@ -98,7 +102,7 @@ fn spawn_all_rows(
                 style: Style {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
-                    padding: UiRect::vertical(Val::Px(1.5)),
+                    padding: UiRect::vertical(Val::Px(2.0)),
                     ..default()
                 },
                 ..default()
@@ -121,7 +125,14 @@ fn spawn_all_rows(
                 parent.spawn(ImageBundle {
                     image: UiImage {
                         texture: if file_display.is_file {
-                            icons.unknown_file.clone()
+                            let data = extension_manager.get_data(
+                                &PathBuf::from(&file_display.filename).extension().unwrap().to_str().unwrap().to_string()
+                            );
+                            if let Some(data) = data {
+                                data.get_icon().clone()
+                            } else {
+                                icons.unknown_file.clone()
+                            }
                         } else {
                             icons.folder.clone()
                         },

@@ -23,7 +23,7 @@ impl Plugin for TextPlugin {
 pub struct TextFile;
 
 use crate as editor_file;
-default_file_handler_impl!(TextFile, ["txt"]);
+default_file_handler_impl!(TextFile, ["txt"], "text.png");
 
 #[derive(Component)]
 struct TextLoadingTask(Task<Option<String>>, FileEventData);

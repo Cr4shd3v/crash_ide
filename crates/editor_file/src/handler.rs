@@ -5,25 +5,47 @@ use crate::{OpenFileEvent, RawOpenFileEvent};
 
 /// Resource containing all [FileHandler]
 #[derive(Resource, Default)]
-pub struct FileHandlerManager {
-    handler_map: HashMap<String, Arc<Box<dyn FileHandler>>>,
+pub struct FileExtensionManager {
+    handler_map: HashMap<String, Arc<FileExtensionData>>,
 }
 
-impl FileHandlerManager {
+impl FileExtensionManager {
     /// Register a [FileHandler].
     ///
     /// Must be called before opening a file of that type.
-    pub fn register_handler<T: FileHandler>(&mut self) {
-        let handler: Arc<Box<dyn FileHandler>> = Arc::new(Box::new(T::get_instance()));
+    pub fn register_handler<T: FileHandler>(&mut self, asset_server: Res<AssetServer>) {
+        let handler: Box<dyn FileHandler> = Box::new(T::get_instance());
+        let icon_name = T::get_icon_name();
+        let icon = asset_server.load(format!("icons/extension/{}", icon_name));
+        let extensions = handler.get_file_extensions();
+        let data = Arc::new(FileExtensionData {
+            handler,
+            icon,
+        });
 
-        for extension in handler.get_file_extensions() {
-            self.handler_map.insert(extension.to_string(), handler.clone());
+        for extension in extensions {
+            self.handler_map.insert(extension.to_string(), data.clone());
         }
     }
 
     /// Retrieve a [FileHandler] by extension.
-    pub fn get_handler(&self, extension: &String) -> Option<&Arc<Box<dyn FileHandler>>> {
+    pub fn get_data(&self, extension: &String) -> Option<&Arc<FileExtensionData>> {
         self.handler_map.get(extension)
+    }
+}
+
+pub struct FileExtensionData {
+    handler: Box<dyn FileHandler>,
+    icon: Handle<Image>,
+}
+
+impl FileExtensionData {
+    pub fn get_handler(&self) -> &Box<dyn FileHandler> {
+        &self.handler
+    }
+
+    pub fn get_icon(&self) -> &Handle<Image> {
+        &self.icon
     }
 }
 
@@ -37,12 +59,15 @@ pub trait FileHandler: Sync + Send + 'static {
 
     /// Generates an [OpenFileEvent] for this type
     fn create_event(&self, commands: &mut Commands, raw_event: &RawOpenFileEvent);
+
+    /// Returns the icon name for this type
+    fn get_icon_name() -> &'static str where Self: Sized;
 }
 
 /// Generates a default implementation for a [FileHandler].
 #[macro_export]
 macro_rules! default_file_handler_impl {
-    ($handler_type:tt, $extensions:expr) => {
+    ($handler_type:tt, $extensions:expr, $icon_name:expr) => {
         impl editor_file::FileHandler for $handler_type {
             fn get_instance() -> Self where Self: Sized {
                 $handler_type
@@ -58,6 +83,10 @@ macro_rules! default_file_handler_impl {
                 commands.add(|w: &mut World| {
                     w.send_event(typed_event);
                 });
+            }
+
+            fn get_icon_name() -> &'static str {
+                $icon_name
             }
         }
     };
@@ -76,8 +105,8 @@ impl FileHandlerAppExtension for App {
     }
 }
 
-fn default_register_handler<T: FileHandler>() -> impl FnMut(ResMut<FileHandlerManager>) {
-    move |mut handler_manager: ResMut<FileHandlerManager>| {
-        handler_manager.register_handler::<T>();
+fn default_register_handler<T: FileHandler>() -> impl FnMut(ResMut<FileExtensionManager>, Res<AssetServer>) {
+    move |mut handler_manager: ResMut<FileExtensionManager>, asset_server: Res<AssetServer>| {
+        handler_manager.register_handler::<T>(asset_server);
     }
 }

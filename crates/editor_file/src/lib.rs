@@ -20,7 +20,7 @@ impl Plugin for EditorFilePlugin {
     fn build(&self, app: &mut App) {
         app
             .add_event::<RawOpenFileEvent>()
-            .init_resource::<FileHandlerManager>()
+            .init_resource::<FileExtensionManager>()
             .add_plugins(StandardExtensionPlugin)
             .add_systems(PreUpdate, handle_raw_file_event)
         ;
