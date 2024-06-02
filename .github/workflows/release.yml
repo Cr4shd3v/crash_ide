@@ -3,30 +3,14 @@ name: Build Editor Release 🚀
 on:
   release:
     types: [created]
-  push:
-    branches: ["feature/51"]
 
 env:
   CARGO_TERM_COLOR: always
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
-      - name: System info
-        run: |
-          free -h
-          df -ha
-          nproc
-
       - name: 🔄 Checkout repository
         uses: actions/checkout@v4
 
@@ -36,7 +20,6 @@ jobs:
           toolchain: nightly
 
       - name: 🔧 Setup dependencies
-        if: startsWith(matrix.os, 'ubuntu-')
         run: |
           chmod +x setup.sh
           ./setup.sh
@@ -57,8 +40,10 @@ jobs:
         continue-on-error: true
 
       - name: ☁️ Upload
-        if: success()
-        uses: actions/upload-artifact@v4
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: crash_ide
-          path: target/debian/*.deb
+          file: target/debian/*.deb
+          file_glob: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          overwrite: true
