@@ -15,7 +15,7 @@ assets = [
     ["target/release/crash_ide", "usr/bin/", "755"],
     ["build/linux/crash_ide.desktop", "usr/share/applications/", "644"],
     ["Readme.md", "usr/share/doc/crash-ide/README", "644"],
-    ["assets/*/*", "var/lib/crash-ide", "644"],
+    ["assets/**/*", "var/lib/crash-ide", "644"],
 ]
 license-file = "LICENSE"
 section = "devel"

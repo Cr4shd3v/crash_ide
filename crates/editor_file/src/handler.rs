@@ -34,16 +34,19 @@ impl FileExtensionManager {
     }
 }
 
+/// Contains the [FileHandler] and the icon for a file extension
 pub struct FileExtensionData {
     handler: Box<dyn FileHandler>,
     icon: Handle<Image>,
 }
 
 impl FileExtensionData {
+    /// Get the [FileHandler]
     pub fn get_handler(&self) -> &Box<dyn FileHandler> {
         &self.handler
     }
 
+    /// Get the icon handle
     pub fn get_icon(&self) -> &Handle<Image> {
         &self.icon
     }
