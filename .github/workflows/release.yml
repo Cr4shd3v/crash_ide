@@ -60,6 +60,9 @@ jobs:
         run: cargo build --release
         continue-on-error: true
 
+      - name: List output
+        run: ls -al target/release
+
       - name: ☁️ Upload
         if: success()
         uses: actions/upload-artifact@v2
