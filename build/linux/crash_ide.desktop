@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Crash IDE
+Comment=An IDE written in Rust + Bevy
+Exec=/usr/bin/crash_ide
+Icon=
+Terminal=False
