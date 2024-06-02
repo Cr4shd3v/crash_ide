@@ -21,6 +21,12 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
+      - name: System info
+        run: |
+          free -h
+          df -ha
+          nproc
+
       - name: 🔄 Checkout repository
         uses: actions/checkout@v2
 
@@ -29,7 +35,8 @@ jobs:
         run: |
           sudo apt-get update
           sh setup.sh
-          sudo apt-get install -y libasound2
+          sudo apt-get install -y libasound2-dev portaudio19-dev build-essential libpulse-dev libdbus-1-dev libssl-dev pkg-config
+          sudo apt-get install -y libudev-dev
 
       - name: 🗃️ Cache Cargo and Build Outputs
         uses: actions/cache@v2
@@ -49,9 +56,14 @@ jobs:
 
       - name: 🏗️ Build
         run: cargo build --release
+        continue-on-error: true
+
+      - name: List output
+        run: ls -al target/release
 
       - name: ☁️ Upload
+        if: success()
         uses: actions/upload-artifact@v2
         with:
           name: editor
-          path: target/release/editor
+          path: target/release/editor_main
