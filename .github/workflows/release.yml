@@ -42,10 +42,6 @@ jobs:
           chmod +x setup.sh
           ./setup.sh
 
-      - name: 🏗️ Build
-        run: cargo build --release
-        continue-on-error: true
-
       - name: 🗃️ Cache Cargo and Build Outputs
         uses: actions/cache@v3
         with:
@@ -56,6 +52,10 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: 🏗️ Build
+        run: cargo build --release
+        continue-on-error: true
 
       - name: List output
         run: ls -al target/release
