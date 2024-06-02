@@ -241,6 +241,7 @@ fn highlight_clicked_row(
 }
 
 fn double_click_row(
+    mut commands: Commands,
     query: Query<&Parent, Added<DoubleClicked>>,
     file_display_query: Query<(&FileDisplay, Option<&DirectoryExpanded>)>,
     mut dir_event_writer: EventWriter<ExpandDirEvent>,
@@ -255,10 +256,16 @@ fn double_click_row(
 
         if file_display.is_file {
             let project = find_project_in_parents.find_project_ref(entity);
+            let path = PathBuf::from(file_path.get_full_path(entity));
+
+            if fs::metadata(&path).is_err() {
+                commands.entity(entity).despawn_recursive();
+                continue;
+            }
 
             file_event_writer.send(RawOpenFileEvent {
                 event_data: FileEventData {
-                    path: PathBuf::from(file_path.get_full_path(entity)),
+                    path,
                     view_entity: projects_file_views.get(project),
                 },
             });
@@ -336,7 +343,12 @@ fn expand_directory(
             let dir_path = file_path.get_full_path(event.row_entity);
             let mut entities = vec![];
 
-            for dir_entry in fs::read_dir(&dir_path).unwrap() {
+            let Ok(dir_entries) = fs::read_dir(&dir_path) else {
+                commands.entity(event.row_entity).despawn_recursive();
+                continue;
+            };
+
+            for dir_entry in dir_entries {
                 let Ok(dir_entry) = dir_entry else {continue;};
 
                 entities.push(commands.spawn(FileDisplay {
