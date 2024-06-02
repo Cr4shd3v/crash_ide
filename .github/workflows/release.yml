@@ -43,7 +43,7 @@ jobs:
           ./setup.sh
 
       - name: 🗃️ Cache Cargo and Build Outputs
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -54,7 +54,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: 🏗️ Build
-        run: cargo build --release
+        run: cargo deb --release
         continue-on-error: true
 
       - name: List output
@@ -62,7 +62,7 @@ jobs:
 
       - name: ☁️ Upload
         if: success()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: editor
-          path: target/release/crash_ide
+          name: crash_ide
+          path: target/debian/*.deb
