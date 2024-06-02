@@ -20,6 +20,14 @@ assets = [
 license-file = "LICENSE"
 section = "devel"
 
+[package.metadata.generate-rpm]
+assets = [
+    {source = "target/release/crash_ide", dest = "/usr/bin/", mode = "755"},
+    {source = "build/linux/crash_ide.desktop", dest = "/usr/share/applications/", mode = "644"},
+    {source = "Readme.md", dest = "/usr/share/doc/crash-ide/README", mode = "644"},
+    {source = "assets/**/*", dest = "/var/lib/crash-ide", mode = "644"},
+]
+
 [dependencies]
 bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
 editor_state = { workspace = true }

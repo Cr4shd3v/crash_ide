@@ -3,54 +3,53 @@ name: Build Editor Release 🚀
 on:
   release:
     types: [created]
-  push:
-    branches: ["feature/51"]
 
 env:
   CARGO_TERM_COLOR: always
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
+  build-linux:
+    permissions: write-all
+    runs-on: ubuntu-latest
     steps:
       - name: 🔄 Checkout repository
-        uses: actions/checkout@v2
-
-      - name: 🔧 Mold and Clang
-        if: startsWith(matrix.os, 'ubuntu-')
-        run: |
-          sh setup.sh
-          apt-get install -y alsa-lib-dev
-
-      - name: 🗃️ Cache Cargo and Build Outputs
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
+        uses: actions/checkout@v4
 
       - name: 🛠️ Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: nightly
-          override: true
 
-      - name: 🏗️ Build
-        run: cargo build --release
+      - name: 🗃️ Cache Cargo and Build Outputs
+        uses: Swatinem/rust-cache@v2
 
-      - name: ☁️ Upload
-        uses: actions/upload-artifact@v2
+      - name: 🔧 Setup dependencies
+        run: |
+          chmod +x setup.sh
+          ./setup.sh
+
+      - name: 🏗️ Build Debian
+        run: cargo deb
+
+      - name: ☁️ Upload Debian
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: editor
-          path: target/release/editor
+          file: target/debian/*.deb
+          file_glob: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          overwrite: true
+
+      - name: 🏗️ Build RPM
+        run: |
+          strip -s target/release/crash_ide
+          cargo-generate-rpm
+
+      - name: ☁️ Upload RPM
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: target/generate-rpm/*.rpm
+          file_glob: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          overwrite: true
