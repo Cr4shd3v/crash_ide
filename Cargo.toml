@@ -1,3 +1,27 @@
+[package]
+name = "editor_main"
+version = "0.1.0"
+edition = "2021"
+authors = ["https://github.com/Cr4shd3v"]
+
+[dependencies]
+bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
+editor_state = { workspace = true }
+editor_config = { workspace = true }
+editor_ui = { workspace = true }
+editor_widget = { workspace = true }
+editor_file = { workspace = true }
+editor_assets = { workspace = true }
+
+[package.metadata.appimage]
+assets = ["assets"]
+auto_link = true
+auto_link_exclude_list = [
+    "libc.so*",
+    "libdl.so*",
+    "libpthread.so*",
+]
+
 [workspace]
 members = ["crates/*"]
 resolver = "2"
