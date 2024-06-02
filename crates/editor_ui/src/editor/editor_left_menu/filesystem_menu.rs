@@ -98,20 +98,12 @@ fn spawn_all_rows(
                 style: Style {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
+                    padding: UiRect::vertical(Val::Px(1.5)),
                     ..default()
                 },
                 ..default()
             }, SelfFileRow, DoubleClickButton::default(), Interaction::None)).with_children(|parent| {
-                if file_display.is_file {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            height: Val::Px(20.0),
-                            margin: UiRect::left(Val::Px(20.0 + 20.0 * file_display.level as f32)),
-                            ..default()
-                        },
-                        ..default()
-                    });
-                } else {
+                if !file_display.is_file {
                     parent.spawn((ImageBundle {
                         image: UiImage {
                             texture: icons.right.clone(),
@@ -136,7 +128,12 @@ fn spawn_all_rows(
                         ..default()
                     },
                     style: Style {
-                        height: Val::Px(22.5),
+                        height: Val::Px(20.0),
+                        margin: if file_display.is_file {
+                            UiRect::left(Val::Px(20.0 + 20.0 * file_display.level as f32))
+                        } else {
+                            UiRect::default()
+                        },
                         ..default()
                     },
                     ..default()
