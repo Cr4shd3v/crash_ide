@@ -40,6 +40,7 @@ serde = "^1.0"
 serde_json = "^1.0"
 homedir = "^0.2"
 open = "^5.1"
+image = "^0.24"
 
 editor_state = { path = "crates/editor_state" }
 editor_config = { path = "crates/editor_config" }
