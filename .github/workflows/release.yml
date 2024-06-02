@@ -68,4 +68,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: editor
-          path: target/release/editor
+          path: target/release/editor_main
