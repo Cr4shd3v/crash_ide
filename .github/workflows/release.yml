@@ -33,6 +33,7 @@ jobs:
       - name: 🔧 Mold and Clang
         if: startsWith(matrix.os, 'ubuntu-')
         run: |
+          chmod +x setup.sh
           ./setup.sh
 
       - name: 🗃️ Cache Cargo and Build Outputs
