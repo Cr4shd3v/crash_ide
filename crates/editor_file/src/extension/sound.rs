@@ -1,3 +1,5 @@
+//! This module contains the implementation for sound files
+
 use bevy::prelude::*;
 use crate::{default_file_handler_impl, FileHandlerManager, OpenFileEvent};
 
@@ -13,6 +15,7 @@ impl Plugin for SoundPlugin {
     }
 }
 
+/// [FileHandler](crate::FileHandler) for sound files
 pub struct SoundFile;
 
 use crate as editor_file;
