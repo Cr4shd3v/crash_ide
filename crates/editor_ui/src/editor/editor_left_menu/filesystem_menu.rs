@@ -6,8 +6,7 @@ use editor_config::FindProjectInParents;
 use editor_file::{FileEventData, RawOpenFileEvent};
 use editor_widget::{DoubleClickButton, DoubleClicked};
 use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
-use editor_assets::DefaultFonts;
-use crate::icons::DefaultIcons;
+use editor_assets::{DefaultFonts, DefaultIcons};
 
 pub struct FilesystemMenuPlugin;
 
