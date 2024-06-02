@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use editor_config::EditorConfigProjects;
 use editor_widget::Hoverable;
-use crate::fonts::DefaultFonts;
+use editor_assets::DefaultFonts;
 use crate::open_project::OpenProjectEvent;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};

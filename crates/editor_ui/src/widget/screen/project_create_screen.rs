@@ -7,7 +7,7 @@ use bevy::prelude::*;
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
 use editor_widget::{TextInputBundle, TextInputTextStyle, TextInputValue};
 
-use crate::fonts::DefaultFonts;
+use editor_assets::DefaultFonts;
 use crate::open_project::OpenProjectEvent;
 use crate::window::AllWindows;
 

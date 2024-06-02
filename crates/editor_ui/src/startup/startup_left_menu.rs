@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use editor_widget::Hoverable;
-use crate::fonts::DefaultFonts;
+use editor_assets::DefaultFonts;
 use crate::startup::StartupScreenState;
 
 pub(crate) fn startup_left_menu(builder: &mut ChildBuilder) {

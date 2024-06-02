@@ -1,10 +1,12 @@
 use std::fs;
+use std::path::PathBuf;
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use editor_config::FindProjectInParents;
+use editor_file::{FileEventData, RawOpenFileEvent};
 use editor_widget::{DoubleClickButton, DoubleClicked};
-use crate::editor::main_editor_screen::EditorLeftMenu;
-use crate::fonts::DefaultFonts;
+use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
+use editor_assets::DefaultFonts;
 use crate::icons::DefaultIcons;
 
 pub struct FilesystemMenuPlugin;
@@ -15,7 +17,6 @@ impl Plugin for FilesystemMenuPlugin {
             .add_systems(Update, ((spawn_left_menu, expand_directory), spawn_all_rows).chain())
             .add_systems(Update, (directory_expand_icon, double_click_row, highlight_clicked_row))
             .add_event::<ExpandDirEvent>()
-            .add_event::<OpenFileEvent>()
         ;
     }
 }
@@ -187,11 +188,6 @@ pub struct ExpandDirEvent {
     pub expand: bool,
 }
 
-#[derive(Event)]
-pub struct OpenFileEvent {
-    pub row_entity: Entity,
-}
-
 fn directory_expand_icon(
     query: Query<(&Interaction, &Parent), (Changed<Interaction>, With<ExpandDirIcon>)>,
     mut event_writer: EventWriter<ExpandDirEvent>,
@@ -249,15 +245,23 @@ fn double_click_row(
     query: Query<&Parent, Added<DoubleClicked>>,
     file_display_query: Query<(&FileDisplay, Option<&DirectoryExpanded>)>,
     mut dir_event_writer: EventWriter<ExpandDirEvent>,
-    mut file_event_writer: EventWriter<OpenFileEvent>,
+    mut file_event_writer: EventWriter<RawOpenFileEvent>,
+    file_path: FilePath,
+    find_project_in_parents: FindProjectInParents,
+    projects_file_views: Res<ProjectsFileViews>,
 ) {
     for parent in query.iter() {
         let entity = parent.get();
         let (file_display, expanded) = file_display_query.get(entity).unwrap();
 
         if file_display.is_file {
-            file_event_writer.send(OpenFileEvent {
-                row_entity: entity,
+            let project = find_project_in_parents.find_project_ref(entity);
+
+            file_event_writer.send(RawOpenFileEvent {
+                event_data: FileEventData {
+                    path: PathBuf::from(file_path.get_full_path(entity)),
+                    view_entity: projects_file_views.get(project),
+                },
             });
         } else {
             dir_event_writer.send(ExpandDirEvent {

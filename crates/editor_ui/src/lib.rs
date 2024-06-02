@@ -7,16 +7,13 @@ pub mod widget;
 mod button;
 mod window;
 mod editor;
-mod fonts;
 mod icons;
 mod open_project;
 
 use bevy::prelude::*;
 use bevy_file_dialog::FileDialogPlugin;
-use editor_widget::WidgetPlugin;
 use crate::button::button_cursor;
 use crate::editor::EditorPlugin;
-use crate::fonts::DefaultFontsPlugin;
 use crate::icons::IconPlugin;
 use crate::open_project::OpenProjectPlugin;
 use crate::startup::StartupScreenPlugin;
@@ -32,8 +29,7 @@ impl Plugin for EditorUiPlugin {
         app
             .add_systems(Update, button_cursor)
             .add_plugins((
-                WidgetPlugin,
-                StartupScreenPlugin, EditorWidgetPlugin, EditorPlugin, DefaultFontsPlugin,
+                StartupScreenPlugin, EditorWidgetPlugin, EditorPlugin,
                 EditorWindowPlugin, IconPlugin, OpenProjectPlugin,
             ))
             .add_plugins(

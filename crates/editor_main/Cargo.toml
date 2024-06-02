@@ -8,4 +8,6 @@ bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
 editor_state = { workspace = true }
 editor_config = { workspace = true }
 editor_ui = { workspace = true }
+editor_widget = { workspace = true }
 editor_file = { workspace = true }
+editor_assets = { workspace = true }

@@ -7,3 +7,4 @@ edition = "2021"
 bevy = { workspace = true, features = ["bevy_ui"] }
 editor_config = { workspace = true }
 editor_widget = { workspace = true }
+editor_assets = { workspace = true }

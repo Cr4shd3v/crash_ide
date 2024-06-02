@@ -1502,6 +1502,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75b325c5dbd37f80359721ad39aca5a29fb04c89279657cffdda8736d0c0b9d2"
 
 [[package]]
+name = "editor_assets"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "editor_config"
 version = "0.1.0"
 dependencies = [
@@ -1517,6 +1524,7 @@ name = "editor_file"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "editor_assets",
  "editor_config",
  "editor_widget",
 ]
@@ -1526,10 +1534,12 @@ name = "editor_main"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "editor_assets",
  "editor_config",
  "editor_file",
  "editor_state",
  "editor_ui",
+ "editor_widget",
 ]
 
 [[package]]
@@ -1545,6 +1555,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_file_dialog",
+ "editor_assets",
  "editor_config",
  "editor_file",
  "editor_state",

@@ -1,31 +1,42 @@
+//! This module contains the implementation for .txt files
+
 use std::fs;
 use bevy::prelude::*;
-use editor_config::FindProjectInParents;
+use editor_assets::DefaultFonts;
 use editor_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
-use crate::editor::editor_left_menu::{FilePath, OpenFileEvent};
-use crate::editor::main_editor_screen::ProjectsFileViews;
-use crate::fonts::DefaultFonts;
+use crate::{default_file_handler_impl, FileViewInstance, OpenFileEvent};
+use crate::handler::FileHandlerManager;
 
-#[derive(Component)]
-pub(super) struct FileViewInstance {
-    path: String,
+pub(super) struct TextPlugin;
+
+impl Plugin for TextPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_event::<OpenFileEvent<TextFile>>()
+            .add_systems(Startup, register_handler)
+            .add_systems(Update, (spawn_file_view, save_edited_content))
+        ;
+    }
+}
+
+/// [FileHandler](crate::FileHandler) for .txt files
+pub struct TextFile;
+
+use crate as editor_file;
+default_file_handler_impl!(TextFile, ["txt"]);
+
+fn register_handler(mut handler_manager: ResMut<FileHandlerManager>) {
+    handler_manager.register_handler::<TextFile>();
 }
 
 pub(super) fn spawn_file_view(
     mut commands: Commands,
-    mut event_reader: EventReader<OpenFileEvent>,
-    file_path: FilePath,
-    find_project_in_parents: FindProjectInParents,
-    projects_file_views: Res<ProjectsFileViews>,
+    mut event_reader: EventReader<OpenFileEvent<TextFile>>,
 ) {
     for event in event_reader.read() {
-        let path = file_path.get_full_path(event.row_entity);
-        let project = find_project_in_parents.find_project_ref(event.row_entity);
-        let view = projects_file_views.get(project);
+        let content = fs::read_to_string(&event.event_data.path).unwrap();
 
-        let content = fs::read_to_string(&path).unwrap();
-
-        commands.entity(view).despawn_descendants().with_children(|parent| {
+        commands.entity(event.event_data.view_entity).despawn_descendants().with_children(|parent| {
             parent.spawn((TextInputBundle {
                 text_input_value: TextInputValue(content),
                 text_input_text_style: TextInputTextStyle(TextStyle {
@@ -45,7 +56,7 @@ pub(super) fn spawn_file_view(
                 },
                 ..default()
             }, FileViewInstance {
-                path,
+                path: event.event_data.path.clone(),
             }));
         });
     }

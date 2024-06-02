@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::fonts::DefaultFonts;
+use editor_assets::DefaultFonts;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 
 pub(crate) struct StartupSettingsPlugin;

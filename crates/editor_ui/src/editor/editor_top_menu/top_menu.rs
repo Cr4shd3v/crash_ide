@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use editor_widget::Hoverable;
 use crate::editor::main_editor_screen::EditorTopMenu;
-use crate::fonts::DefaultFonts;
+use editor_assets::DefaultFonts;
 
 pub(super) fn spawn_top_menu(
     mut commands: Commands,

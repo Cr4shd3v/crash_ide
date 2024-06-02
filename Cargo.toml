@@ -14,6 +14,7 @@ editor_config = { path = "crates/editor_config" }
 editor_ui = { path = "crates/editor_ui" }
 editor_widget = { path = "crates/editor_widget" }
 editor_file = { path = "crates/editor_file" }
+editor_assets = { path = "crates/editor_assets" }
 
 [profile.dev]
 opt-level = 1

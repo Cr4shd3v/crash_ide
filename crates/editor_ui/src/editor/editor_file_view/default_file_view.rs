@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::editor::main_editor_screen::EditorFileView;
-use crate::fonts::DefaultFonts;
+use editor_assets::DefaultFonts;
 
 pub(super) fn spawn_default_file_view(
     mut commands: Commands,

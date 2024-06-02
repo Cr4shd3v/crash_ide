@@ -3,13 +3,17 @@ use bevy::prelude::*;
 use bevy::utils::HashMap;
 use crate::RawOpenFileEvent;
 
+/// Resource containing all [FileHandler]
 #[derive(Resource, Default)]
 pub struct FileHandlerManager {
     handler_map: HashMap<String, Arc<Box<dyn FileHandler>>>,
 }
 
 impl FileHandlerManager {
-    pub fn register_handler<T: FileHandler, R: Event>(&mut self) {
+    /// Register a [FileHandler].
+    ///
+    /// Must be called before opening a file of that type.
+    pub fn register_handler<T: FileHandler>(&mut self) {
         let handler: Arc<Box<dyn FileHandler>> = Arc::new(Box::new(T::get_instance()));
 
         for extension in handler.get_file_extensions() {
@@ -17,36 +21,44 @@ impl FileHandlerManager {
         }
     }
 
+    /// Retrieve a [FileHandler] by extension.
     pub fn get_handler(&self, extension: &String) -> Option<&Arc<Box<dyn FileHandler>>> {
         self.handler_map.get(extension)
     }
 }
 
+/// Trait for all file handler implementations
 pub trait FileHandler: Sync + Send + 'static {
-
+    /// Creates an instance of Self.
     fn get_instance() -> Self where Self: Sized;
 
+    /// Returns all file extension this [FileHandler] should be used
     fn get_file_extensions(&self) -> Vec<&'static str>;
 
-    fn create_event(&self, commands: Commands, raw_event: &RawOpenFileEvent);
+    /// Generates an [OpenFileEvent](crate::OpenFileEvent) for this type
+    fn create_event(&self, commands: &mut Commands, raw_event: &RawOpenFileEvent);
 }
 
-pub struct TextFileHandler;
+/// Generates a default implementation for a [FileHandler].
+#[macro_export]
+macro_rules! default_file_handler_impl {
+    ($handler_type:tt, $extensions:expr) => {
+        impl editor_file::FileHandler for $handler_type {
+            fn get_instance() -> Self where Self: Sized {
+                $handler_type
+            }
 
-impl FileHandler for TextFileHandler {
-    fn get_instance() -> Self where Self: Sized {
-        TextFileHandler
-    }
+            fn get_file_extensions(&self) -> Vec<&'static str> {
+                $extensions.into()
+            }
 
-    fn get_file_extensions(&self) -> Vec<&'static str> {
-        vec!["txt"]
-    }
+            fn create_event(&self, commands: &mut Commands, raw_event: &editor_file::RawOpenFileEvent) {
+                let typed_event = raw_event.to_type_event::<$handler_type>();
 
-    fn create_event(&self, mut commands: Commands, raw_event: &RawOpenFileEvent) {
-        let typed_event = raw_event.to_type_event::<TextFileHandler>();
-
-        commands.add(|w: &mut World| {
-            w.send_event(typed_event);
-        });
-    }
+                commands.add(|w: &mut World| {
+                    w.send_event(typed_event);
+                });
+            }
+        }
+    };
 }
