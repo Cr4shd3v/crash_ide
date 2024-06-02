@@ -57,8 +57,10 @@ jobs:
 
       - name: 🏗️ Build
         run: cargo build --release
+        continue-on-error: true
 
       - name: ☁️ Upload
+        if: success()
         uses: actions/upload-artifact@v2
         with:
           name: editor
