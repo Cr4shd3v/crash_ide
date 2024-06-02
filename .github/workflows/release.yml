@@ -33,10 +33,7 @@ jobs:
       - name: 🔧 Mold and Clang
         if: startsWith(matrix.os, 'ubuntu-')
         run: |
-          sudo apt-get update
-          sh setup.sh
-          sudo apt-get install -y libasound2-dev portaudio19-dev build-essential libpulse-dev libdbus-1-dev libssl-dev pkg-config
-          sudo apt-get install -y libudev-dev
+          ./setup.sh
 
       - name: 🗃️ Cache Cargo and Build Outputs
         uses: actions/cache@v2
