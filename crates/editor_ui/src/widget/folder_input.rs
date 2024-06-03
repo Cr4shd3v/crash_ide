@@ -1,8 +1,9 @@
 //! Contains the implementation of a folder text input.
 
+use std::path::PathBuf;
 use bevy::prelude::*;
-use bevy_file_dialog::{DialogDirectoryPicked, FileDialogExt};
 use editor_assets::DefaultIcons;
+use editor_file_picker::{DirectoryPicked, DirectoryPicker};
 use editor_widget::{TextInputCursorPos, TextInputValue};
 
 pub(super) struct FolderInputPlugin;
@@ -57,21 +58,21 @@ fn folder_input_button(
             continue;
         }
 
-        let current_value = text_input_query.get(parent.get()).unwrap();
+        let parent_entity = parent.get();
+        let current_value = text_input_query.get(parent_entity).unwrap();
 
-        commands.dialog()
-            .set_title("Select project path")
-            .set_directory(&current_value.0)
-            .pick_directory_path::<FolderInput>();
+        commands.entity(parent_entity).insert(DirectoryPicker {
+            start_directory: Some(PathBuf::from(&current_value.0)),
+            title: "Select project path".to_string(),
+        });
     }
 }
 
 fn folder_picked(
-    mut event_reader: EventReader<DialogDirectoryPicked<FolderInput>>,
-    mut input_query: Query<&mut TextInputValue, With<FolderInput>>,
+    mut input_query: Query<(&DirectoryPicked, &mut TextInputValue), (With<FolderInput>, Added<DirectoryPicked>)>,
 ) {
-    for event in event_reader.read() {
-        input_query.single_mut().0 = event.path.to_str().unwrap().to_string();
+    for (directory, mut input) in input_query.iter_mut() {
+        input.0 = directory.0.path().to_str().unwrap().to_string();
     }
 }
 

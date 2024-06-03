@@ -220,9 +220,9 @@ dependencies = [
 
 [[package]]
 name = "async-broadcast"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "258b52a1aa741b9f09783b2d86cf0aeeb617bbf847f6933340a39644227acbdb"
+checksum = "20cd0e2e25ea8e5f7e9df04578dc6cf5c83577fd09b1a46aaf5c85e1c33f2a7e"
 dependencies = [
  "event-listener 5.3.0",
  "event-listener-strategy 0.5.2",
@@ -268,9 +268,9 @@ dependencies = [
 
 [[package]]
 name = "async-io"
-version = "2.3.2"
+version = "2.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcccb0f599cfa2f8ace422d3555572f47424da5648a4382a9dd0310ff8210884"
+checksum = "0d6baa8f0178795da0e71bc42c9e5d13261aac7ee549853162e66a241ba17964"
 dependencies = [
  "async-lock",
  "cfg-if",
@@ -309,9 +309,9 @@ dependencies = [
 
 [[package]]
 name = "async-process"
-version = "2.2.2"
+version = "2.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a53fc6301894e04a92cb2584fedde80cb25ba8e02d9dc39d4a87d036e22f397d"
+checksum = "f7eda79bbd84e29c2b308d1dc099d7de8dcc7035e48f4bf5dc4a531a44ff5e2a"
 dependencies = [
  "async-channel",
  "async-io",
@@ -340,9 +340,9 @@ dependencies = [
 
 [[package]]
 name = "async-signal"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afe66191c335039c7bb78f99dc7520b0cbb166b3a1cb33a03f53d8a1c6f2afda"
+checksum = "329972aa325176e89114919f2a80fdae4f4c040f66a370b1a1159c6c0f94e7aa"
 dependencies = [
  "async-io",
  "async-lock",
@@ -576,21 +576,6 @@ checksum = "887087a5e522d9f20733a84dd7e6e9ca04cd8fdfac659220ed87d675eebc83a7"
 dependencies = [
  "bevy_macro_utils",
  "encase_derive_impl",
-]
-
-[[package]]
-name = "bevy_file_dialog"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67d16e1368848cef708cdf43b6f0371717677557e1d94e2adda33d65324aad06"
-dependencies = [
- "bevy_app",
- "bevy_derive",
- "bevy_ecs",
- "bevy_tasks",
- "bevy_utils",
- "crossbeam-channel",
- "rfd",
 ]
 
 [[package]]
@@ -1427,6 +1412,7 @@ dependencies = [
  "editor_assets",
  "editor_config",
  "editor_file",
+ "editor_file_picker",
  "editor_state",
  "editor_ui",
  "editor_widget",
@@ -1576,6 +1562,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "editor_file_picker"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "rfd",
+]
+
+[[package]]
 name = "editor_state"
 version = "0.1.0"
 dependencies = [
@@ -1587,10 +1581,10 @@ name = "editor_ui"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "bevy_file_dialog",
  "editor_assets",
  "editor_config",
  "editor_file",
+ "editor_file_picker",
  "editor_state",
  "editor_widget",
 ]
@@ -4552,7 +4546,7 @@ version = "4.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "989c3977a7aafa97b12b9a35d21cdcff9b0d2289762b14683f45d66b1ba6c48f"
 dependencies = [
- "async-broadcast 0.7.0",
+ "async-broadcast 0.7.1",
  "async-executor",
  "async-fs",
  "async-io",

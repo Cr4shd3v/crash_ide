@@ -29,13 +29,14 @@ assets = [
 ]
 
 [dependencies]
-bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland"] }
+bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland", "multi-threaded"] }
 editor_state = { workspace = true }
 editor_config = { workspace = true }
 editor_ui = { workspace = true }
 editor_widget = { workspace = true }
 editor_file = { workspace = true }
 editor_assets = { workspace = true }
+editor_file_picker = { workspace = true }
 
 [workspace]
 members = ["crates/*"]
@@ -43,12 +44,12 @@ resolver = "2"
 
 [workspace.dependencies]
 bevy = { version = "0.13.2", default-features = false }
-bevy_file_dialog = "0.5.0"
 serde = "^1.0"
 serde_json = "^1.0"
 homedir = "^0.2"
 open = "^5.1"
 image = "^0.24"
+rfd = "^0.14"
 
 editor_state = { path = "crates/editor_state" }
 editor_config = { path = "crates/editor_config" }
@@ -56,6 +57,7 @@ editor_ui = { path = "crates/editor_ui" }
 editor_widget = { path = "crates/editor_widget" }
 editor_file = { path = "crates/editor_file" }
 editor_assets = { path = "crates/editor_assets" }
+editor_file_picker = { path = "crates/editor_file_picker" }
 
 [profile.dev]
 opt-level = 1

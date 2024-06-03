@@ -1,0 +1,9 @@
+[package]
+name = "editor_file_picker"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true }
+rfd = { workspace = true }
+

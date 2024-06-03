@@ -10,14 +10,11 @@ mod editor;
 mod open_project;
 
 use bevy::prelude::*;
-use bevy_file_dialog::FileDialogPlugin;
 use crate::button::button_cursor;
 use crate::editor::EditorPlugin;
 use crate::open_project::OpenProjectPlugin;
 use crate::startup::StartupScreenPlugin;
-use crate::widget::button::OpenProjectDialog;
 use crate::widget::EditorWidgetPlugin;
-use crate::widget::folder_input::FolderInput;
 use crate::window::EditorWindowPlugin;
 
 /// Plugin implementing UI for the editor
@@ -31,11 +28,6 @@ impl Plugin for EditorUiPlugin {
                 StartupScreenPlugin, EditorWidgetPlugin, EditorPlugin,
                 EditorWindowPlugin, OpenProjectPlugin,
             ))
-            .add_plugins(
-                FileDialogPlugin::new()
-                    .with_pick_directory::<OpenProjectDialog>()
-                    .with_pick_directory::<FolderInput>(),
-            )
         ;
     }
 }

@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/editor_widget/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/editor_file/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/editor_assets/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/editor_file_picker/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
