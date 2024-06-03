@@ -142,6 +142,8 @@ pub struct TextInputSettings {
     pub with_border: bool,
     /// Accept multiline input
     pub multiline: bool,
+    /// Width of the overflow container
+    pub input_width: Val,
 }
 
 impl Default for TextInputSettings {
@@ -149,6 +151,7 @@ impl Default for TextInputSettings {
         Self {
             with_border: true,
             multiline: false,
+            input_width: Val::Percent(100.0),
         }
     }
 }
@@ -477,7 +480,7 @@ fn create_text_input(
             style: Style {
                 overflow: Overflow::clip(),
                 justify_content: JustifyContent::FlexEnd,
-                max_width: Val::Percent(100.0),
+                max_width: settings.input_width,
                 ..default()
             },
             ..default()

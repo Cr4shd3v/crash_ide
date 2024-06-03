@@ -77,6 +77,7 @@ fn spawn_file_view(
                 text_input_settings: TextInputSettings {
                     with_border: false,
                     multiline: true,
+                    ..default()
                 },
                 ..default()
             }, NodeBundle {

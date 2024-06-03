@@ -5,10 +5,11 @@ use std::str::FromStr;
 use bevy::prelude::*;
 
 use editor_config::{EditorConfigProjects, EditorProject, HomeDir};
-use editor_widget::{TextInputBundle, TextInputTextStyle, TextInputValue};
+use editor_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 
 use editor_assets::DefaultFonts;
 use crate::open_project::OpenProjectEvent;
+use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
 
 /// Marker component for the create project dialog
@@ -49,16 +50,22 @@ pub(super) fn spawn_project_create_screen(
                     TextInputBundle {
                         text_input_value: TextInputValue(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
                         text_input_text_style: TextInputTextStyle::default().with_font(DefaultFonts::ROBOTO_REGULAR),
+                        text_input_settings: TextInputSettings {
+                            input_width: Val::Percent(96.0),
+                            ..default()
+                        },
                         ..default()
                     },
                     NodeBundle {
                         style: Style {
                             width: Val::Vw(80.0),
+                            justify_content: JustifyContent::SpaceBetween,
                             ..default()
                         },
                         ..default()
                     },
                     ProjectPathInput,
+                    FolderInput,
                 ));
 
                 parent.spawn(NodeBundle {
