@@ -56,7 +56,7 @@ fn start_directory_picker(
             dialog.pick_folder().await
         });
 
-        commands.entity(entity).insert(DirectoryPickerTask(task));
+        commands.entity(entity).insert(DirectoryPickerTask(task)).remove::<(DirectoryPicker, DirectoryPicked)>();
     }
 }
 
@@ -69,8 +69,10 @@ fn handle_picked_directory(
             continue;
         };
 
+        commands.entity(entity).remove::<DirectoryPickerTask>();
+
         if let Some(file) = result {
-            commands.entity(entity).insert(DirectoryPicked(file)).remove::<DirectoryPickerTask>();
+            commands.entity(entity).insert(DirectoryPicked(file));
         }
     }
 }
