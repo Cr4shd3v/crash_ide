@@ -3,7 +3,7 @@ use bevy::utils::HashMap;
 use editor_config::ProjectRef;
 use crate::window::{AllWindows, ProjectWindow};
 
-pub struct MainEditorScreenPlugin;
+pub(super) struct MainEditorScreenPlugin;
 
 impl Plugin for MainEditorScreenPlugin {
     fn build(&self, app: &mut App) {
@@ -97,11 +97,13 @@ pub(super) fn spawn_main_editor_screen(
                 style: Style {
                     height: Val::Vh(30.0),
                     width: Val::Vw(100.0),
+                    border: UiRect::top(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::BLUE),
+                border_color: BorderColor(Color::GRAY.with_a(0.1)),
+                background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
                 ..default()
-            }, EditorBottomMenu, ProjectRef(project_window.project_editor_config)));
+            }, EditorBottomMenu));
         });
     }
 }

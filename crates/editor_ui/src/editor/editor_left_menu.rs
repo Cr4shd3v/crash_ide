@@ -3,7 +3,7 @@ mod filesystem_menu;
 use bevy::prelude::*;
 pub use filesystem_menu::*;
 
-pub struct EditorLeftMenuPlugin;
+pub(super) struct EditorLeftMenuPlugin;
 
 impl Plugin for EditorLeftMenuPlugin {
     fn build(&self, app: &mut App) {
