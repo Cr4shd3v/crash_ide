@@ -1,4 +1,5 @@
 use std::io::{BufRead, BufReader, Write};
+use std::path::Path;
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
 use std::sync::{Arc, Mutex};
@@ -9,17 +10,20 @@ pub struct RawConsole {
     cmd: Child,
     stdout_read: Arc<Mutex<Receiver<String>>>,
     stdin: ChildStdin,
+    #[allow(unused)]
     stdout_task: Task<()>,
+    #[allow(unused)]
     stderr_task: Task<()>,
 }
 
 impl RawConsole {
-    pub fn new() -> Result<Self, String> {
+    pub fn new(start_dir: impl AsRef<Path>) -> Result<Self, String> {
         #[cfg(target_os = "linux")]
             let mut cmd = Command::new("bash");
         #[cfg(target_os = "windows")]
             let mut cmd = Command::new("cmd");
         let mut cmd = cmd
+            .current_dir(start_dir)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
@@ -27,7 +31,7 @@ impl RawConsole {
 
         let mut stdout = BufReader::new(cmd.stdout.take().unwrap());
         let mut stderr = BufReader::new(cmd.stderr.take().unwrap());
-        let stdin = cmd.stdin.take().unwrap();
+        let mut stdin = cmd.stdin.take().unwrap();
 
         let (stdout_write, stdout_read) = channel();
 
@@ -56,6 +60,8 @@ impl RawConsole {
                 buf.clear();
             }
         });
+
+        stdin.write_all(b"echo $PWD$\n").unwrap();
 
         Ok(Self {
             cmd,

@@ -103,7 +103,7 @@ pub(super) fn spawn_main_editor_screen(
                 border_color: BorderColor(Color::GRAY.with_a(0.1)),
                 background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
                 ..default()
-            }, EditorBottomMenu));
+            }, EditorBottomMenu, ProjectRef(project_window.project_editor_config)));
         });
     }
 }
