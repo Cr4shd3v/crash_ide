@@ -37,6 +37,7 @@ editor_widget = { workspace = true }
 editor_file = { workspace = true }
 editor_assets = { workspace = true }
 editor_file_picker = { workspace = true }
+editor_console = { workspace = true }
 
 [workspace]
 members = ["crates/*"]
@@ -58,6 +59,7 @@ editor_widget = { path = "crates/editor_widget" }
 editor_file = { path = "crates/editor_file" }
 editor_assets = { path = "crates/editor_assets" }
 editor_file_picker = { path = "crates/editor_file_picker" }
+editor_console = { path = "crates/editor_console" }
 
 [profile.dev]
 opt-level = 1

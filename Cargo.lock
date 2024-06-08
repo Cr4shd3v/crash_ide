@@ -1411,6 +1411,7 @@ dependencies = [
  "bevy",
  "editor_assets",
  "editor_config",
+ "editor_console",
  "editor_file",
  "editor_file_picker",
  "editor_state",
@@ -1550,6 +1551,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "editor_console"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "editor_assets",
+ "editor_widget",
+]
+
+[[package]]
 name = "editor_file"
 version = "0.1.0"
 dependencies = [
@@ -1583,6 +1593,7 @@ dependencies = [
  "bevy",
  "editor_assets",
  "editor_config",
+ "editor_console",
  "editor_file",
  "editor_file_picker",
  "editor_state",

@@ -11,3 +11,4 @@ editor_widget = { workspace = true }
 editor_file = { workspace = true }
 editor_assets = { workspace = true }
 editor_file_picker = { workspace = true }
+editor_console = { workspace = true }

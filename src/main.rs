@@ -7,6 +7,7 @@ use bevy::window::ExitCondition;
 use editor_assets::EditorAssetPlugin;
 
 use editor_config::EditorConfigPlugin;
+use editor_console::EditorConsolePlugin;
 use editor_file::EditorFilePlugin;
 use editor_file_picker::EditorFilePickerPlugin;
 use editor_state::EditorStatePlugin;
@@ -33,6 +34,7 @@ fn main() {
     app.add_plugins(EditorAssetPlugin);
     app.add_plugins(WidgetPlugin);
     app.add_plugins(EditorFilePickerPlugin);
+    app.add_plugins(EditorConsolePlugin);
 
     app.run();
 }
