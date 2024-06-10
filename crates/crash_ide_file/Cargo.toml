@@ -1,0 +1,12 @@
+[package]
+name = "crash_ide_file"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true, features = ["bevy_ui", "png", "bevy_asset"] }
+open = { workspace = true }
+image = { workspace = true }
+crash_ide_config = { workspace = true }
+crash_ide_widget = { workspace = true }
+crash_ide_assets = { workspace = true }

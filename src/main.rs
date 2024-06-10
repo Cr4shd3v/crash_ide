@@ -4,15 +4,15 @@
 
 use bevy::prelude::*;
 use bevy::window::ExitCondition;
-use editor_assets::EditorAssetPlugin;
+use crash_ide_assets::EditorAssetPlugin;
 
-use editor_config::EditorConfigPlugin;
-use editor_console::EditorConsolePlugin;
-use editor_file::EditorFilePlugin;
-use editor_file_picker::EditorFilePickerPlugin;
-use editor_state::EditorStatePlugin;
-use editor_ui::EditorUiPlugin;
-use editor_widget::WidgetPlugin;
+use crash_ide_config::EditorConfigPlugin;
+use crash_ide_console::EditorConsolePlugin;
+use crash_ide_file::EditorFilePlugin;
+use crash_ide_file_picker::EditorFilePickerPlugin;
+use crash_ide_state::EditorStatePlugin;
+use crash_ide_ui::EditorUiPlugin;
+use crash_ide_widget::WidgetPlugin;
 
 fn main() {
     let mut app = App::new();

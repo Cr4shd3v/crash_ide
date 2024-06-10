@@ -1,9 +1,0 @@
-[package]
-name = "editor_console"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-bevy = { workspace = true }
-editor_widget = { workspace = true }
-editor_assets = { workspace = true }

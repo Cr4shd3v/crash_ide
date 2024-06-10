@@ -1,0 +1,11 @@
+[package]
+name = "crash_ide_config"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+crash_ide_state = { workspace = true }
+homedir = { workspace = true }

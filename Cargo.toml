@@ -30,14 +30,14 @@ assets = [
 
 [dependencies]
 bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland", "multi-threaded"] }
-editor_state = { workspace = true }
-editor_config = { workspace = true }
-editor_ui = { workspace = true }
-editor_widget = { workspace = true }
-editor_file = { workspace = true }
-editor_assets = { workspace = true }
-editor_file_picker = { workspace = true }
-editor_console = { workspace = true }
+crash_ide_state = { workspace = true }
+crash_ide_config = { workspace = true }
+crash_ide_ui = { workspace = true }
+crash_ide_widget = { workspace = true }
+crash_ide_file = { workspace = true }
+crash_ide_assets = { workspace = true }
+crash_ide_file_picker = { workspace = true }
+crash_ide_console = { workspace = true }
 
 [workspace]
 members = ["crates/*"]
@@ -52,14 +52,14 @@ open = "^5.1"
 image = "^0.24"
 rfd = "^0.14"
 
-editor_state = { path = "crates/editor_state" }
-editor_config = { path = "crates/editor_config" }
-editor_ui = { path = "crates/editor_ui" }
-editor_widget = { path = "crates/editor_widget" }
-editor_file = { path = "crates/editor_file" }
-editor_assets = { path = "crates/editor_assets" }
-editor_file_picker = { path = "crates/editor_file_picker" }
-editor_console = { path = "crates/editor_console" }
+crash_ide_state = { path = "crates/crash_ide_state" }
+crash_ide_config = { path = "crates/crash_ide_config" }
+crash_ide_ui = { path = "crates/crash_ide_ui" }
+crash_ide_widget = { path = "crates/crash_ide_widget" }
+crash_ide_file = { path = "crates/crash_ide_file" }
+crash_ide_assets = { path = "crates/crash_ide_assets" }
+crash_ide_file_picker = { path = "crates/crash_ide_file_picker" }
+crash_ide_console = { path = "crates/crash_ide_console" }
 
 [profile.dev]
 opt-level = 1
