@@ -20,6 +20,15 @@ impl ExpandableMenuExtension for App {
 #[derive(Component, Default)]
 pub struct ExpandableMenuButton<T: Send + Sync + 'static> {
     phantom_data: PhantomData<T>,
+    override_pos: Option<Vec2>,
+}
+
+impl<T: Send + Sync + 'static> ExpandableMenuButton<T> {
+    /// Set the `override_pos` for self
+    pub fn with_override_pos(mut self, override_pos: Vec2) -> Self {
+        self.override_pos = Some(override_pos);
+        self
+    }
 }
 
 /// Event produced when a expandable button should be expanded
@@ -33,10 +42,10 @@ pub struct ExpandMenuEvent<T: Send + Sync + 'static> {
 }
 
 fn expand_menu<T: Send + Sync + 'static>(
-    query: Query<(&GlobalTransform, &Interaction, Entity), (Changed<Interaction>, With<ExpandableMenuButton<T>>)>,
+    query: Query<(&GlobalTransform, &Interaction, Entity, &ExpandableMenuButton<T>), Changed<Interaction>>,
     mut event_writer: EventWriter<ExpandMenuEvent<T>>,
 ) {
-    for (transform, interaction, entity) in query.iter() {
+    for (transform, interaction, entity, menu_button) in query.iter() {
         if *interaction != Interaction::Pressed {
             continue;
         }
@@ -45,7 +54,7 @@ fn expand_menu<T: Send + Sync + 'static>(
 
         event_writer.send(ExpandMenuEvent {
             phantom_data: PhantomData,
-            position,
+            position: menu_button.override_pos.unwrap_or(position),
             entity,
         });
     }
