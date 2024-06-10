@@ -1,7 +1,7 @@
 use std::ops::Neg;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_widget::FocusNode;
 
 pub(super) struct FileMenuPlugin;
@@ -38,7 +38,7 @@ fn open_file_menu(
                     border: UiRect::all(Val::Px(1.0)),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::hex("#21252B").unwrap()),
+                background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),
                 border_color: BorderColor(Color::GRAY.with_a(0.1)),
                 z_index: ZIndex::Global(1),
                 focus_policy: FocusPolicy::Block,

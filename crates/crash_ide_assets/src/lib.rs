@@ -1,8 +1,10 @@
 mod fonts;
 mod icons;
+mod colors;
 
 pub use fonts::*;
 pub use icons::*;
+pub use colors::*;
 
 use bevy::prelude::*;
 

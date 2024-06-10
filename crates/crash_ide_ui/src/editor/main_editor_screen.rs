@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::utils::HashMap;
+use crash_ide_assets::DefaultColors;
 use crash_ide_config::ProjectRef;
 use crate::window::{AllWindows, ProjectWindow};
 
@@ -55,7 +56,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                     border: UiRect::bottom(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
+                background_color: BackgroundColor(DefaultColors::MAIN_VIEW_BACKGROUND),
                 border_color: BorderColor(Color::GRAY.with_a(0.1)),
                 ..default()
             }, EditorTopMenu, ProjectRef(project_window.project_crash_ide_config)));
@@ -76,7 +77,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                         flex_direction: FlexDirection::Column,
                         ..default()
                     },
-                    background_color: BackgroundColor(Color::hex("#21252B").unwrap()),
+                    background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),
                     ..default()
                 }, EditorLeftMenu));
 
@@ -86,7 +87,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                         width: Val::Percent(80.0),
                         ..default()
                     },
-                    background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
+                    background_color: BackgroundColor(DefaultColors::MAIN_VIEW_BACKGROUND),
                     ..default()
                 }, EditorFileView)).id();
 
@@ -101,7 +102,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                     ..default()
                 },
                 border_color: BorderColor(Color::GRAY.with_a(0.1)),
-                background_color: BackgroundColor(Color::hex("#282C34").unwrap()),
+                background_color: BackgroundColor(DefaultColors::MAIN_VIEW_BACKGROUND),
                 ..default()
             }, EditorBottomMenu, ProjectRef(project_window.project_crash_ide_config)));
         });

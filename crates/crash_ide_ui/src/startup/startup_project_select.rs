@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crash_ide_config::EditorConfigProjects;
 use crash_ide_widget::Hoverable;
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crate::open_project::OpenProjectEvent;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
@@ -59,7 +59,7 @@ fn build_project_select(
                     justify_content: JustifyContent::Center,
                     ..default()
                 },
-                background_color: BackgroundColor(Color::hex("#578AF2").unwrap()),
+                background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
                 ..default()
             }, CreateProjectButton)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("New Project", TextStyle {
@@ -76,7 +76,7 @@ fn build_project_select(
                     margin: UiRect::right(Val::Vw(2.0)),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::hex("#578AF2").unwrap()),
+                background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
                 ..default()
             }, OpenProjectButton)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Open", TextStyle {

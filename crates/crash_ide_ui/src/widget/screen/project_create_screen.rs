@@ -7,7 +7,7 @@ use bevy::prelude::*;
 use crash_ide_config::{EditorConfigProjects, EditorProject, HomeDir};
 use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crate::open_project::OpenProjectEvent;
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
@@ -82,7 +82,7 @@ pub(super) fn spawn_project_create_screen(
                                 margin: UiRect::top(Val::Vh(2.5)),
                                 ..default()
                             },
-                            background_color: BackgroundColor(Color::hex("#578AF2").unwrap()),
+                            background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
                             ..default()
                         },
                         CreateProjectConfirmButton,
