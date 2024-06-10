@@ -1,7 +1,8 @@
 use bevy::prelude::*;
-use editor_widget::Hoverable;
+use editor_widget::{ExpandableMenuButton, Hoverable};
 use crate::editor::main_editor_screen::EditorTopMenu;
 use editor_assets::DefaultFonts;
+use crate::editor::editor_top_menu::file_menu::FileMenu;
 
 pub(super) fn spawn_top_menu(
     mut commands: Commands,
@@ -28,7 +29,11 @@ pub(super) fn spawn_top_menu(
                     ..default()
                 },
                 ..default()
-            }, Hoverable::new(Color::GRAY.with_a(0.2)), Interaction::None)).with_children(|parent| {
+            },
+                          Hoverable::new(Color::GRAY.with_a(0.2)),
+                          Interaction::None,
+                          ExpandableMenuButton::<FileMenu>::default(),
+            )).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("File", TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
                     font_size: 18.0,
