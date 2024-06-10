@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 bevy = { workspace = true, features = ["bevy_ui", "bevy_winit", "png"] }
+open = { workspace = true }
+
 crash_ide_state = { workspace = true }
 crash_ide_config = { workspace = true }
 crash_ide_widget = { workspace = true }

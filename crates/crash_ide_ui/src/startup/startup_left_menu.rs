@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use crash_ide_widget::Hoverable;
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultFonts, DefaultIcons};
 use crate::startup::StartupScreenState;
+use crate::widget::button::GithubButton;
 
-pub(crate) fn startup_left_menu(builder: &mut ChildBuilder) {
+pub(crate) fn startup_left_menu(builder: &mut ChildBuilder, icons: &Res<DefaultIcons>) {
     builder.spawn(NodeBundle {
         style: Style {
             width: Val::Percent(20.0),
@@ -17,6 +18,38 @@ pub(crate) fn startup_left_menu(builder: &mut ChildBuilder) {
     }).with_children(|parent| {
         startup_left_menu_entry(parent, StartupScreenState::ProjectSelect);
         startup_left_menu_entry(parent, StartupScreenState::Settings);
+
+        parent.spawn(NodeBundle {
+            style: Style {
+                flex_direction: FlexDirection::Column,
+                position_type: PositionType::Absolute,
+                bottom: Val::Px(0.0),
+                align_items: AlignItems::Center,
+                width: Val::Percent(100.0),
+                ..default()
+            },
+            ..default()
+        }).with_children(|parent| {
+            parent.spawn(TextBundle {
+                text: Text::from_section(format!("Crash IDE v{}", env!("CARGO_PKG_VERSION")), TextStyle {
+                    font: DefaultFonts::ROBOTO_REGULAR,
+                    font_size: 16.0,
+                    color: Color::GRAY.with_a(0.8),
+                }),
+                ..default()
+            });
+
+            parent.spawn((ImageBundle {
+                image: UiImage::new(icons.github.clone()),
+                style: Style {
+                    height: Val::Px(25.0),
+                    width: Val::Px(25.0),
+                    margin: UiRect::top(Val::Px(5.0)),
+                    ..default()
+                },
+                ..default()
+            }, Interaction::None, Button, GithubButton));
+        });
     });
 }
 

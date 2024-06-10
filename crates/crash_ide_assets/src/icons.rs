@@ -18,6 +18,7 @@ pub struct DefaultIcons {
     pub right: Handle<Image>,
     pub folder: Handle<Image>,
     pub unknown_file: Handle<Image>,
+    pub github: Handle<Image>,
 }
 
 fn load_default_icons(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -27,5 +28,6 @@ fn load_default_icons(mut commands: Commands, asset_server: Res<AssetServer>) {
         right: asset_server.load("icons/right.png"),
         folder: asset_server.load("icons/folder.png"),
         unknown_file: asset_server.load("icons/unknown_file.png"),
+        github: asset_server.load("icons/github.png"),
     });
 }

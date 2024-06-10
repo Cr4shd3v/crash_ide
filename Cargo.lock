@@ -1485,6 +1485,7 @@ dependencies = [
  "crash_ide_file_picker",
  "crash_ide_state",
  "crash_ide_widget",
+ "open",
 ]
 
 [[package]]

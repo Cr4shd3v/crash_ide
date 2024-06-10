@@ -3,6 +3,7 @@ mod startup_project_select;
 mod startup_settings;
 
 use bevy::prelude::*;
+use crash_ide_assets::DefaultIcons;
 use crash_ide_state::EditorState;
 use crate::startup::startup_project_select::StartupProjectSelectPlugin;
 use crate::startup::startup_settings::StartupSettingsPlugin;
@@ -47,6 +48,7 @@ fn spawn_startup_screen(
     mut startup_state: ResMut<NextState<StartupScreenState>>,
     window_query: Query<Entity, With<StartupWindow>>,
     all_windows: Res<AllWindows>,
+    icons: Res<DefaultIcons>,
 ) {
     let window_entity = window_query.single();
     commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
@@ -60,7 +62,7 @@ fn spawn_startup_screen(
             },
             ..default()
         }).with_children(|parent| {
-            startup_left_menu(parent);
+            startup_left_menu(parent, &icons);
             parent.spawn((StartupContentRoot, NodeBundle {
                 style: Style {
                     width: Val::Percent(80.0),
