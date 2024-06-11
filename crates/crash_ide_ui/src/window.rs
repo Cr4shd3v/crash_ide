@@ -45,7 +45,7 @@ pub struct WindowData {
 
 fn initial_window(mut commands: Commands) {
     commands.spawn((Window {
-        resolution: WindowResolution::new(1280.0, 720.0),
+        resolution: WindowResolution::new(1280.0, 720.0).with_scale_factor_override(1.0),
         title: String::from("Crash Editor"),
         ..default()
     }, StartupWindow));
@@ -59,9 +59,9 @@ fn save_resolution(
     mut event_reader: EventReader<WindowCreated>,
     winit_windows: NonSend<WinitWindows>,
 ) {
-    for WindowCreated{ window } in event_reader.read() {
+    for WindowCreated { window } in event_reader.read() {
         let monitor_size = winit_windows.get_window(window.clone()).unwrap().current_monitor().unwrap().size();
-        resolution.0 = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32);
+        resolution.0 = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32).with_scale_factor_override(1.0);
     }
 }
 
