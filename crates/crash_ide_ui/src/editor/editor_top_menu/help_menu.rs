@@ -36,7 +36,6 @@ fn open_help_menu(
                     position_type: PositionType::Absolute,
                     top: Val::Px(size.y),
                     left: style.margin.left.neg(),
-                    padding: UiRect::all(Val::Px(3.0)),
                     border: UiRect::all(Val::Px(1.0)),
                     flex_direction: FlexDirection::Column,
                     ..default()
@@ -51,7 +50,7 @@ fn open_help_menu(
                     style: Style {
                         flex_direction: FlexDirection::Row,
                         align_items: AlignItems::Center,
-                        padding: UiRect::all(Val::Px(3.0)),
+                        padding: UiRect::axes(Val::Px(6.0), Val::Px(3.0)),
                         ..default()
                     },
                     ..default()
@@ -80,7 +79,7 @@ fn open_help_menu(
                     style: Style {
                         flex_direction: FlexDirection::Row,
                         align_items: AlignItems::Center,
-                        padding: UiRect::all(Val::Px(3.0)),
+                        padding: UiRect::axes(Val::Px(6.0), Val::Px(3.0)),
                         ..default()
                     },
                     ..default()
@@ -109,7 +108,7 @@ fn open_help_menu(
                     style: Style {
                         flex_direction: FlexDirection::Row,
                         justify_content: JustifyContent::Center,
-                        padding: UiRect::all(Val::Px(3.0)),
+                        padding: UiRect::axes(Val::Px(6.0), Val::Px(3.0)),
                         ..default()
                     },
                     ..default()
