@@ -36,6 +36,7 @@ fn open_file_menu(
                     left: style.margin.left.neg(),
                     padding: UiRect::all(Val::Px(3.0)),
                     border: UiRect::all(Val::Px(1.0)),
+                    flex_direction: FlexDirection::Column,
                     ..default()
                 },
                 background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),

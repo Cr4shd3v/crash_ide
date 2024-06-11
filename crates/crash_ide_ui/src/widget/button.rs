@@ -18,6 +18,7 @@ impl Plugin for ButtonPlugin {
             open_project_directory_picked,
             create_project_button,
             open_github_link,
+            open_github_issue_link,
         ));
     }
 }

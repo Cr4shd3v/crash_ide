@@ -4,6 +4,7 @@ use crash_ide_assets::DefaultFonts;
 use crash_ide_widget::Hoverable;
 
 use crate::editor::editor_top_menu::file_menu::FileMenu;
+use crate::editor::editor_top_menu::help_menu::HelpMenu;
 use crate::editor::main_editor_screen::EditorTopMenu;
 
 pub(super) fn spawn_top_menu(
@@ -52,7 +53,11 @@ pub(super) fn spawn_top_menu(
                     ..default()
                 },
                 ..default()
-            }, Hoverable::new(Color::GRAY.with_a(0.2)), Interaction::None)).with_children(|parent| {
+            },
+                          Hoverable::new(Color::GRAY.with_a(0.2)),
+                          Interaction::None,
+                          HelpMenu,
+            )).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Help", TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
                     font_size: 18.0,
