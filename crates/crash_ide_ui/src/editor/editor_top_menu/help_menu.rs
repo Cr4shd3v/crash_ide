@@ -1,9 +1,13 @@
 use std::ops::Neg;
+
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
+
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
-use crash_ide_widget::{FocusNode, Hoverable};
+use crash_ide_widget::FocusNode;
+
 use crate::widget::button::{GithubButton, GithubIssueButton};
+use crate::widget::context_menu_row::ContextMenuRow;
 
 pub(super) struct HelpMenuPlugin;
 
@@ -46,63 +50,8 @@ fn open_help_menu(
                 focus_policy: FocusPolicy::Block,
                 ..default()
             }, FocusNode, Interaction::None)).with_children(|parent| {
-                parent.spawn((NodeBundle {
-                    style: Style {
-                        flex_direction: FlexDirection::Row,
-                        align_items: AlignItems::Center,
-                        padding: UiRect::axes(Val::Px(6.0), Val::Px(3.0)),
-                        ..default()
-                    },
-                    ..default()
-                }, Interaction::None, GithubButton, Hoverable::new(Color::GRAY.with_a(0.2)))).with_children(|parent| {
-                    parent.spawn(ImageBundle {
-                        image: UiImage::new(icons.github.clone()),
-                        style: Style {
-                            height: Val::Px(15.0),
-                            margin: UiRect::right(Val::Px(5.0)),
-                            ..default()
-                        },
-                        ..default()
-                    });
-
-                    parent.spawn(TextBundle {
-                        text: Text::from_section("Github", TextStyle {
-                            font: DefaultFonts::ROBOTO_REGULAR,
-                            font_size: 18.0,
-                            ..default()
-                        }).with_no_wrap(),
-                        ..default()
-                    });
-                });
-
-                parent.spawn((NodeBundle {
-                    style: Style {
-                        flex_direction: FlexDirection::Row,
-                        align_items: AlignItems::Center,
-                        padding: UiRect::axes(Val::Px(6.0), Val::Px(3.0)),
-                        ..default()
-                    },
-                    ..default()
-                }, Interaction::None, GithubIssueButton, Hoverable::new(Color::GRAY.with_a(0.2)))).with_children(|parent| {
-                    parent.spawn(ImageBundle {
-                        image: UiImage::new(icons.github.clone()),
-                        style: Style {
-                            height: Val::Px(15.0),
-                            margin: UiRect::right(Val::Px(5.0)),
-                            ..default()
-                        },
-                        ..default()
-                    });
-
-                    parent.spawn(TextBundle {
-                        text: Text::from_section("Create issue", TextStyle {
-                            font: DefaultFonts::ROBOTO_REGULAR,
-                            font_size: 18.0,
-                            ..default()
-                        }).with_no_wrap(),
-                        ..default()
-                    });
-                });
+                ContextMenuRow::new(parent, "Github", GithubButton, Some(icons.github.clone()));
+                ContextMenuRow::new(parent, "Create issue", GithubIssueButton, Some(icons.github.clone()));
 
                 parent.spawn(NodeBundle {
                     style: Style {

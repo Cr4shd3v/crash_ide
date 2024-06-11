@@ -3,6 +3,7 @@
 pub mod button;
 pub mod screen;
 pub mod folder_input;
+pub mod context_menu_row;
 
 use bevy::prelude::*;
 use crate::widget::button::ButtonPlugin;
