@@ -14,9 +14,9 @@ pub use extension::*;
 pub use file_view::*;
 
 /// Plugin implementing file loading & display
-pub struct EditorFilePlugin;
+pub struct CrashIDEFilePlugin;
 
-impl Plugin for EditorFilePlugin {
+impl Plugin for CrashIDEFilePlugin {
     fn build(&self, app: &mut App) {
         app
             .add_event::<RawOpenFileEvent>()

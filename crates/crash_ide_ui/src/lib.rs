@@ -18,9 +18,9 @@ use crate::widget::EditorWidgetPlugin;
 use crate::window::EditorWindowPlugin;
 
 /// Plugin implementing UI for the editor
-pub struct EditorUiPlugin;
+pub struct CrashIDEUiPlugin;
 
-impl Plugin for EditorUiPlugin {
+impl Plugin for CrashIDEUiPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, button_cursor)

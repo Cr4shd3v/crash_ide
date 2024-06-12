@@ -13,9 +13,9 @@ use bevy::prelude::*;
 use crash_ide_state::EditorState;
 
 /// Plugin implementing configuration
-pub struct EditorConfigPlugin;
+pub struct CrashIDEConfigPlugin;
 
-impl Plugin for EditorConfigPlugin {
+impl Plugin for CrashIDEConfigPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<ConfigLoadStatus>()

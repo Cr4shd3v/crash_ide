@@ -8,9 +8,9 @@ pub use colors::*;
 
 use bevy::prelude::*;
 
-pub struct EditorAssetPlugin;
+pub struct CrashIDEAssetPlugin;
 
-impl Plugin for EditorAssetPlugin {
+impl Plugin for CrashIDEAssetPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_plugins((DefaultFontsPlugin, IconPlugin))

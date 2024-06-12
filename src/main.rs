@@ -4,14 +4,14 @@
 
 use bevy::prelude::*;
 use bevy::window::ExitCondition;
-use crash_ide_assets::EditorAssetPlugin;
+use crash_ide_assets::CrashIDEAssetPlugin;
 
-use crash_ide_config::EditorConfigPlugin;
-use crash_ide_console::EditorConsolePlugin;
-use crash_ide_file::EditorFilePlugin;
-use crash_ide_file_picker::EditorFilePickerPlugin;
-use crash_ide_state::EditorStatePlugin;
-use crash_ide_ui::EditorUiPlugin;
+use crash_ide_config::CrashIDEConfigPlugin;
+use crash_ide_console::CrashIDEConsolePlugin;
+use crash_ide_file::CrashIDEFilePlugin;
+use crash_ide_file_picker::CrashIDEFilePickerPlugin;
+use crash_ide_state::CrashIDEStatePlugin;
+use crash_ide_ui::CrashIDEUiPlugin;
 use crash_ide_widget::WidgetPlugin;
 
 fn main() {
@@ -27,14 +27,14 @@ fn main() {
         ..default()
     }));
 
-    app.add_plugins(EditorStatePlugin);
-    app.add_plugins(EditorConfigPlugin);
-    app.add_plugins(EditorUiPlugin);
-    app.add_plugins(EditorFilePlugin);
-    app.add_plugins(EditorAssetPlugin);
+    app.add_plugins(CrashIDEStatePlugin);
+    app.add_plugins(CrashIDEConfigPlugin);
+    app.add_plugins(CrashIDEUiPlugin);
+    app.add_plugins(CrashIDEFilePlugin);
+    app.add_plugins(CrashIDEAssetPlugin);
     app.add_plugins(WidgetPlugin);
-    app.add_plugins(EditorFilePickerPlugin);
-    app.add_plugins(EditorConsolePlugin);
+    app.add_plugins(CrashIDEFilePickerPlugin);
+    app.add_plugins(CrashIDEConsolePlugin);
 
     app.run();
 }

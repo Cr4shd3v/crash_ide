@@ -4,9 +4,9 @@ use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
 use rfd::FileHandle;
 
-pub struct EditorFilePickerPlugin;
+pub struct CrashIDEFilePickerPlugin;
 
-impl Plugin for EditorFilePickerPlugin {
+impl Plugin for CrashIDEFilePickerPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, (start_directory_picker, handle_picked_directory))

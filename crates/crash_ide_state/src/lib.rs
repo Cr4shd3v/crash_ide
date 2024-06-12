@@ -5,9 +5,9 @@
 use bevy::prelude::*;
 
 /// Initializes the global editor state
-pub struct EditorStatePlugin;
+pub struct CrashIDEStatePlugin;
 
-impl Plugin for EditorStatePlugin {
+impl Plugin for CrashIDEStatePlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_state(EditorState::Loading)

@@ -4,9 +4,9 @@ use crash_ide_assets::DefaultFonts;
 use crash_ide_widget::{TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle, TextInputValue};
 use crate::RawConsole;
 
-pub struct EditorConsolePlugin;
+pub struct CrashIDEConsolePlugin;
 
-impl Plugin for EditorConsolePlugin {
+impl Plugin for CrashIDEConsolePlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, (create_console, console_stdout, console_input))
