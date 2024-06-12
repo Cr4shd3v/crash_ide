@@ -1,18 +1,18 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use crash_ide_widget::ActiveWindow;
 use crate::widget::screen::CreateProjectWindow;
 
-#[derive(Component)]
-pub struct CreateProjectButton;
+#[derive(Component, Default)]
+pub struct CreateProjectButton {
+    pub base_window: Option<Entity>,
+}
 
 pub(super) fn create_project_button(
     mut commands: Commands,
-    interaction_query: Query<&Interaction, (With<CreateProjectButton>, Changed<Interaction>)>,
+    interaction_query: Query<(&Interaction, &CreateProjectButton), Changed<Interaction>>,
     mut create_project_window_query: Query<&mut Window, With<CreateProjectWindow>>,
-    current_window_query: Query<Entity, With<ActiveWindow>>,
 ) {
-    for interaction in interaction_query.iter() {
+    for (interaction, button) in interaction_query.iter() {
         match interaction {
             Interaction::Pressed => {
                 if let Ok(mut window) = create_project_window_query.get_single_mut() {
@@ -25,7 +25,7 @@ pub(super) fn create_project_button(
                             ..default()
                         },
                         CreateProjectWindow {
-                            base_window: Some(current_window_query.single()),
+                            base_window: button.base_window,
                         },
                     ));
                 }

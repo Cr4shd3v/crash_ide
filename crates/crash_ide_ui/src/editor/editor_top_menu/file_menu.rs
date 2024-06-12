@@ -1,10 +1,11 @@
 use std::ops::Neg;
 
 use bevy::prelude::*;
+use crash_ide_widget::ActiveWindow;
 
-use crash_ide_assets::DefaultFonts;
+use crate::widget::button::{CloseProjectButton, CreateProjectButton, OpenProjectButton};
 
-use crate::widget::context_menu::ContextMenu;
+use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
 
 pub(super) struct FileMenuPlugin;
 
@@ -21,7 +22,8 @@ pub(super) struct FileMenu;
 
 fn open_file_menu(
     mut commands: Commands,
-    query: Query<(&Interaction, &Node, &Style, Entity), (With<FileMenu>, Changed<Interaction>)>
+    query: Query<(&Interaction, &Node, &Style, Entity), (With<FileMenu>, Changed<Interaction>)>,
+    window_query: Query<Entity, With<ActiveWindow>>,
 ) {
     for (interaction, node, style, entity) in query.iter() {
         if *interaction != Interaction::Pressed {
@@ -32,14 +34,9 @@ fn open_file_menu(
 
         commands.entity(entity).with_children(|parent| {
             parent.spawn(ContextMenu::new_top(size.y, style.margin.left.neg())).with_children(|parent| {
-                parent.spawn(TextBundle {
-                    text: Text::from_section("test text", TextStyle {
-                        font: DefaultFonts::ROBOTO_REGULAR,
-                        font_size: 18.0,
-                        ..default()
-                    }).with_no_wrap(),
-                    ..default()
-                });
+                ContextMenuRow::new(parent, "New Project", CreateProjectButton::default(), None);
+                ContextMenuRow::new(parent, "Open Project", OpenProjectButton::default(), None);
+                ContextMenuRow::new(parent, "Close Project", CloseProjectButton { window_entity: window_query.single() }, None);
             });
         });
     }

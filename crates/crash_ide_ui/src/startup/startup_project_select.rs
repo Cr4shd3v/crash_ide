@@ -28,12 +28,12 @@ fn build_project_select(
     mut commands: Commands,
     content_parent: Query<Entity, With<StartupContentRoot>>,
     projects: Res<EditorConfigProjects>,
-    window_query: Query<&Window, With<StartupWindow>>,
+    window_query: Query<Entity, With<StartupWindow>>,
 ) {
     // Check if the window still exists
-    if window_query.get_single().is_err() {
+    let Ok(startup_window) = window_query.get_single() else {
         return;
-    }
+    };
 
     let entity = match content_parent.get_single() {
         Ok(entity) => entity,
@@ -61,7 +61,9 @@ fn build_project_select(
                 },
                 background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
                 ..default()
-            }, CreateProjectButton)).with_children(|parent| {
+            }, CreateProjectButton {
+                base_window: Some(startup_window),
+            })).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("New Project", TextStyle {
                     font_size: 14.0,
                     font: DefaultFonts::ROBOTO_REGULAR,
@@ -78,7 +80,9 @@ fn build_project_select(
                 },
                 background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
                 ..default()
-            }, OpenProjectButton)).with_children(|parent| {
+            }, OpenProjectButton {
+                base_window: Some(startup_window),
+            })).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Open", TextStyle {
                     font_size: 14.0,
                     font: DefaultFonts::ROBOTO_REGULAR,

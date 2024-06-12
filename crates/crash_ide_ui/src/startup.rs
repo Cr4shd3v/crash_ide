@@ -4,7 +4,6 @@ mod startup_settings;
 
 use bevy::prelude::*;
 use crash_ide_assets::DefaultIcons;
-use crash_ide_state::EditorState;
 use crate::startup::startup_project_select::StartupProjectSelectPlugin;
 use crate::startup::startup_settings::StartupSettingsPlugin;
 use crate::startup::startup_left_menu::{handle_left_menu_state_change, startup_left_menu, startup_left_menu_click};
@@ -16,8 +15,7 @@ impl Plugin for StartupScreenPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_state(StartupScreenState::None)
-            .add_systems(OnEnter(EditorState::Loaded), spawn_startup_screen)
-            .add_systems(Update, (startup_left_menu_click, handle_left_menu_state_change))
+            .add_systems(Update, (spawn_startup_screen, startup_left_menu_click, handle_left_menu_state_change))
             .add_plugins((StartupProjectSelectPlugin, StartupSettingsPlugin))
         ;
     }
@@ -46,11 +44,14 @@ pub(crate) struct StartupContentRoot;
 fn spawn_startup_screen(
     mut commands: Commands,
     mut startup_state: ResMut<NextState<StartupScreenState>>,
-    window_query: Query<Entity, With<StartupWindow>>,
+    window_query: Query<Entity, Added<StartupWindow>>,
     all_windows: Res<AllWindows>,
     icons: Res<DefaultIcons>,
 ) {
-    let window_entity = window_query.single();
+    let Ok(window_entity) = window_query.get_single() else {
+        return;
+    };
+
     commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
         parent.spawn(NodeBundle {
             style: Style {

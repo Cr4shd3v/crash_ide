@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 use crash_ide_config::{EditorConfigProjects, EditorProject, HomeDir};
 use crash_ide_file_picker::{DirectoryPicked, DirectoryPicker};
-use crash_ide_widget::ActiveWindow;
 use crate::open_project::OpenProjectEvent;
 
-#[derive(Component)]
-pub(crate) struct OpenProjectButton;
+#[derive(Component, Default)]
+pub struct OpenProjectButton {
+    pub base_window: Option<Entity>,
+}
 
 pub(super) fn open_project_button(
     mut commands: Commands,
@@ -26,12 +27,11 @@ pub(super) fn open_project_button(
 }
 
 pub(super) fn open_project_directory_picked(
-    folder_query: Query<&DirectoryPicked, (Added<DirectoryPicked>, With<OpenProjectButton>)>,
+    folder_query: Query<(&DirectoryPicked, &OpenProjectButton), Added<DirectoryPicked>>,
     mut projects_config: ResMut<EditorConfigProjects>,
-    window_query: Query<Entity, With<ActiveWindow>>,
     mut event_writer: EventWriter<OpenProjectEvent>,
 ) {
-    for picked in folder_query.iter() {
+    for (picked, button) in folder_query.iter() {
         let picked_path = picked.0.path().to_str().unwrap().to_string();
 
         let config = if let Some(config) = projects_config.projects.get(&picked_path) {
@@ -47,8 +47,6 @@ pub(super) fn open_project_directory_picked(
             config
         };
 
-        let window_entity = window_query.single();
-
-        event_writer.send(OpenProjectEvent::new(config, Some(window_entity)));
+        event_writer.send(OpenProjectEvent::new(config, button.base_window));
     }
 }

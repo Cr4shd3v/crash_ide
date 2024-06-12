@@ -4,6 +4,7 @@ use bevy::render::camera::RenderTarget;
 use bevy::utils::HashMap;
 use bevy::window::{WindowCreated, WindowRef, WindowResolution};
 use bevy::winit::WinitWindows;
+use crate::startup::StartupScreenState;
 
 pub(super) struct EditorWindowPlugin;
 
@@ -12,7 +13,7 @@ impl Plugin for EditorWindowPlugin {
         app
             .add_systems(PreStartup, initial_window)
             .add_systems(PreUpdate, (process_new_window, save_resolution))
-            .add_systems(PostUpdate, (despawn_window, check_for_exit))
+            .add_systems(PostUpdate, (despawn_window, check_for_exit, on_startup_window_despawn))
             .init_resource::<DefaultWindowResolution>()
             .init_resource::<AllWindows>()
         ;
@@ -21,6 +22,14 @@ impl Plugin for EditorWindowPlugin {
 
 #[derive(Component)]
 pub struct StartupWindow;
+
+impl StartupWindow {
+    /// Get the startup window resolution
+    #[inline]
+    pub fn get_resolution() -> WindowResolution {
+        WindowResolution::new(1280.0, 720.0).with_scale_factor_override(1.0)
+    }
+}
 
 #[derive(Component)]
 pub struct ProjectWindow {
@@ -45,10 +54,19 @@ pub struct WindowData {
 
 fn initial_window(mut commands: Commands) {
     commands.spawn((Window {
-        resolution: WindowResolution::new(1280.0, 720.0).with_scale_factor_override(1.0),
+        resolution: StartupWindow::get_resolution(),
         title: String::from("Crash Editor"),
         ..default()
     }, StartupWindow));
+}
+
+fn on_startup_window_despawn(
+    mut removed: RemovedComponents<StartupWindow>,
+    mut next_state: ResMut<NextState<StartupScreenState>>,
+) {
+    for _ in removed.read() {
+        next_state.set(StartupScreenState::None);
+    }
 }
 
 #[derive(Resource, Default)]
