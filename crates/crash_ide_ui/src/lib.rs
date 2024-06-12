@@ -3,16 +3,18 @@
 #![warn(missing_docs)]
 
 mod startup;
-pub mod widget;
+mod widget;
 mod button;
 mod window;
 mod editor;
 mod open_project;
+mod switch_project;
 
 use bevy::prelude::*;
+pub use open_project::*;
+pub use switch_project::*;
 use crate::button::button_cursor;
 use crate::editor::EditorPlugin;
-use crate::open_project::OpenProjectPlugin;
 use crate::startup::StartupScreenPlugin;
 use crate::widget::EditorWidgetPlugin;
 use crate::window::EditorWindowPlugin;
@@ -26,7 +28,7 @@ impl Plugin for CrashIDEUiPlugin {
             .add_systems(Update, button_cursor)
             .add_plugins((
                 StartupScreenPlugin, EditorWidgetPlugin, EditorPlugin,
-                EditorWindowPlugin, OpenProjectPlugin,
+                EditorWindowPlugin, OpenProjectPlugin, SwitchProjectPlugin,
             ))
         ;
     }

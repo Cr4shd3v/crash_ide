@@ -5,7 +5,7 @@ mod create_project_button;
 mod github_button;
 mod close_project_button;
 
-pub(crate) use bevy::prelude::*;
+use bevy::prelude::*;
 pub(crate) use open_project_button::*;
 pub(crate) use create_project_button::*;
 pub(crate) use github_button::*;

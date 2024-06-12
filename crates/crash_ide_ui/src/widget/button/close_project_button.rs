@@ -24,7 +24,7 @@ pub(super) fn close_project_button(
             commands.entity(button.window_entity).remove::<ProjectWindow>().insert(StartupWindow);
             let mut window = window_query.get_mut(button.window_entity).unwrap();
             window.resolution = StartupWindow::get_resolution();
-            window.position.center(MonitorSelection::Current);
+            window.position = WindowPosition::Centered(MonitorSelection::Current);
         }
     }
 }
