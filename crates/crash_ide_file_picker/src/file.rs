@@ -8,6 +8,8 @@ use rfd::FileHandle;
 pub struct FilePicker {
     pub start_directory: Option<PathBuf>,
     pub title: String,
+    pub save: bool,
+    pub filename: Option<String>,
 }
 
 impl Default for FilePicker {
@@ -15,6 +17,8 @@ impl Default for FilePicker {
         Self {
             start_directory: None,
             title: "Select file".to_string(),
+            save: false,
+            filename: None,
         }
     }
 }
@@ -43,7 +47,15 @@ pub(super) fn start_file_picker(
                 dialog = dialog.set_directory(start_directory);
             }
 
-            dialog.pick_file().await
+            if picker.save {
+                if let Some(filename) = picker.filename {
+                    dialog = dialog.set_file_name(filename);
+                }
+
+                dialog.save_file().await
+            } else {
+                dialog.pick_file().await
+            }
         });
 
         commands.entity(entity).insert(FilePickerTask(task)).remove::<(FilePicker, FilePicked)>();
