@@ -1,5 +1,3 @@
-//! Contains the implementation for a context menu row.
-
 use bevy::prelude::*;
 use crash_ide_assets::DefaultFonts;
 use crash_ide_widget::Hoverable;

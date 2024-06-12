@@ -1,13 +1,11 @@
 use std::ops::Neg;
 
 use bevy::prelude::*;
-use bevy::ui::FocusPolicy;
 
-use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
-use crash_ide_widget::FocusNode;
+use crash_ide_assets::{DefaultFonts, DefaultIcons};
 
 use crate::widget::button::{GithubButton, GithubIssueButton};
-use crate::widget::context_menu_row::ContextMenuRow;
+use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
 
 pub(super) struct HelpMenuPlugin;
 
@@ -35,21 +33,7 @@ fn open_help_menu(
         let size = node.size();
 
         commands.entity(entity).with_children(|parent| {
-            parent.spawn((NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    top: Val::Px(size.y),
-                    left: style.margin.left.neg(),
-                    border: UiRect::all(Val::Px(1.0)),
-                    flex_direction: FlexDirection::Column,
-                    ..default()
-                },
-                background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),
-                border_color: BorderColor(Color::GRAY.with_a(0.1)),
-                z_index: ZIndex::Global(1),
-                focus_policy: FocusPolicy::Block,
-                ..default()
-            }, FocusNode, Interaction::None)).with_children(|parent| {
+            parent.spawn(ContextMenu::new_top(size.y, style.margin.left.neg())).with_children(|parent| {
                 ContextMenuRow::new(parent, "Github", GithubButton, Some(icons.github.clone()));
                 ContextMenuRow::new(parent, "Create issue", GithubIssueButton, Some(icons.github.clone()));
 
