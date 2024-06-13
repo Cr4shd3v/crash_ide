@@ -14,3 +14,4 @@ crash_ide_file = { workspace = true }
 crash_ide_assets = { workspace = true }
 crash_ide_file_picker = { workspace = true }
 crash_ide_console = { workspace = true }
+crash_ide_util = { workspace = true }

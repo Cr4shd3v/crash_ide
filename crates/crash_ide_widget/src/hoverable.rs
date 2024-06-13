@@ -4,7 +4,7 @@ pub(super) struct HoverablePlugin;
 
 impl Plugin for HoverablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PreUpdate, (init_hover, on_hover));
+        app.add_systems(PreUpdate, (init_hover, on_hover, update_hovered));
     }
 }
 
@@ -38,22 +38,36 @@ fn init_hover(mut query: Query<(&mut Hoverable, &BackgroundColor), Added<Hoverab
 }
 
 fn on_hover(
-    mut commands: Commands,
-    mut interaction_query: Query<(Entity, &Interaction, &Hoverable, &mut BackgroundColor), Changed<Interaction>>,
+    mut interaction_query: Query<(&Interaction, &Hoverable, &mut BackgroundColor), Changed<Interaction>>,
 ) {
-    for (entity, interaction, hoverable, mut background_color) in interaction_query.iter_mut() {
+    for (interaction, hoverable, mut background_color) in interaction_query.iter_mut() {
         match interaction {
             Interaction::Hovered => {
-                commands.entity(entity).insert(Hovered);
                 background_color.0 = hoverable.hover_color;
             }
             Interaction::None => {
-                commands.entity(entity).remove::<Hovered>();
                 if let Some(ref color) = hoverable.saved_color {
                     background_color.0 = color.clone();
                 }
             }
             _ => {},
+        }
+    }
+}
+
+fn update_hovered(
+    mut commands: Commands,
+    query: Query<(Entity, &Interaction), Changed<Interaction>>,
+) {
+    for (entity, interaction) in query.iter() {
+        match interaction {
+            Interaction::Hovered => {
+                commands.entity(entity).insert(Hovered);
+            }
+            Interaction::None => {
+                commands.entity(entity).remove::<Hovered>();
+            }
+            _ => {}
         }
     }
 }

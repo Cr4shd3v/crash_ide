@@ -60,6 +60,7 @@ crash_ide_file = { path = "crates/crash_ide_file" }
 crash_ide_assets = { path = "crates/crash_ide_assets" }
 crash_ide_file_picker = { path = "crates/crash_ide_file_picker" }
 crash_ide_console = { path = "crates/crash_ide_console" }
+crash_ide_util = { path = "crates/crash_ide_util" }
 
 [profile.dev]
 opt-level = 1

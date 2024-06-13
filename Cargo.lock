@@ -1484,8 +1484,16 @@ dependencies = [
  "crash_ide_file",
  "crash_ide_file_picker",
  "crash_ide_state",
+ "crash_ide_util",
  "crash_ide_widget",
  "open",
+]
+
+[[package]]
+name = "crash_ide_util"
+version = "0.1.0"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]

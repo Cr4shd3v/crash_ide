@@ -26,4 +26,8 @@ impl ContextMenu {
             ..default()
         }, FocusNode, Interaction::None)
     }
+
+    pub fn new_at_cursor(cursor_pos: Vec2) -> impl Bundle {
+        Self::new_top(cursor_pos.y, Val::Px(cursor_pos.x))
+    }
 }

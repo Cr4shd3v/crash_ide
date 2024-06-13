@@ -12,6 +12,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_state/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_ui/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_widget/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_util/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

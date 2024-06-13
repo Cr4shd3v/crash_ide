@@ -10,7 +10,11 @@ use crash_ide_config::FindProjectInParents;
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
 use crash_ide_widget::{DoubleClickButton, DoubleClicked};
 
+use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::FileContextMenuPlugin;
 use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
+
+mod file_context_menu;
+mod filename_dialog;
 
 pub struct FilesystemMenuPlugin;
 
@@ -20,6 +24,7 @@ impl Plugin for FilesystemMenuPlugin {
             .add_systems(Update, ((spawn_left_menu, expand_directory), spawn_all_rows).chain())
             .add_systems(Update, (directory_expand_icon, double_click_row, highlight_clicked_row))
             .add_event::<ExpandDirEvent>()
+            .add_plugins(FileContextMenuPlugin)
         ;
     }
 }
@@ -252,7 +257,7 @@ fn highlight_clicked_row(
 
 fn double_click_row(
     mut commands: Commands,
-    query: Query<&Parent, Added<DoubleClicked>>,
+    query: Query<&Parent, (Added<DoubleClicked>, With<SelfFileRow>)>,
     file_display_query: Query<(&FileDisplay, Option<&DirectoryExpanded>)>,
     mut dir_event_writer: EventWriter<ExpandDirEvent>,
     mut file_event_writer: EventWriter<RawOpenFileEvent>,
