@@ -1,7 +1,8 @@
 use bevy::prelude::*;
+use bevy::ui::FocusPolicy;
 use crash_ide_config::EditorConfigProjects;
 use crash_ide_widget::Hoverable;
-use crash_ide_assets::{DefaultColors, DefaultFonts};
+use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crate::open_project::OpenProjectEvent;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
@@ -14,7 +15,7 @@ impl Plugin for StartupProjectSelectPlugin {
         app
             .add_systems(OnEnter(StartupScreenState::ProjectSelect), build_project_select)
             .add_systems(Update, build_project_select.run_if(resource_changed::<EditorConfigProjects>))
-            .add_systems(Update, handle_row_click)
+            .add_systems(Update, (handle_row_click, delete_project))
         ;
     }
 }
@@ -24,11 +25,15 @@ struct ProjectRow {
     path: String,
 }
 
+#[derive(Component)]
+struct DeleteProjectButton;
+
 fn build_project_select(
     mut commands: Commands,
     content_parent: Query<Entity, With<StartupContentRoot>>,
     projects: Res<EditorConfigProjects>,
     window_query: Query<Entity, With<StartupWindow>>,
+    icons: Res<DefaultIcons>,
 ) {
     // Check if the window still exists
     let Ok(startup_window) = window_query.get_single() else {
@@ -99,25 +104,49 @@ fn build_project_select(
             ..default()
         }).with_children(|parent| {
             for (path, project) in &projects.projects {
-                parent.spawn((ButtonBundle {
+                parent.spawn((NodeBundle {
                     style: Style {
-                        flex_direction: FlexDirection::Column,
+                        flex_direction: FlexDirection::Row,
+                        justify_content: JustifyContent::SpaceBetween,
+                        align_items: AlignItems::Center,
                         padding: UiRect::axes(Val::Vw(2.0), Val::Vh(1.0)),
                         ..default()
                     },
                     background_color: BackgroundColor(Color::NONE),
                     ..default()
-                }, Hoverable::new(Color::BLACK.with_a(0.2)), ProjectRow { path: path.clone() })).with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(&project.name, TextStyle {
-                        font_size: 20.0,
-                        color: Color::WHITE,
-                        font: DefaultFonts::ROBOTO_REGULAR,
-                    }));
-                    parent.spawn(TextBundle::from_section(path, TextStyle {
-                        font_size: 13.0,
-                        color: Color::GRAY,
-                        font: DefaultFonts::ROBOTO_REGULAR,
-                    }));
+                }, ProjectRow {
+                    path: path.clone()
+                }, Hoverable::new(Color::BLACK.with_a(0.2)), Interaction::None)).with_children(|parent| {
+                    parent.spawn(NodeBundle {
+                        style: Style {
+                            flex_direction: FlexDirection::Column,
+                            ..default()
+                        },
+                        ..default()
+                    }).with_children(|parent| {
+                        parent.spawn(TextBundle::from_section(&project.name, TextStyle {
+                            font_size: 20.0,
+                            color: Color::WHITE,
+                            font: DefaultFonts::ROBOTO_REGULAR,
+                        }));
+
+                        parent.spawn(TextBundle::from_section(path, TextStyle {
+                            font_size: 13.0,
+                            color: Color::GRAY,
+                            font: DefaultFonts::ROBOTO_REGULAR,
+                        }));
+                    });
+
+                    parent.spawn((ImageBundle {
+                        image: UiImage::new(icons.cross.clone()),
+                        z_index: ZIndex::Local(0),
+                        focus_policy: FocusPolicy::Block,
+                        style: Style {
+                            width: Val::Px(18.0),
+                            ..default()
+                        },
+                        ..default()
+                    }, Interaction::None, Button, DeleteProjectButton));
                 });
             }
         });
@@ -140,5 +169,20 @@ fn handle_row_click(
         let crash_ide_project = projects.projects.get(&row.path).unwrap();
 
         event_writer.send(OpenProjectEvent::new(crash_ide_project.clone(), Some(window_entity)));
+    }
+}
+
+fn delete_project(
+    interaction_query: Query<(&Interaction, &Parent), (With<DeleteProjectButton>, Changed<Interaction>)>,
+    project_row_query: Query<&ProjectRow>,
+    mut projects: ResMut<EditorConfigProjects>,
+) {
+    for (interaction, parent) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let row = project_row_query.get(parent.get()).unwrap();
+        projects.projects.remove(&row.path);
     }
 }
