@@ -12,6 +12,16 @@ use crate::open_project::OpenProjectEvent;
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
 
+pub(super) struct ProjectCreateScreenPlugin;
+
+impl Plugin for ProjectCreateScreenPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_systems(Update, (spawn_project_create_screen, create_project_confirm))
+        ;
+    }
+}
+
 /// Marker component for the create project dialog
 #[derive(Component, Default)]
 pub struct CreateProjectWindow {
@@ -21,12 +31,15 @@ pub struct CreateProjectWindow {
 const DEFAULT_NEW_PROJECT_NAME: &'static str = "untitled";
 
 #[derive(Component)]
-pub(super) struct ProjectPathInput;
+struct ProjectPathInput;
 
 #[derive(Component)]
-pub(super) struct CreateProjectConfirmButton;
+struct CreateProjectConfirmButton;
 
-pub(super) fn spawn_project_create_screen(
+#[derive(Component)]
+struct CreateProjectPathErrorText;
+
+fn spawn_project_create_screen(
     mut commands: Commands,
     query: Query<Entity, Added<CreateProjectWindow>>,
     home_dir: Res<HomeDir>,
@@ -46,6 +59,7 @@ pub(super) fn spawn_project_create_screen(
                     font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
                 }));
+
                 parent.spawn((
                     TextInputBundle {
                         text_input_value: TextInputValue(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
@@ -67,6 +81,19 @@ pub(super) fn spawn_project_create_screen(
                     ProjectPathInput,
                     FolderInput,
                 ));
+
+                parent.spawn((TextBundle {
+                    text: Text::from_section("", TextStyle {
+                        font: DefaultFonts::ROBOTO_REGULAR,
+                        color: Color::RED,
+                        font_size: 18.0,
+                    }),
+                    style: Style {
+                        margin: UiRect::vertical(Val::Px(3.0)),
+                        ..default()
+                    },
+                    ..default()
+                }, CreateProjectPathErrorText));
 
                 parent.spawn(NodeBundle {
                     style: Style {
@@ -99,13 +126,14 @@ pub(super) fn spawn_project_create_screen(
     }
 }
 
-pub(super) fn create_project_confirm(
+fn create_project_confirm(
     mut commands: Commands,
     interaction_query: Query<&Interaction, (With<CreateProjectConfirmButton>, Changed<Interaction>)>,
     window_query: Query<(Entity, &CreateProjectWindow)>,
     path_input_query: Query<&TextInputValue, With<ProjectPathInput>>,
     mut projects: ResMut<EditorConfigProjects>,
     mut event_writer: EventWriter<OpenProjectEvent>,
+    mut error_text: Query<&mut Text, With<CreateProjectPathErrorText>>,
 ) {
     for interaction in interaction_query.iter() {
         if *interaction != Interaction::Pressed {
@@ -116,13 +144,14 @@ pub(super) fn create_project_confirm(
         let path = path_input_query.single().0.clone();
 
         if projects.projects.contains_key(&path) {
-            // Todo: Error message
+            error_text.single_mut().sections[0].value = "A project already exists at this path".to_string();
             return;
         }
 
         if fs::metadata(&path).is_err() {
-            if let Err(_) = fs::create_dir_all(&path) {
-                // Todo: Error message
+            if let Err(e) = fs::create_dir_all(&path) {
+                error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
+                continue;
             };
         }
 

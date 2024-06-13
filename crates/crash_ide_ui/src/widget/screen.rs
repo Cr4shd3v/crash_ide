@@ -10,7 +10,7 @@ pub(super) struct ScreenPlugin;
 impl Plugin for ScreenPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, (spawn_project_create_screen, create_project_confirm))
+            .add_plugins(ProjectCreateScreenPlugin)
         ;
     }
 }
