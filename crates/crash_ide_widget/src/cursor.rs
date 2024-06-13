@@ -12,18 +12,21 @@ impl Plugin for CursorPlugin {
     }
 }
 
+/// Event to set a cursor. Handles the correct setting of a cursor.
 #[derive(Event)]
 pub struct SetCursorEvent {
-    pub cursor: Option<CursorIcon>,
+    cursor: Option<CursorIcon>,
 }
 
 impl SetCursorEvent {
+    /// Constructs an event to reset the cursor back to [CursorIcon::Default]
     pub fn reset() -> Self {
         Self {
             cursor: None,
         }
     }
 
+    /// Creates an event to set the cursor icon to `cursor`
     pub fn cursor(cursor: CursorIcon) -> Self {
         Self {
             cursor: Some(cursor),
