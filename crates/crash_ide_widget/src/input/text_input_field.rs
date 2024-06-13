@@ -3,7 +3,7 @@ use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::text::BreakLineOn;
-use crate::ActiveWindow;
+use crate::cursor::SetCursorEvent;
 
 pub(super) struct TextInputPlugin;
 
@@ -616,17 +616,16 @@ fn focus_text_input(
     query: Query<(Entity, &Interaction, Option<&TextInputFocused>), (Changed<Interaction>, With<TextInputValue>)>,
     current_focus: Query<Entity, With<TextInputFocused>>,
     buttons: Res<ButtonInput<MouseButton>>,
-    mut windows: Query<&mut Window, With<ActiveWindow>>,
+    mut cursor_writer: EventWriter<SetCursorEvent>,
 ) {
     let current_focus_entity = current_focus.get_single();
     let mut click_on_text = false;
-    let Ok(mut active_window) = windows.get_single_mut() else { return };
 
     for (entity, interaction, focused) in query.iter() {
         if *interaction == Interaction::None {
-            active_window.cursor.icon = CursorIcon::Default;
+            cursor_writer.send(SetCursorEvent::reset());
         } else {
-            active_window.cursor.icon = CursorIcon::Text;
+            cursor_writer.send(SetCursorEvent::cursor(CursorIcon::Text));
         }
 
         if *interaction != Interaction::Pressed {

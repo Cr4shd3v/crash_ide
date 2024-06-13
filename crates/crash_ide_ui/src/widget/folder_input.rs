@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 use bevy::prelude::*;
+use bevy::ui::FocusPolicy;
 use crash_ide_assets::DefaultIcons;
 use crash_ide_file_picker::{DirectoryPicked, DirectoryPicker};
 use crash_ide_widget::{TextInputCursorPos, TextInputValue};
@@ -42,6 +43,8 @@ fn spawn_button(
                     height: Val::Px(node.size().y),
                     ..default()
                 },
+                z_index: ZIndex::Local(1),
+                focus_policy: FocusPolicy::Block,
                 ..default()
             }, FolderInputButton, Interaction::None, Button));
         });
