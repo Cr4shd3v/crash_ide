@@ -319,6 +319,10 @@ impl<'w, 's> FilePath<'w, 's> {
             entity = parent.get();
         }
     }
+
+    pub fn get_directory(&self, row_entity: Entity) -> String {
+        self.get_full_path(self.query.get(row_entity).unwrap().0.get())
+    }
 }
 
 fn expand_directory(

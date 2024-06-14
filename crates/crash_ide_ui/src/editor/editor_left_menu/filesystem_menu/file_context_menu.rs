@@ -19,7 +19,8 @@ impl Plugin for FileContextMenuPlugin {
         app
             .add_systems(Update, (
                 file_context_menu, handle_file_delete, handle_create_file,
-                create_file_submenu, handle_create_file_submit,
+                create_file_submenu, handle_create_file_submit, handle_file_rename,
+                handle_rename_file_submit,
             ))
         ;
     }
@@ -62,6 +63,8 @@ fn file_context_menu(
                 if root.is_none() {
                     ContextMenuRow::new(parent, "Delete", DeleteFileButton, None, None);
                 }
+
+                ContextMenuRow::new(parent, "Rename", RenameFileButton, None, None);
             });
         });
     }
@@ -106,6 +109,74 @@ fn handle_file_delete(
         }
 
         commands.entity(file_context.0).despawn_recursive();
+    }
+}
+
+#[derive(Component)]
+struct RenameFileButton;
+
+#[derive(Component)]
+struct RenameFileFilenameInput;
+
+fn handle_file_rename(
+    mut commands: Commands,
+    query: Query<(&Parent, &Interaction), (With<RenameFileButton>, Changed<Interaction>)>,
+    context_ref: Query<&FileContextRef>,
+    file_display_query: Query<&FileDisplay>,
+    window_query: Query<(Entity, &Window), With<ActiveWindow>>,
+    all_windows: Res<AllWindows>,
+) {
+    for (parent, interaction) in query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let context_menu_entity = parent.get();
+
+        commands.entity(context_menu_entity).despawn_recursive();
+
+        let file_context = context_ref.get(context_menu_entity).unwrap();
+        let Ok(file_display) = file_display_query.get(file_context.0) else {
+            continue;
+        };
+        let (window_entity, window) = window_query.single();
+        commands.entity(all_windows.get(&window_entity).ui_root).with_children(|parent| {
+            FilenameDialog::new(
+                parent,
+                window,
+                (RenameFileFilenameInput, file_context.clone()),
+                if file_display.is_file { "Rename File" } else { "Rename Folder" },
+                file_display.filename.clone(),
+            );
+        });
+    }
+}
+
+fn handle_rename_file_submit(
+    mut commands: Commands,
+    query: Query<(Entity, &TextInputSubmitted, &FileContextRef), (With<RenameFileFilenameInput>, Changed<TextInputSubmitted>)>,
+    find_context_menu: FindComponentInParents<FilenameDialog>,
+    file_path: FilePath,
+    file_display: Query<&FileDisplay>,
+) {
+    for (entity, text_submitted, file_context) in query.iter() {
+        let Some(text) = text_submitted.0.as_ref() else {
+            continue;
+        };
+
+        commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
+
+        let base_path = file_path.get_directory(file_context.0);
+        let mut file_display = file_display.get(file_context.0).unwrap();
+        let old_full_path = format!("{}/{}", base_path, file_display.filename);
+        let new_full_path = format!("{}/{}", base_path, text);
+
+        let result = fs::rename(&old_full_path, &new_full_path);
+
+        if let Err(e) = result {
+            // TODO: error notification
+            println!("Could not rename file from {} to {}: {}", old_full_path, new_full_path, e);
+        }
     }
 }
 
@@ -187,6 +258,7 @@ fn handle_create_file(
                 window,
                 (CreateFileFilenameInput, file_context.clone(), CreateContext { is_file }),
                 if is_file { "Create File" } else { "Create Folder" },
+                String::new(),
             );
         });
     }

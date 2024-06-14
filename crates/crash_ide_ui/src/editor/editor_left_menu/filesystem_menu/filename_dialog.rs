@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crash_ide_assets::DefaultFonts;
-use crash_ide_widget::{TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle};
+use crash_ide_widget::{TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle, TextInputValue};
 
 use crate::widget::context_menu::ContextMenu;
 
@@ -10,7 +10,7 @@ use crate::widget::context_menu::ContextMenu;
 pub struct FilenameDialog;
 
 impl FilenameDialog {
-    pub fn new(parent: &mut ChildBuilder, window: &Window, input_marker: impl Bundle, title: &str) {
+    pub fn new(parent: &mut ChildBuilder, window: &Window, input_marker: impl Bundle, title: &str, init_value: String) {
         parent.spawn((
             ContextMenu::new_top(window.resolution.height() / 2.0 - 50.0, Val::Px(window.resolution.width() / 2.0 - 150.0)),
             FilenameDialog,
@@ -45,6 +45,7 @@ impl FilenameDialog {
                             submittable: true,
                             ..default()
                         },
+                        text_input_value: TextInputValue(init_value),
                         ..default()
                     },
                     TextInputFocused,
