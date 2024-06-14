@@ -58,6 +58,8 @@ pub struct TextInputBundle {
     pub text_input_inactive: TextInputInactive,
     /// Settings for the text input
     pub text_input_settings: TextInputSettings,
+    /// Last submitted value
+    pub text_input_submitted: TextInputSubmitted,
 }
 
 /// Value of the text input
@@ -144,6 +146,10 @@ pub struct TextInputSettings {
     pub multiline: bool,
     /// Width of the overflow container
     pub input_width: Val,
+    /// Allows this text field to be submitted via [TextInputSubmitted].
+    ///
+    /// Only works in single line
+    pub submittable: bool,
 }
 
 impl Default for TextInputSettings {
@@ -152,9 +158,14 @@ impl Default for TextInputSettings {
             with_border: true,
             multiline: false,
             input_width: Val::Percent(100.0),
+            submittable: false,
         }
     }
 }
+
+/// Component storing the last submitted value of the text input.
+#[derive(Component, Default)]
+pub struct TextInputSubmitted(pub Option<String>);
 
 #[derive(Component)]
 struct TextInputInner;
@@ -188,6 +199,7 @@ fn keyboard(
         &mut TextInputValue,
         &mut TextInputCursorPos,
         &mut TextInputCursorTimer,
+        &mut TextInputSubmitted,
     )>,
 ) {
     if events.is_empty() {
@@ -195,7 +207,8 @@ fn keyboard(
     }
 
     for (input_entity, focused, inactive, settings,
-        mut text_input, mut cursor_pos, mut cursor_timer) in &mut text_input_query
+        mut text_input, mut cursor_pos, mut cursor_timer,
+        mut submitted) in &mut text_input_query
     {
         if inactive.0 || focused.is_none() {
             continue;
@@ -316,6 +329,9 @@ fn keyboard(
                     if settings.multiline {
                         text_input.0.insert(cursor_pos.0, '\n');
                         cursor_pos.0 += 1;
+                    } else if settings.submittable {
+                        // Set submitted
+                        submitted.0 = Some(text_input.0.clone());
                     } else {
                         commands.entity(input_entity).remove::<TextInputFocused>();
                     }

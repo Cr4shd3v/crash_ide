@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crash_ide_assets::{DefaultColors, DefaultFonts};
-use crash_ide_widget::{TextInputBundle, TextInputTextStyle};
+use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle};
 use crate::widget::context_menu::ContextMenu;
 
 #[derive(Component)]
@@ -11,7 +11,7 @@ pub struct FilenameDialogConfirmButton {
 pub struct FilenameDialog;
 
 impl FilenameDialog {
-    pub fn new(parent: &mut ChildBuilder, window: &Window, marker: impl Bundle, title: &str, button_title: &str) {
+    pub fn new(parent: &mut ChildBuilder, window: &Window, button_marker: impl Bundle, input_marker: impl Bundle, title: &str, button_title: &str) {
         parent.spawn(
             ContextMenu::new_top(window.resolution.height() / 2.0 - 50.0, Val::Px(window.resolution.width() / 2.0 - 150.0)),
         ).with_children(|parent| {
@@ -41,6 +41,10 @@ impl FilenameDialog {
                 let input_id = parent.spawn((
                     TextInputBundle {
                         text_input_text_style: TextInputTextStyle::default().with_font(DefaultFonts::ROBOTO_REGULAR),
+                        text_input_settings: TextInputSettings {
+                            submittable: true,
+                            ..default()
+                        },
                         ..default()
                     },
                     NodeBundle {
@@ -50,6 +54,7 @@ impl FilenameDialog {
                         },
                         ..default()
                     },
+                    input_marker,
                 )).id();
 
                 parent.spawn(NodeBundle {
@@ -73,7 +78,7 @@ impl FilenameDialog {
                         },
                         Interaction::None,
                         Button,
-                        marker,
+                        button_marker,
                         FilenameDialogConfirmButton {
                             input_id,
                         },
