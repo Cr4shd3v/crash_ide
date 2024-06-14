@@ -10,7 +10,7 @@ pub struct ContextMenuRow;
 
 impl ContextMenuRow {
     /// Creates a new [ContextMenuRow] with all components and children.
-    pub fn new(parent: &mut ChildBuilder, title: &str, marker: impl Bundle, icon: Option<Handle<Image>>) -> impl Bundle {
+    pub fn new(parent: &mut ChildBuilder, title: &str, marker: impl Bundle, pre_icon: Option<Handle<Image>>, post_icon: Option<Handle<Image>>) {
         parent.spawn((NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Row,
@@ -20,8 +20,8 @@ impl ContextMenuRow {
             },
             ..default()
         }, Interaction::None, ContextMenuRow, marker, Hoverable::new(Color::GRAY.with_a(0.2)))).with_children(|parent| {
-            let has_icon = icon.is_some();
-            if let Some(icon) = icon {
+            let has_pre_icon = pre_icon.is_some();
+            if let Some(icon) = pre_icon {
                 parent.spawn(ImageBundle {
                     image: UiImage::new(icon),
                     style: Style {
@@ -40,11 +40,23 @@ impl ContextMenuRow {
                     ..default()
                 }).with_no_wrap(),
                 style: Style {
-                    padding: UiRect::left(Val::Px(if has_icon { 0.0 } else { 20.0 })),
+                    padding: UiRect::left(Val::Px(if has_pre_icon { 0.0 } else { 20.0 })),
                     ..default()
                 },
                 ..default()
             });
+
+            if let Some(post_icon) = post_icon {
+                parent.spawn(ImageBundle {
+                    image: UiImage::new(post_icon),
+                    style: Style {
+                        height: Val::Px(15.0),
+                        margin: UiRect::left(Val::Px(5.0)),
+                        ..default()
+                    },
+                    ..default()
+                });
+            }
         });
     }
 }

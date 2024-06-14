@@ -34,8 +34,8 @@ fn open_help_menu(
 
         commands.entity(entity).with_children(|parent| {
             parent.spawn(ContextMenu::new_top(size.y, style.margin.left.neg())).with_children(|parent| {
-                ContextMenuRow::new(parent, "Github", GithubButton, Some(icons.github.clone()));
-                ContextMenuRow::new(parent, "Create issue", GithubIssueButton, Some(icons.github.clone()));
+                ContextMenuRow::new(parent, "Github", GithubButton, Some(icons.github.clone()), None);
+                ContextMenuRow::new(parent, "Create issue", GithubIssueButton, Some(icons.github.clone()), None);
 
                 parent.spawn(NodeBundle {
                     style: Style {

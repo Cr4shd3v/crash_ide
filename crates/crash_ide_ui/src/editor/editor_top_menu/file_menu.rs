@@ -34,9 +34,9 @@ fn open_file_menu(
 
         commands.entity(entity).with_children(|parent| {
             parent.spawn(ContextMenu::new_top(size.y, style.margin.left.neg())).with_children(|parent| {
-                ContextMenuRow::new(parent, "New Project", CreateProjectButton::default(), None);
-                ContextMenuRow::new(parent, "Open Project", OpenProjectButton::default(), None);
-                ContextMenuRow::new(parent, "Close Project", CloseProjectButton { window_entity: window_query.single() }, None);
+                ContextMenuRow::new(parent, "New Project", CreateProjectButton::default(), None, None);
+                ContextMenuRow::new(parent, "Open Project", OpenProjectButton::default(), None, None);
+                ContextMenuRow::new(parent, "Close Project", CloseProjectButton { window_entity: window_query.single() }, None, None);
             });
         });
     }

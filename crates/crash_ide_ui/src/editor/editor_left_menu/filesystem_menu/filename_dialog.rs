@@ -11,10 +11,11 @@ pub struct FilenameDialogConfirmButton {
 pub struct FilenameDialog;
 
 impl FilenameDialog {
-    pub fn new(parent: &mut ChildBuilder, window: &Window, button_marker: impl Bundle, input_marker: impl Bundle, title: &str, button_title: &str) {
-        parent.spawn(
+    pub fn new(parent: &mut ChildBuilder, window: &Window, menu_marker: impl Bundle, button_marker: impl Bundle, input_marker: impl Bundle, title: &str, button_title: &str) {
+        parent.spawn((
             ContextMenu::new_top(window.resolution.height() / 2.0 - 50.0, Val::Px(window.resolution.width() / 2.0 - 150.0)),
-        ).with_children(|parent| {
+            menu_marker
+        )).with_children(|parent| {
             parent.spawn(NodeBundle {
                 style: Style {
                     width: Val::Px(300.0),

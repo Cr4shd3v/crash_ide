@@ -24,7 +24,7 @@ impl ContextMenu {
             z_index: ZIndex::Global(1),
             focus_policy: FocusPolicy::Block,
             ..default()
-        }, FocusNode, Interaction::None)
+        }, FocusNode, ContextMenu, Interaction::None)
     }
 
     pub fn new_at_cursor(cursor_pos: Vec2) -> impl Bundle {
