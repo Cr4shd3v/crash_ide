@@ -4,6 +4,7 @@ use std::path::PathBuf;
 
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
+use bevy::ui::FocusPolicy;
 
 use crash_ide_assets::{DefaultFonts, DefaultIcons};
 use crash_ide_config::FindProjectInParents;
@@ -124,6 +125,8 @@ fn spawn_all_rows(
                             margin: UiRect::left(Val::Px(20.0 * file_display.level as f32)),
                             ..default()
                         },
+                        z_index: ZIndex::Local(1),
+                        focus_policy: FocusPolicy::Block,
                         ..default()
                     }, ExpandDirIcon, Interaction::None));
                 }
