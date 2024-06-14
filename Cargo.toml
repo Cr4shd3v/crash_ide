@@ -38,6 +38,7 @@ crash_ide_file = { workspace = true }
 crash_ide_assets = { workspace = true }
 crash_ide_file_picker = { workspace = true }
 crash_ide_console = { workspace = true }
+crash_ide_project = { workspace = true }
 
 [workspace]
 members = ["crates/*"]
@@ -61,6 +62,7 @@ crash_ide_assets = { path = "crates/crash_ide_assets" }
 crash_ide_file_picker = { path = "crates/crash_ide_file_picker" }
 crash_ide_console = { path = "crates/crash_ide_console" }
 crash_ide_util = { path = "crates/crash_ide_util" }
+crash_ide_project = { path = "crates/crash_ide_project" }
 
 [profile.dev]
 opt-level = 1

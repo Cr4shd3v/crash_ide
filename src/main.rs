@@ -10,6 +10,7 @@ use crash_ide_config::CrashIDEConfigPlugin;
 use crash_ide_console::CrashIDEConsolePlugin;
 use crash_ide_file::CrashIDEFilePlugin;
 use crash_ide_file_picker::CrashIDEFilePickerPlugin;
+use crash_ide_project::CrashIDEProjectPlugin;
 use crash_ide_state::CrashIDEStatePlugin;
 use crash_ide_ui::CrashIDEUiPlugin;
 use crash_ide_widget::WidgetPlugin;
@@ -35,6 +36,7 @@ fn main() {
     app.add_plugins(WidgetPlugin);
     app.add_plugins(CrashIDEFilePickerPlugin);
     app.add_plugins(CrashIDEConsolePlugin);
+    app.add_plugins(CrashIDEProjectPlugin);
 
     app.run();
 }

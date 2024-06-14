@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use bevy::prelude::*;
-use crash_ide_config::FindProjectInParents;
 
 use crash_ide_console::Console;
+use crash_ide_project::FindProjectInParents;
 
 use crate::editor::main_editor_screen::EditorBottomMenu;
 

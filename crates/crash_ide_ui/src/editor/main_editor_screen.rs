@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use crash_ide_assets::DefaultColors;
-use crash_ide_config::ProjectRef;
+use crash_ide_project::ProjectRef;
 use crate::window::{AllWindows, ProjectWindow};
 
 pub(super) struct MainEditorScreenPlugin;

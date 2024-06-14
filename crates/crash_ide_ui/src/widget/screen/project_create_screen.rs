@@ -4,11 +4,11 @@ use std::str::FromStr;
 
 use bevy::prelude::*;
 
-use crash_ide_config::{EditorConfigProjects, EditorProject, HomeDir};
+use crash_ide_config::{EditorConfigProjects, HomeDir};
 use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 
 use crash_ide_assets::{DefaultColors, DefaultFonts};
-use crate::open_project::OpenProjectEvent;
+use crash_ide_project::{EditorProject, OpenProjectEvent};
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
 

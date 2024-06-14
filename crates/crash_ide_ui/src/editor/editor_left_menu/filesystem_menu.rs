@@ -7,8 +7,8 @@ use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 
 use crash_ide_assets::{DefaultFonts, DefaultIcons};
-use crash_ide_config::FindProjectInParents;
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
+use crash_ide_project::FindProjectInParents;
 use crash_ide_widget::{DoubleClickButton, DoubleClicked};
 
 use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::FileContextMenuPlugin;

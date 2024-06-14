@@ -2,12 +2,12 @@ macro_rules! default_load_config {
     ($name:ident,$struct_type:ty,$status_field:ident) => {
         pub(crate) fn $name (mut commands: Commands, home_dir: Res<crate::HomeDir>, mut load_status: ResMut<crate::ConfigLoadStatus>) {
             let projects_config_path = home_dir.config_path.join(<$struct_type>::FILENAME);
-            let projects_config = if fs::metadata(&projects_config_path).is_err() {
+            let projects_config = if std::fs::metadata(&projects_config_path).is_err() {
                 let config = <$struct_type>::default();
-                fs::write(&projects_config_path, serde_json::to_vec(&config).unwrap()).unwrap();
+                std::fs::write(&projects_config_path, serde_json::to_vec(&config).unwrap()).unwrap();
                 config
             } else {
-                serde_json::from_slice::<$struct_type>(fs::read(&projects_config_path).unwrap().as_slice()).unwrap_or(<$struct_type>::default())
+                serde_json::from_slice::<$struct_type>(std::fs::read(&projects_config_path).unwrap().as_slice()).unwrap_or(<$struct_type>::default())
             };
 
             commands.insert_resource(projects_config);

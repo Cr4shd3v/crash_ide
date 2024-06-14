@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crash_ide_config::{EditorProject, LoadedEditorProject};
+use crash_ide_project::{LoadedEditorProject, OpenProjectEvent};
 use crate::widget::screen::CreateProjectWindow;
 use crate::window::{DefaultWindowResolution, ProjectWindow, StartupWindow};
 
@@ -8,28 +8,8 @@ pub(super) struct OpenProjectPlugin;
 impl Plugin for OpenProjectPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_event::<OpenProjectEvent>()
             .add_systems(Update, on_open_project)
         ;
-    }
-}
-
-/// Event fired when opening a project
-#[derive(Event)]
-pub struct OpenProjectEvent {
-    crash_ide_project: EditorProject,
-    base_window: Option<Entity>,
-}
-
-impl OpenProjectEvent {
-    /// Opens the provided project.
-    ///
-    /// When `base_window` is None, a new window is created.
-    pub fn new(crash_ide_project: EditorProject, base_window: Option<Entity>) -> Self {
-        Self {
-            crash_ide_project,
-            base_window,
-        }
     }
 }
 

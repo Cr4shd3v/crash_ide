@@ -11,7 +11,7 @@ mod open_project;
 mod switch_project;
 
 use bevy::prelude::*;
-pub use open_project::*;
+use open_project::OpenProjectPlugin;
 pub use switch_project::*;
 use crate::button::button_cursor;
 use crate::editor::EditorPlugin;

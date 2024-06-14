@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use crash_ide_config::{EditorConfigProjects, EditorProject, HomeDir};
+use crash_ide_config::{EditorConfigProjects, HomeDir};
 use crash_ide_file_picker::{DirectoryPicked, DirectoryPicker};
-use crate::open_project::OpenProjectEvent;
+use crash_ide_project::{EditorProject, OpenProjectEvent};
 
 #[derive(Component, Default)]
 pub struct OpenProjectButton {

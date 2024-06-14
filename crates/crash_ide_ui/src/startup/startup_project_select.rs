@@ -3,7 +3,7 @@ use bevy::ui::FocusPolicy;
 use crash_ide_config::EditorConfigProjects;
 use crash_ide_widget::Hoverable;
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
-use crate::open_project::OpenProjectEvent;
+use crash_ide_project::OpenProjectEvent;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 use crate::widget::button::{CreateProjectButton, OpenProjectButton};
 use crate::window::StartupWindow;
