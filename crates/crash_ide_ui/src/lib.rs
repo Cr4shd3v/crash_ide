@@ -6,7 +6,7 @@ mod startup;
 mod widget;
 mod button;
 mod window;
-mod editor;
+pub mod editor;
 mod open_project;
 mod switch_project;
 

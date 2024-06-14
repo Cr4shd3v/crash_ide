@@ -49,6 +49,9 @@ fn load_text_file(
     }
 }
 
+#[derive(Component)]
+struct TextFileView;
+
 fn spawn_file_view(
     mut commands: Commands,
     mut task_query: Query<(Entity, &mut TextLoadingTask)>,
@@ -88,13 +91,13 @@ fn spawn_file_view(
                 ..default()
             }, FileViewInstance {
                 path: loading_task.1.path.clone(),
-            }));
+            }, TextFileView));
         });
     }
 }
 
 fn save_edited_content(
-    query: Query<(&TextInputValue, &FileViewInstance), Changed<TextInputValue>>
+    query: Query<(&TextInputValue, &FileViewInstance), (Changed<TextInputValue>, With<TextFileView>)>
 ) {
     for (input_value, view_instance) in query.iter() {
         fs::write(&view_instance.path, &input_value.0).unwrap();

@@ -13,6 +13,7 @@ impl Plugin for CrashIDEProjectPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_event::<OpenProjectEvent>()
+            .add_event::<CloseProjectEvent>()
         ;
     }
 }

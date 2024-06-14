@@ -3,7 +3,8 @@ use std::path::Path;
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
 use std::sync::{Arc, Mutex};
-use bevy::tasks::{AsyncComputeTaskPool, Task};
+use std::thread;
+use std::thread::JoinHandle;
 
 pub struct RawConsole {
     #[allow(unused)]
@@ -11,9 +12,9 @@ pub struct RawConsole {
     stdout_read: Arc<Mutex<Receiver<String>>>,
     stdin: ChildStdin,
     #[allow(unused)]
-    stdout_task: Task<()>,
+    stdout_task: JoinHandle<()>,
     #[allow(unused)]
-    stderr_task: Task<()>,
+    stderr_task: JoinHandle<()>,
 }
 
 impl RawConsole {
@@ -37,9 +38,7 @@ impl RawConsole {
 
         let cloned_write = stdout_write.clone();
 
-        let pool = AsyncComputeTaskPool::get();
-
-        let stdout_task = pool.spawn(async move {
+        let stdout_task = thread::spawn(move || {
             let mut buf = String::new();
             while let Ok(_) = stdout.read_line(&mut buf) {
                 if cloned_write.send(buf.clone()).is_err() {
@@ -50,7 +49,7 @@ impl RawConsole {
             }
         });
 
-        let stderr_task = pool.spawn(async move {
+        let stderr_task = thread::spawn(move || {
             let mut buf = String::new();
             while let Ok(_) = stderr.read_line(&mut buf) {
                 if stdout_write.send(buf.clone()).is_err() {

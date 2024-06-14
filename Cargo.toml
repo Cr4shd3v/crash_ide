@@ -39,9 +39,10 @@ crash_ide_assets = { workspace = true }
 crash_ide_file_picker = { workspace = true }
 crash_ide_console = { workspace = true }
 crash_ide_project = { workspace = true }
+crash_ide_discord_rpc = { workspace = true }
 
 [workspace]
-members = ["crates/*"]
+members = ["crates/*", "plugins/*"]
 resolver = "2"
 
 [workspace.dependencies]
@@ -52,6 +53,7 @@ homedir = "^0.2"
 open = "^5.1"
 image = "^0.24"
 rfd = "^0.14"
+discord-presence = "^1.2"
 
 crash_ide_state = { path = "crates/crash_ide_state" }
 crash_ide_config = { path = "crates/crash_ide_config" }
@@ -63,6 +65,7 @@ crash_ide_file_picker = { path = "crates/crash_ide_file_picker" }
 crash_ide_console = { path = "crates/crash_ide_console" }
 crash_ide_util = { path = "crates/crash_ide_util" }
 crash_ide_project = { path = "crates/crash_ide_project" }
+crash_ide_discord_rpc = { path = "plugins/crash_ide_discord_rpc" }
 
 [profile.dev]
 opt-level = 1

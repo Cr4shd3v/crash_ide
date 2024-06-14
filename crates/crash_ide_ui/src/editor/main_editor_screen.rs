@@ -15,18 +15,23 @@ impl Plugin for MainEditorScreenPlugin {
     }
 }
 
+/// Marker component for the top menu.
 #[derive(Component)]
 pub struct EditorTopMenu;
 
+/// Marker component for the left menu.
 #[derive(Component)]
 pub struct EditorLeftMenu;
 
+/// Marker component for the file view in the center.
 #[derive(Component)]
 pub struct EditorFileView;
 
+/// Marker component for the bottom menu.
 #[derive(Component)]
 pub struct EditorBottomMenu;
 
+/// Resource containing the file view per project
 #[derive(Resource, Default)]
 pub struct ProjectsFileViews {
     /// Maps project [Entity] to file view [Entity]

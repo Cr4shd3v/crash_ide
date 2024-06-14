@@ -19,3 +19,10 @@ impl OpenProjectEvent {
         }
     }
 }
+
+/// Event fired when current project was closed
+#[derive(Event)]
+pub struct CloseProjectEvent {
+    /// Window to be closed
+    pub window_entity: Entity,
+}
