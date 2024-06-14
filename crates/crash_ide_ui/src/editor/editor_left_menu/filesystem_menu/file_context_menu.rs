@@ -1,14 +1,13 @@
 use std::fs;
-use std::path::Path;
 
 use bevy::prelude::*;
 
 use crash_ide_assets::DefaultIcons;
 use crash_ide_util::FindComponentInParents;
-use crash_ide_widget::{ActiveWindow, RightClicked, TextInputSubmitted, TextInputValue};
+use crash_ide_widget::{ActiveWindow, RightClicked, TextInputSubmitted};
 
 use crate::editor::editor_left_menu::{FileDisplay, FilePath, ProjectRoot};
-use crate::editor::editor_left_menu::filesystem_menu::filename_dialog::{FilenameDialog, FilenameDialogConfirmButton};
+use crate::editor::editor_left_menu::filesystem_menu::filename_dialog::FilenameDialog;
 use crate::editor::editor_left_menu::filesystem_menu::SelfFileRow;
 use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
 use crate::window::AllWindows;
@@ -20,7 +19,7 @@ impl Plugin for FileContextMenuPlugin {
         app
             .add_systems(Update, (
                 file_context_menu, handle_file_delete, handle_create_file,
-                create_file_submenu, handle_create_file_submit, handle_create_file_filename_submit,
+                create_file_submenu, handle_create_file_submit,
             ))
         ;
     }
@@ -111,9 +110,6 @@ fn handle_file_delete(
 }
 
 #[derive(Component)]
-struct CreateFileConfirmButton;
-
-#[derive(Component)]
 struct CreateFileFilenameInput;
 
 #[derive(Component)]
@@ -189,11 +185,8 @@ fn handle_create_file(
             FilenameDialog::new(
                 parent,
                 window,
-                (file_context.clone(), CreateContext { is_file }),
-                CreateFileConfirmButton,
-                CreateFileFilenameInput,
+                (CreateFileFilenameInput, file_context.clone(), CreateContext { is_file }),
                 if is_file { "Create File" } else { "Create Folder" },
-                "Create"
             );
         });
     }
@@ -201,61 +194,29 @@ fn handle_create_file(
 
 fn handle_create_file_submit(
     mut commands: Commands,
-    query: Query<(Entity, &Interaction, &FilenameDialogConfirmButton), (With<CreateFileConfirmButton>, Changed<Interaction>)>,
-    find_context_menu: FindComponentInParents<ContextMenu>,
-    text_query: Query<&TextInputValue>,
-    context_query: Query<(&FileContextRef, &CreateContext)>,
+    query: Query<(Entity, &TextInputSubmitted, &FileContextRef, &CreateContext), (With<CreateFileFilenameInput>, Changed<TextInputSubmitted>)>,
+    find_context_menu: FindComponentInParents<FilenameDialog>,
     file_path: FilePath,
 ) {
-    for (entity, interaction, button) in query.iter() {
-        if *interaction != Interaction::Pressed {
-            continue;
-        }
-
-        let context_menu = find_context_menu.find_entity(entity).unwrap();
-        commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
-        let (file_context, create_context) = context_query.get(context_menu).unwrap();
-
-        let base_path = file_path.get_full_path(file_context.0);
-        let text_content = text_query.get(button.input_id).unwrap().0.clone();
-        let full_path = format!("{}/{}", base_path, text_content);
-
-        create_file(full_path, create_context);
-    }
-}
-
-fn handle_create_file_filename_submit(
-    mut commands: Commands,
-    query: Query<(Entity, &TextInputSubmitted), (With<CreateFileFilenameInput>, Changed<TextInputSubmitted>)>,
-    find_context_menu: FindComponentInParents<ContextMenu>,
-    context_query: Query<(&FileContextRef, &CreateContext)>,
-    file_path: FilePath,
-) {
-    for (entity, text_submitted) in query.iter() {
+    for (entity, text_submitted, file_context, create_context) in query.iter() {
         let Some(text) = text_submitted.0.as_ref() else {
             continue;
         };
 
-        let context_menu = find_context_menu.find_entity(entity).unwrap();
         commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
-        let (file_context, create_context) = context_query.get(context_menu).unwrap();
 
         let base_path = file_path.get_full_path(file_context.0);
         let full_path = format!("{}/{}", base_path, text);
 
-        create_file(full_path, create_context);
-    }
-}
+        let result = if create_context.is_file {
+            fs::write(full_path, "")
+        } else {
+            fs::create_dir_all(full_path)
+        };
 
-fn create_file(full_path: impl AsRef<Path>, create_context: &CreateContext) {
-    let result = if create_context.is_file {
-        fs::write(full_path, "")
-    } else {
-        fs::create_dir_all(full_path)
-    };
-
-    if let Err(e) = result {
-        // TODO: error notification
-        println!("Could not create file: {}", e);
+        if let Err(e) = result {
+            // TODO: error notification
+            println!("Could not create file: {}", e);
+        }
     }
 }
