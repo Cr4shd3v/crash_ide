@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
 use crash_ide_assets::DefaultFonts;
-use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
+use crash_ide_widget::{Scrollable, ScrollableContent, TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 use crate::{default_file_handler_impl, FileEventData, FileHandlerAppExtension, FileViewInstance, OpenFileEvent};
 
 pub(super) struct TextPlugin;
@@ -70,28 +70,30 @@ fn spawn_file_view(
         };
 
         commands.entity(loading_task.1.view_entity).despawn_descendants().with_children(|parent| {
-            parent.spawn((TextInputBundle {
-                text_input_value: TextInputValue(content),
-                text_input_text_style: TextInputTextStyle(TextStyle {
-                    font: DefaultFonts::JETBRAINS_MONO_REGULAR,
-                    font_size: 18.0,
+            parent.spawn((NodeBundle::default(), Scrollable::default(), Interaction::None)).with_children(|parent| {
+                parent.spawn((TextInputBundle {
+                    text_input_value: TextInputValue(content),
+                    text_input_text_style: TextInputTextStyle(TextStyle {
+                        font: DefaultFonts::JETBRAINS_MONO_REGULAR,
+                        font_size: 18.0,
+                        ..default()
+                    }),
+                    text_input_settings: TextInputSettings {
+                        with_border: false,
+                        multiline: true,
+                        ..default()
+                    },
                     ..default()
-                }),
-                text_input_settings: TextInputSettings {
-                    with_border: false,
-                    multiline: true,
+                }, NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        ..default()
+                    },
                     ..default()
-                },
-                ..default()
-            }, NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    ..default()
-                },
-                ..default()
-            }, FileViewInstance {
-                path: loading_task.1.path.clone(),
-            }, TextFileView));
+                }, FileViewInstance {
+                    path: loading_task.1.path.clone(),
+                }, ScrollableContent::default(), TextFileView));
+            });
         });
     }
 }

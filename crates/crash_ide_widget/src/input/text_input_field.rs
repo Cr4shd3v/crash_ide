@@ -19,9 +19,9 @@ impl Plugin for TextInputPlugin {
         );
 
         app
+            .add_systems(PreUpdate, keyboard)
             .add_systems(Update, (
                 create_text_input,
-                keyboard,
                 update_value.after(keyboard),
                 blink_cursor,
                 show_hide_cursor,

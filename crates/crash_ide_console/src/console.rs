@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use bevy::prelude::*;
 use crash_ide_assets::DefaultFonts;
-use crash_ide_widget::{TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle, TextInputValue};
+use crash_ide_widget::{Scrollable, ScrollableContent, TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle, TextInputValue};
 use crate::RawConsole;
 
 pub struct CrashIDEConsolePlugin;
@@ -78,12 +78,20 @@ fn create_console(
         }, ConsoleTextInput)).id();
 
         commands.entity(entity)
-            .insert(ConsoleInstance {
+            .insert((ConsoleInstance {
                 console_output,
                 raw_console: raw_console.unwrap(),
-            })
-            .despawn_descendants()
-            .push_children(&[console_output, console_input]);
+            }, Scrollable::default(), Interaction::None)).despawn_descendants().with_children(|parent| {
+            parent.spawn((NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                ..default()
+            }, ScrollableContent::default()))
+                .push_children(&[console_output, console_input]);
+        });
     }
 }
 
@@ -102,12 +110,13 @@ fn console_stdout(
 fn console_input(
     mut query: Query<(&Parent, &mut TextInputValue), (Changed<TextInputValue>, With<TextInputFocused>, With<ConsoleTextInput>)>,
     keys: Res<ButtonInput<KeyCode>>,
+    parent_query: Query<&Parent>,
     mut console_query: Query<&mut ConsoleInstance>,
     mut text_query: Query<&mut Text>,
 ) {
     if keys.just_pressed(KeyCode::Enter) {
         for (parent, mut value) in query.iter_mut() {
-            let mut console = console_query.get_mut(parent.get()).unwrap();
+            let mut console = console_query.get_mut(parent_query.get(parent.get()).unwrap().get()).unwrap();
             let input = value.0.drain(..).as_str().to_string();
             text_query.get_mut(console.console_output).unwrap().sections[0].value.push_str(&*input);
             console.raw_console.execute_command(format!("{} ; echo $PWD$\n", input.trim()));
