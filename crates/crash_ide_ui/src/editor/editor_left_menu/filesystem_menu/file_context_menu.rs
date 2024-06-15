@@ -167,7 +167,7 @@ fn handle_rename_file_submit(
         commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
 
         let base_path = file_path.get_directory(file_context.0);
-        let mut file_display = file_display.get(file_context.0).unwrap();
+        let file_display = file_display.get(file_context.0).unwrap();
         let old_full_path = format!("{}/{}", base_path, file_display.filename);
         let new_full_path = format!("{}/{}", base_path, text);
 
