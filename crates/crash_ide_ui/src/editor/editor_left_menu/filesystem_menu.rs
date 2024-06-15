@@ -370,13 +370,36 @@ fn expand_directory(
                 continue;
             };
 
-            for dir_entry in dir_entries {
-                let Ok(dir_entry) = dir_entry else {continue;};
+            let mut directories = vec![];
+            let mut files = vec![];
 
+            for entry in dir_entries {
+                let Ok(dir_entry) = entry else {continue;};
+
+                let name = dir_entry.file_name().to_str().unwrap().to_string();
+                if dir_entry.file_type().unwrap().is_file() {
+                    files.push(name);
+                } else {
+                    directories.push(name);
+                }
+            }
+
+            directories.sort_by(|v1, v2| v1.to_lowercase().cmp(&v2.to_lowercase()));
+            files.sort_by(|v1, v2| v1.to_lowercase().cmp(&v2.to_lowercase()));
+
+            for dir_entry in directories {
                 entities.push(commands.spawn(FileDisplay {
-                    filename: dir_entry.file_name().to_str().unwrap().to_string(),
+                    filename: dir_entry,
                     level: file_display.level + 1,
-                    is_file: dir_entry.file_type().unwrap().is_file(),
+                    is_file: false,
+                }).id());
+            }
+
+            for file_entry in files {
+                entities.push(commands.spawn(FileDisplay {
+                    filename: file_entry,
+                    level: file_display.level + 1,
+                    is_file: true,
                 }).id());
             }
 
