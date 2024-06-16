@@ -79,7 +79,6 @@ pub(super) fn spawn_main_crash_ide_screen(
                     style: Style {
                         height: Val::Percent(100.0),
                         width: Val::Percent(20.0),
-                        flex_direction: FlexDirection::Column,
                         ..default()
                     },
                     background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),

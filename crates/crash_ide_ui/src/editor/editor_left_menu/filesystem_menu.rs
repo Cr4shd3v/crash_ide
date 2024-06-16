@@ -9,7 +9,7 @@ use bevy::ui::FocusPolicy;
 use crash_ide_assets::{DefaultFonts, DefaultIcons};
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
 use crash_ide_project::FindProjectInParents;
-use crash_ide_widget::{DoubleClickButton, DoubleClicked};
+use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
 
 use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::FileContextMenuPlugin;
 use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
@@ -82,10 +82,17 @@ fn spawn_left_menu(
         }
 
         commands.entity(entity).despawn_descendants().with_children(|parent| {
-            parent.spawn((
-                FileDisplay::new(project.crash_ide_project.name.clone(), false, 0),
-                ProjectRoot { display_path, full_path },
-            ));
+            parent.spawn((NodeBundle::default(), Scrollable::default(), Interaction::None)).with_children(|parent| {
+                parent.spawn((
+                    ScrollableContent::default(),
+                    NodeBundle::default(),
+                )).with_children(|parent| {
+                    parent.spawn((
+                        FileDisplay::new(project.crash_ide_project.name.clone(), false, 0),
+                        ProjectRoot { display_path, full_path },
+                    ));
+                });
+            });
         });
     }
 }
