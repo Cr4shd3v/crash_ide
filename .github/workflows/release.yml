@@ -8,53 +8,53 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-#  build-linux:
-#    permissions: write-all
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: 🔄 Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: 🛠️ Setup Rust
-#        uses: actions-rust-lang/setup-rust-toolchain@v1
-#        with:
-#          toolchain: nightly
-#
-#      - name: 🗃️ Cache Cargo and Build Outputs
-#        uses: Swatinem/rust-cache@v2
-#
-#      - name: 🔧 Setup dependencies
-#        run: |
-#          chmod +x ./build/linux/*.sh
-#          ./build/linux/setup.sh
-#          ./build/linux/setup_deb.sh
-#          ./build/linux/setup_rpm.sh
-#
-#      - name: 🏗️ Build Debian
-#        run: cargo deb
-#
-#      - name: ☁️ Upload Debian
-#        uses: svenstaro/upload-release-action@v2
-#        with:
-#          file: target/debian/*.deb
-#          file_glob: true
-#          repo_token: ${{ secrets.GITHUB_TOKEN }}
-#          tag: ${{ github.ref }}
-#          overwrite: true
-#
-#      - name: 🏗️ Build RPM
-#        run: |
-#          strip -s target/release/crash_ide
-#          cargo-generate-rpm
-#
-#      - name: ☁️ Upload RPM
-#        uses: svenstaro/upload-release-action@v2
-#        with:
-#          file: target/generate-rpm/*.rpm
-#          file_glob: true
-#          repo_token: ${{ secrets.GITHUB_TOKEN }}
-#          tag: ${{ github.ref }}
-#          overwrite: true
+  build-linux:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: nightly
+
+      - name: 🗃️ Cache Cargo and Build Outputs
+        uses: Swatinem/rust-cache@v2
+
+      - name: 🔧 Setup dependencies
+        run: |
+          chmod +x ./build/linux/*.sh
+          ./build/linux/setup.sh
+          ./build/linux/setup_deb.sh
+          ./build/linux/setup_rpm.sh
+
+      - name: 🏗️ Build Debian
+        run: cargo deb
+
+      - name: ☁️ Upload Debian
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: target/debian/*.deb
+          file_glob: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          overwrite: true
+
+      - name: 🏗️ Build RPM
+        run: |
+          strip -s target/release/crash_ide
+          cargo-generate-rpm
+
+      - name: ☁️ Upload RPM
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: target/generate-rpm/*.rpm
+          file_glob: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          overwrite: true
 
 
   build-windows:
