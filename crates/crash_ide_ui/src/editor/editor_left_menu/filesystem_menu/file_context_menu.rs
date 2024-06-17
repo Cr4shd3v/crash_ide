@@ -10,6 +10,7 @@ use crate::editor::editor_left_menu::{FileDisplay, FilePath, ProjectRoot};
 use crate::editor::editor_left_menu::filesystem_menu::filename_dialog::FilenameDialog;
 use crate::editor::editor_left_menu::filesystem_menu::SelfFileRow;
 use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
+use crate::widget::notification::{Notification, NotificationIcon};
 use crate::window::AllWindows;
 
 pub(super) struct FileContextMenuPlugin;
@@ -79,6 +80,7 @@ fn handle_file_delete(
     context_ref: Query<&FileContextRef>,
     file_display_query: Query<&FileDisplay>,
     file_path: FilePath,
+    window: Query<Entity, With<ActiveWindow>>,
 ) {
     for (parent, interaction) in query.iter() {
         if *interaction != Interaction::Pressed {
@@ -103,8 +105,12 @@ fn handle_file_delete(
         };
 
         if let Err(e) = fs_result {
-            // TODO: error notification
-            println!("Could not delete: {}", e);
+            commands.spawn(Notification::new(
+                window.single(),
+                "Error while deleting file".to_string(),
+                format!("Could not delete: {}", e),
+                NotificationIcon::Error,
+            ));
             continue;
         }
 

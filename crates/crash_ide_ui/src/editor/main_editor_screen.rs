@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy::utils::HashMap;
 use crash_ide_assets::DefaultColors;
 use crash_ide_project::ProjectRef;
+use crate::widget::notification::NotificationContainerMap;
 use crate::window::{AllWindows, ProjectWindow};
 
 pub(super) struct MainEditorScreenPlugin;
@@ -50,6 +51,7 @@ pub(super) fn spawn_main_crash_ide_screen(
     window_query: Query<(Entity, &ProjectWindow), Added<ProjectWindow>>,
     all_windows: Res<AllWindows>,
     mut project_file_views: ResMut<ProjectsFileViews>,
+    mut notification_container: ResMut<NotificationContainerMap>,
 ) {
     for (window_entity, project_window) in window_query.iter() {
         commands.entity(all_windows.get(&window_entity).ui_root).despawn_descendants().with_children(|parent| {
@@ -109,6 +111,22 @@ pub(super) fn spawn_main_crash_ide_screen(
                 background_color: BackgroundColor(DefaultColors::MAIN_VIEW_BACKGROUND),
                 ..default()
             }, EditorBottomMenu, ProjectRef(project_window.project_crash_ide_config)));
+
+            let notification_container_id = parent.spawn(NodeBundle {
+                style: Style {
+                    position_type: PositionType::Absolute,
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    flex_direction: FlexDirection::ColumnReverse,
+                    width: Val::Vw(20.0),
+                    height: Val::Percent(100.0),
+                    ..default()
+                },
+                z_index: ZIndex::Global(10),
+                ..default()
+            }).id();
+
+            notification_container.notification_map.insert(window_entity, notification_container_id);
         });
     }
 }

@@ -4,16 +4,18 @@ pub mod button;
 pub mod screen;
 pub mod folder_input;
 pub mod context_menu;
+pub mod notification;
 
 use bevy::prelude::*;
 use crate::widget::button::ButtonPlugin;
 use crate::widget::folder_input::FolderInputPlugin;
+use crate::widget::notification::NotificationPlugin;
 use crate::widget::screen::ScreenPlugin;
 
 pub(crate) struct EditorWidgetPlugin;
 
 impl Plugin for EditorWidgetPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((ButtonPlugin, ScreenPlugin, FolderInputPlugin));
+        app.add_plugins((ButtonPlugin, ScreenPlugin, FolderInputPlugin, NotificationPlugin));
     }
 }
