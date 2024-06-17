@@ -3,9 +3,6 @@ name: Build Editor Release 🚀
 on:
   release:
     types: [created]
-  push:
-    branches:
-      - master
 
 env:
   CARGO_TERM_COLOR: always
