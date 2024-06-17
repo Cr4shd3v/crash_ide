@@ -104,9 +104,9 @@ fn handle_new_notifications(
             }).with_children(|parent| {
                 parent.spawn(ImageBundle {
                     image: UiImage::new(match &notification.icon {
-                        NotificationIcon::Info => icons.right.clone(),
-                        NotificationIcon::Warning => icons.right.clone(),
-                        NotificationIcon::Error => icons.right.clone(),
+                        NotificationIcon::Info => icons.info.clone(),
+                        NotificationIcon::Warning => icons.warning.clone(),
+                        NotificationIcon::Error => icons.error.clone(),
                         NotificationIcon::Custom(handle) => handle.clone(),
                     }),
                     ..default()

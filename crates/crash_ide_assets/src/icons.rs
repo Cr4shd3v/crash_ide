@@ -19,6 +19,9 @@ pub struct DefaultIcons {
     pub folder: Handle<Image>,
     pub unknown_file: Handle<Image>,
     pub github: Handle<Image>,
+    pub info: Handle<Image>,
+    pub warning: Handle<Image>,
+    pub error: Handle<Image>,
 }
 
 fn load_default_icons(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -29,5 +32,8 @@ fn load_default_icons(mut commands: Commands, asset_server: Res<AssetServer>) {
         folder: asset_server.load("icons/folder.png"),
         unknown_file: asset_server.load("icons/unknown_file.png"),
         github: asset_server.load("icons/github.png"),
+        info: asset_server.load("icons/info.png"),
+        warning: asset_server.load("icons/warning.png"),
+        error: asset_server.load("icons/error.png"),
     });
 }
