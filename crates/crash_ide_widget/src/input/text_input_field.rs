@@ -1,8 +1,10 @@
+use std::ops::Mul;
 use bevy::asset::load_internal_binary_asset;
 use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::text::BreakLineOn;
+use bevy::ui::RelativeCursorPosition;
 use crate::cursor::SetCursorEvent;
 
 pub(super) struct TextInputPlugin;
@@ -509,7 +511,7 @@ fn create_text_input(
         }
 
         commands.entity(overflow_container).add_child(text);
-        commands.entity(entity).insert(cursor_pos).push_children(&[overflow_container, placeholder_text]);
+        commands.entity(entity).insert((cursor_pos, RelativeCursorPosition::default())).push_children(&[overflow_container, placeholder_text]);
     }
 }
 
@@ -629,7 +631,16 @@ fn update_style(
 
 fn focus_text_input(
     mut commands: Commands,
-    query: Query<(Entity, &Interaction, Option<&TextInputFocused>), (Changed<Interaction>, With<TextInputValue>)>,
+    mut query: Query<(
+        Entity,
+        &Interaction,
+        Option<&TextInputFocused>,
+        &RelativeCursorPosition,
+        &Node,
+        &TextInputTextStyle,
+        &TextInputValue,
+        &mut TextInputCursorPos,
+    ), (Changed<Interaction>, With<TextInputValue>)>,
     current_focus: Query<Entity, With<TextInputFocused>>,
     buttons: Res<ButtonInput<MouseButton>>,
     mut cursor_writer: EventWriter<SetCursorEvent>,
@@ -637,7 +648,9 @@ fn focus_text_input(
     let current_focus_entity = current_focus.get_single();
     let mut click_on_text = false;
 
-    for (entity, interaction, focused) in query.iter() {
+    for (entity, interaction, focused,
+        relative_cursor_pos, node, text_style,
+        value, mut cursor_pos) in query.iter_mut() {
         if *interaction == Interaction::None {
             cursor_writer.send(SetCursorEvent::reset());
         } else {
@@ -649,6 +662,28 @@ fn focus_text_input(
         }
 
         click_on_text = true;
+
+        let node_size = node.size();
+        let cursor_pos_normalized = relative_cursor_pos.normalized.unwrap();
+        let font_size = text_style.0.font_size;
+
+        let cursor_pos_relative = cursor_pos_normalized.mul(node_size);
+
+        let calculated_line = cursor_pos_relative.y / font_size;
+        let calculated_column = (cursor_pos_relative.x / (font_size * 0.5)).round() as usize;
+
+        let lines = value.0.lines()
+            .take(calculated_line.round() as usize + 1)
+            .collect::<Vec<&str>>();
+        let mut new_pos = lines[..lines.len() - 2].join("\n").len() + calculated_column;
+
+        if calculated_column > lines[lines.len() - 1].len() {
+            new_pos += lines[lines.len() - 1].len();
+        } else {
+            new_pos += calculated_column;
+        }
+
+        cursor_pos.0 = new_pos;
 
         if focused.is_some() {
             continue;
@@ -676,7 +711,7 @@ fn set_section_values(value: &str, cursor_pos: usize, sections: &mut [TextSectio
     sections[2].value = after;
 
     if cursor_pos >= value.chars().count() {
-        sections[1].value = "}".to_string();
+        sections[1].value = "|".to_string();
     } else {
         sections[1].value = "|".to_string();
     }
