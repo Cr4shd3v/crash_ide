@@ -164,6 +164,7 @@ fn handle_rename_file_submit(
     find_context_menu: FindComponentInParents<FilenameDialog>,
     file_path: FilePath,
     file_display: Query<&FileDisplay>,
+    window: Query<Entity, With<ActiveWindow>>,
 ) {
     for (entity, text_submitted, file_context) in query.iter() {
         let Some(text) = text_submitted.0.as_ref() else {
@@ -180,8 +181,12 @@ fn handle_rename_file_submit(
         let result = fs::rename(&old_full_path, &new_full_path);
 
         if let Err(e) = result {
-            // TODO: error notification
-            println!("Could not rename file from {} to {}: {}", old_full_path, new_full_path, e);
+            commands.spawn(Notification::new(
+                window.single(),
+                "Error while renaming file".to_string(),
+                format!("Could not rename file from {} to {}: {}", old_full_path, new_full_path, e),
+                NotificationIcon::Error,
+            ));
         }
     }
 }
@@ -275,6 +280,7 @@ fn handle_create_file_submit(
     query: Query<(Entity, &TextInputSubmitted, &FileContextRef, &CreateContext), (With<CreateFileFilenameInput>, Changed<TextInputSubmitted>)>,
     find_context_menu: FindComponentInParents<FilenameDialog>,
     file_path: FilePath,
+    window: Query<Entity, With<ActiveWindow>>,
 ) {
     for (entity, text_submitted, file_context, create_context) in query.iter() {
         let Some(text) = text_submitted.0.as_ref() else {
@@ -293,8 +299,12 @@ fn handle_create_file_submit(
         };
 
         if let Err(e) = result {
-            // TODO: error notification
-            println!("Could not create file: {}", e);
+            commands.spawn(Notification::new(
+                window.single(),
+                "Error while creating file".to_string(),
+                format!("Could not create file: {}", e),
+                NotificationIcon::Error,
+            ));
         }
     }
 }

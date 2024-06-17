@@ -6,7 +6,7 @@ use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 
-use crash_ide_assets::{DefaultFonts, DefaultIcons};
+use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
 use crash_ide_project::FindProjectInParents;
 use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
@@ -82,10 +82,22 @@ fn spawn_left_menu(
         }
 
         commands.entity(entity).despawn_descendants().with_children(|parent| {
-            parent.spawn((NodeBundle::default(), Scrollable::default(), Interaction::None)).with_children(|parent| {
+            parent.spawn((NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    ..default()
+                },
+                ..default()
+            }, Scrollable::default(), Interaction::None)).with_children(|parent| {
                 parent.spawn((
                     ScrollableContent::default(),
-                    NodeBundle::default(),
+                    NodeBundle {
+                        style: Style {
+                            width: Val::Percent(100.0),
+                            ..default()
+                        },
+                        ..default()
+                    },
                 )).with_children(|parent| {
                     parent.spawn((
                         FileDisplay::new(project.crash_ide_project.name.clone(), false, 0),
@@ -108,6 +120,7 @@ fn spawn_all_rows(
         let row_entity = commands.entity(entity).insert(NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
+                width: Val::Percent(100.0),
                 ..default()
             },
             ..default()
@@ -248,7 +261,7 @@ fn highlight_clicked_row(
         }
 
         let mut background_color = background_color_query.get_mut(entity).unwrap();
-        background_color.0 = Color::BLUE;
+        background_color.0 = DefaultColors::PRIMARY_BUTTON;
 
         for current_entity in current_button_query.iter() {
             if current_entity == entity {
