@@ -15,7 +15,7 @@ impl Plugin for TextPlugin {
     fn build(&self, app: &mut App) {
         app
             .register_file_handler::<TextFile>()
-            .add_systems(Update, (load_text_file, spawn_file_view, save_edited_content))
+            .add_systems(Update, (load_text_file, spawn_file_view, save_edited_content_timer, save_edited_content))
         ;
     }
 }
@@ -52,6 +52,9 @@ fn load_text_file(
 
 #[derive(Component)]
 struct TextFileView;
+
+#[derive(Component)]
+struct TextFilePendingChanges(Timer);
 
 fn spawn_file_view(
     mut commands: Commands,
@@ -99,19 +102,37 @@ fn spawn_file_view(
     }
 }
 
+fn save_edited_content_timer(
+    mut commands: Commands,
+    mut query: Query<(Entity, Option<&mut TextFilePendingChanges>), (Changed<TextInputValue>, With<TextFileView>)>,
+) {
+    for (entity, pending) in query.iter_mut() {
+        if let Some(mut timer) = pending {
+            timer.0.reset();
+        } else {
+            commands.entity(entity).insert(TextFilePendingChanges(Timer::from_seconds(1.0, TimerMode::Once)));
+        }
+    }
+}
+
 fn save_edited_content(
     mut commands: Commands,
-    query: Query<(&TextInputValue, &FileViewInstance), (Changed<TextInputValue>, With<TextFileView>)>,
+    mut query: Query<(&TextInputValue, &FileViewInstance, &mut TextFilePendingChanges), With<TextFileView>>,
     window: Query<Entity, With<ActiveWindow>>,
+    time: Res<Time>,
 ) {
-    for (input_value, view_instance) in query.iter() {
-        if let Err(e) = fs::write(&view_instance.path, &input_value.0) {
-            commands.spawn(Notification::new(
-                window.single(),
-                "Error while writing to disk".to_string(),
-                format!("Could not save content of {}: {}", &view_instance.path.to_str().unwrap(), e),
-                NotificationIcon::Error,
-            ));
+    for (input_value, view_instance, mut pending) in query.iter_mut() {
+        pending.0.tick(time.delta());
+
+        if pending.0.finished() {
+            if let Err(e) = fs::write(&view_instance.path, &input_value.0) {
+                commands.spawn(Notification::new(
+                    window.single(),
+                    "Error while writing to disk".to_string(),
+                    format!("Could not save content of {}: {}", &view_instance.path.to_str().unwrap(), e),
+                    NotificationIcon::Error,
+                ));
+            }
         }
     }
 }
