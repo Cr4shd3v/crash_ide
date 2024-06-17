@@ -1,4 +1,5 @@
 use std::ops::Mul;
+use arboard::Clipboard;
 use bevy::asset::load_internal_binary_asset;
 use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
@@ -203,6 +204,7 @@ fn keyboard(
         &mut TextInputCursorTimer,
         &mut TextInputSubmitted,
     )>,
+    keys: Res<ButtonInput<KeyCode>>,
 ) {
     if events.is_empty() {
         return;
@@ -352,6 +354,15 @@ fn keyboard(
 
                     cursor_timer.should_reset = true;
                     continue;
+                }
+                KeyCode::KeyV => {
+                    if keys.pressed(KeyCode::ControlLeft) {
+                        let mut clipboard = Clipboard::new().unwrap();
+                        let text = clipboard.get_text().unwrap_or(String::new());
+                        text_input.0.insert_str(cursor_pos.0, &*text);
+                        cursor_pos.0 += text.len();
+                        continue;
+                    }
                 }
                 _ => {}
             }
