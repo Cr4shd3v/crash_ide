@@ -3,6 +3,7 @@ use std::fs;
 use bevy::prelude::*;
 
 use crash_ide_assets::DefaultIcons;
+use crash_ide_notification::{Notification, NotificationIcon};
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::{ActiveWindow, RightClicked, TextInputSubmitted};
 
@@ -10,7 +11,6 @@ use crate::editor::editor_left_menu::{FileDisplay, FilePath, ProjectRoot};
 use crate::editor::editor_left_menu::filesystem_menu::filename_dialog::FilenameDialog;
 use crate::editor::editor_left_menu::filesystem_menu::SelfFileRow;
 use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
-use crate::widget::notification::{Notification, NotificationIcon};
 use crate::window::AllWindows;
 
 pub(super) struct FileContextMenuPlugin;

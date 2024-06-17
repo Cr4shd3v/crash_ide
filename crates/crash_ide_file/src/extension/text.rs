@@ -5,7 +5,8 @@ use bevy::prelude::*;
 use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
 use crash_ide_assets::DefaultFonts;
-use crash_ide_widget::{Scrollable, ScrollableContent, TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
+use crash_ide_notification::{Notification, NotificationIcon};
+use crash_ide_widget::{ActiveWindow, Scrollable, ScrollableContent, TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 use crate::{default_file_handler_impl, FileEventData, FileHandlerAppExtension, FileViewInstance, OpenFileEvent};
 
 pub(super) struct TextPlugin;
@@ -99,9 +100,18 @@ fn spawn_file_view(
 }
 
 fn save_edited_content(
-    query: Query<(&TextInputValue, &FileViewInstance), (Changed<TextInputValue>, With<TextFileView>)>
+    mut commands: Commands,
+    query: Query<(&TextInputValue, &FileViewInstance), (Changed<TextInputValue>, With<TextFileView>)>,
+    window: Query<Entity, With<ActiveWindow>>,
 ) {
     for (input_value, view_instance) in query.iter() {
-        fs::write(&view_instance.path, &input_value.0).unwrap();
+        if let Err(e) = fs::write(&view_instance.path, &input_value.0) {
+            commands.spawn(Notification::new(
+                window.single(),
+                "Error while writing to disk".to_string(),
+                format!("Could not save content of {}: {}", &view_instance.path.to_str().unwrap(), e),
+                NotificationIcon::Error,
+            ));
+        }
     }
 }

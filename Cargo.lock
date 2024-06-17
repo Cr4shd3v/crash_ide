@@ -1415,6 +1415,7 @@ dependencies = [
  "crash_ide_discord_rpc",
  "crash_ide_file",
  "crash_ide_file_picker",
+ "crash_ide_notification",
  "crash_ide_project",
  "crash_ide_state",
  "crash_ide_ui",
@@ -1467,6 +1468,7 @@ dependencies = [
  "bevy",
  "crash_ide_assets",
  "crash_ide_config",
+ "crash_ide_notification",
  "crash_ide_widget",
  "image",
  "open",
@@ -1478,6 +1480,14 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "rfd",
+]
+
+[[package]]
+name = "crash_ide_notification"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "crash_ide_assets",
 ]
 
 [[package]]
@@ -1505,6 +1515,7 @@ dependencies = [
  "crash_ide_console",
  "crash_ide_file",
  "crash_ide_file_picker",
+ "crash_ide_notification",
  "crash_ide_project",
  "crash_ide_state",
  "crash_ide_util",

@@ -3,11 +3,10 @@ use bevy::ui::FocusPolicy;
 use bevy::utils::HashMap;
 
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
-use crate::window::ProjectWindow;
 
-pub(super) struct NotificationPlugin;
+pub struct CrashIDENotificationPlugin;
 
-impl Plugin for NotificationPlugin {
+impl Plugin for CrashIDENotificationPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<NotificationContainerMap>()
@@ -61,7 +60,7 @@ struct NotificationCloseButton {
 }
 
 fn cleanup_notification_map(
-    mut removed: RemovedComponents<ProjectWindow>,
+    mut removed: RemovedComponents<Window>,
     mut notification_container_map: ResMut<NotificationContainerMap>,
 ) {
     for entity in removed.read() {

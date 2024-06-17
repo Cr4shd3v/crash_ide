@@ -15,6 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_util/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_project/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/crash_ide_discord_rpc/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_notification/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

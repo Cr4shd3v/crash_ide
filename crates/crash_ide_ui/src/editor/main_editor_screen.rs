@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use crash_ide_assets::DefaultColors;
+use crash_ide_notification::NotificationContainerMap;
 use crash_ide_project::ProjectRef;
-use crate::widget::notification::NotificationContainerMap;
 use crate::window::{AllWindows, ProjectWindow};
 
 pub(super) struct MainEditorScreenPlugin;
