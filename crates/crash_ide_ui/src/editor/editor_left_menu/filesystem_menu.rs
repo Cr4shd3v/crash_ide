@@ -71,15 +71,19 @@ fn spawn_left_menu(
         let project = find_project.find(entity);
 
         let full_path = project.crash_ide_project.path.clone();
-        let mut display_path = full_path.clone();
 
         // Linux: Change /home/<user>/ to ~/
         #[cfg(target_os = "linux")]
-        {
+        let display_path = {
+            let mut display_path = full_path.clone();
             if display_path.starts_with("/home") {
                 display_path = format!("~/{}", display_path.split("/").skip(3).collect::<Vec<&str>>().join("/"));
             }
-        }
+            display_path
+        };
+
+        #[cfg(not(target_os = "linux"))]
+        let display_path = full_path.clone();
 
         commands.entity(entity).despawn_descendants().with_children(|parent| {
             parent.spawn((NodeBundle {
