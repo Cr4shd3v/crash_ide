@@ -72,8 +72,10 @@ impl Plugin for DefaultFontsPlugin {
     }
 }
 
+/// Contains all default fonts.
 pub struct DefaultFonts;
 
+#[allow(missing_docs)]
 impl DefaultFonts {
     pub const ROBOTO_REGULAR: Handle<Font> = Handle::weak_from_u128(0x493cdff68af949cd9d4486d1b592ba4a);
     pub const ROBOTO_BOLD: Handle<Font> = Handle::weak_from_u128(0x208f6a3079ef4ef284e2616b8da36418);

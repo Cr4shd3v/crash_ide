@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub struct IconPlugin;
+pub(super) struct IconPlugin;
 
 impl Plugin for IconPlugin {
     fn build(&self, app: &mut App) {
@@ -11,7 +11,8 @@ impl Plugin for IconPlugin {
 }
 
 #[derive(Resource)]
-#[allow(unused)]
+#[allow(unused, missing_docs)]
+/// Resource containing all loaded icons.
 pub struct DefaultIcons {
     pub cross: Handle<Image>,
     pub down: Handle<Image>,
