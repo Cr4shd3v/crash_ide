@@ -1443,6 +1443,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "crash_ide_assets",
+ "crash_ide_clipboard",
  "crash_ide_config",
  "crash_ide_console",
  "crash_ide_discord_rpc",
@@ -1459,6 +1460,14 @@ dependencies = [
 name = "crash_ide_assets"
 version = "0.1.0"
 dependencies = [
+ "bevy",
+]
+
+[[package]]
+name = "crash_ide_clipboard"
+version = "0.1.0"
+dependencies = [
+ "arboard",
  "bevy",
 ]
 
@@ -1567,8 +1576,8 @@ dependencies = [
 name = "crash_ide_widget"
 version = "0.1.0"
 dependencies = [
- "arboard",
  "bevy",
+ "crash_ide_clipboard",
 ]
 
 [[package]]

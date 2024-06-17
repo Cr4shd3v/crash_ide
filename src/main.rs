@@ -5,6 +5,7 @@
 use bevy::prelude::*;
 use bevy::window::ExitCondition;
 use crash_ide_assets::CrashIDEAssetPlugin;
+use crash_ide_clipboard::CrashIDEClipboardPlugin;
 
 use crash_ide_config::CrashIDEConfigPlugin;
 use crash_ide_console::CrashIDEConsolePlugin;
@@ -41,6 +42,7 @@ fn main() {
     app.add_plugins(CrashIDEProjectPlugin);
     app.add_plugins(CrashIDEDiscordRpcPlugin);
     app.add_plugins(CrashIDENotificationPlugin);
+    app.add_plugins(CrashIDEClipboardPlugin);
 
     app.run();
 }
