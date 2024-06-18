@@ -47,10 +47,6 @@ pub(super) fn handle_file_watcher(
     row_entity_from_path: RowEntityFromPath,
 ) {
     for (entity, watcher) in query.iter() {
-        let mut modify_from = vec![];
-        let mut modify_to = vec![];
-        let mut modify_both = vec![];
-
         while let Ok(event) = watcher.receiver().try_recv() {
             let first_path = event.paths[0].to_str().unwrap().to_string();
 
@@ -71,16 +67,13 @@ pub(super) fn handle_file_watcher(
                         ModifyKind::Name(name) => {
                             match name {
                                 RenameMode::To => {
-                                    modify_to.push(first_path);
+                                    // Like create file
                                 }
                                 RenameMode::From => {
-                                    modify_from.push(first_path);
-                                }
-                                RenameMode::Both => {
-                                    let to_path = event.paths[1].to_str().unwrap().to_string();
-                                    modify_both.push((first_path.clone(), to_path.clone()));
-
-                                    // Rename
+                                    // Like delete file
+                                    if let Some(row_entity) = row_entity_from_path.get_row_entity(entity, &*first_path) {
+                                        commands.entity(row_entity).despawn_recursive();
+                                    }
                                 }
                                 _ => {}
                             }
@@ -100,25 +93,6 @@ pub(super) fn handle_file_watcher(
                     }
                 }
                 _ => {}
-            }
-        }
-
-        for path in modify_to {
-            if modify_both.iter().any(|v| v.1 == path) {
-                continue;
-            }
-
-            // Like create file
-        }
-
-        for path in modify_from {
-            if modify_both.iter().any(|v| v.0 == path) {
-                continue;
-            }
-
-            // Like delete file
-            if let Some(row_entity) = row_entity_from_path.get_row_entity(entity, &*path) {
-                commands.entity(row_entity).despawn_recursive();
             }
         }
     }
