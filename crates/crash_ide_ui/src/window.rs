@@ -4,6 +4,9 @@ use bevy::render::camera::RenderTarget;
 use bevy::utils::HashMap;
 use bevy::window::{WindowCreated, WindowRef, WindowResolution};
 use bevy::winit::WinitWindows;
+use crash_ide_config::EditorConfigProjects;
+use crash_ide_project::{CloseProjectEvent, LoadedEditorProject, OpenProjectEvent};
+use crash_ide_state::EditorState;
 use crate::startup::StartupScreenState;
 
 pub(super) struct EditorWindowPlugin;
@@ -12,8 +15,9 @@ impl Plugin for EditorWindowPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(PreStartup, initial_window)
+            .add_systems(OnEnter(EditorState::Loaded), open_last_projects)
             .add_systems(PreUpdate, (process_new_window, save_resolution))
-            .add_systems(PostUpdate, (despawn_window, check_for_exit, on_startup_window_despawn))
+            .add_systems(PostUpdate, (despawn_window, check_for_exit, on_startup_window_despawn, track_open_projects))
             .init_resource::<DefaultWindowResolution>()
             .init_resource::<AllWindows>()
         ;
@@ -52,12 +56,34 @@ pub struct WindowData {
     pub camera: Entity,
 }
 
-fn initial_window(mut commands: Commands) {
+fn initial_window(
+    mut commands: Commands,
+) {
     commands.spawn((Window {
         resolution: StartupWindow::get_resolution(),
         title: String::from("Crash Editor"),
         ..default()
     }, StartupWindow));
+}
+
+fn open_last_projects(
+    config: Res<EditorConfigProjects>,
+    mut open_project: EventWriter<OpenProjectEvent>,
+    startup_window: Query<Entity, With<StartupWindow>>,
+) {
+    let window_entity = startup_window.single();
+    let mut window_id = Some(window_entity);
+
+    for path in &config.last_opened {
+        if let Some(project) = config.projects.get(path) {
+            open_project.send(OpenProjectEvent {
+                base_window: window_id,
+                crash_ide_project: project.clone(),
+            });
+
+            window_id = None;
+        }
+    }
 }
 
 fn on_startup_window_despawn(
@@ -133,4 +159,23 @@ fn check_for_exit(
     if window_query.is_empty() {
         app_exit.send(AppExit);
     }
+}
+
+fn track_open_projects(
+    new_project_er: EventReader<OpenProjectEvent>,
+    close_project_er: EventReader<CloseProjectEvent>,
+    query: Query<&ProjectWindow>,
+    project_query: Query<&LoadedEditorProject>,
+    mut config: ResMut<EditorConfigProjects>,
+) {
+    if new_project_er.is_empty() && close_project_er.is_empty() {
+        return;
+    }
+
+    let mut projects = vec![];
+    for window in query.iter() {
+        projects.push(project_query.get(window.project_crash_ide_config).unwrap().crash_ide_project.path.clone());
+    }
+
+    config.last_opened = projects;
 }

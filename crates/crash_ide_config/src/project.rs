@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use serde::{Deserialize, Serialize};
+
 use crash_ide_project::EditorProject;
+
 use crate::load::{default_load_config, EditorConfig};
 
 /// Resource containing all [EditorProject]s
@@ -9,6 +11,9 @@ use crate::load::{default_load_config, EditorConfig};
 pub struct EditorConfigProjects {
     /// All saved [EditorProject]s, indexed by their path
     pub projects: HashMap<String, EditorProject>,
+    /// List of last opened projects
+    #[serde(default)]
+    pub last_opened: Vec<String>,
 }
 
 impl EditorConfig for EditorConfigProjects {
