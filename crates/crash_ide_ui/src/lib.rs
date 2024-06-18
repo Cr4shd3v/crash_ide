@@ -9,12 +9,14 @@ mod window;
 pub mod editor;
 mod open_project;
 mod switch_project;
+mod settings;
 
 use bevy::prelude::*;
 use open_project::OpenProjectPlugin;
 pub use switch_project::*;
 use crate::button::button_cursor;
 use crate::editor::EditorPlugin;
+use crate::settings::SettingsPlugin;
 use crate::startup::StartupScreenPlugin;
 use crate::widget::EditorWidgetPlugin;
 use crate::window::EditorWindowPlugin;
@@ -29,6 +31,7 @@ impl Plugin for CrashIDEUiPlugin {
             .add_plugins((
                 StartupScreenPlugin, EditorWidgetPlugin, EditorPlugin,
                 EditorWindowPlugin, OpenProjectPlugin, SwitchProjectPlugin,
+                SettingsPlugin,
             ))
         ;
     }

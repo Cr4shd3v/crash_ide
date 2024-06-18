@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crash_ide_assets::DefaultFonts;
+use crate::settings::SettingsScreen;
 use crate::startup::{StartupContentRoot, StartupScreenState};
 
 pub(crate) struct StartupSettingsPlugin;
@@ -15,9 +15,6 @@ impl Plugin for StartupSettingsPlugin {
 fn build_settings(mut commands: Commands, content_parent: Query<Entity, With<StartupContentRoot>>) {
     let entity = content_parent.single();
     commands.entity(entity).despawn_descendants().with_children(|parent| {
-        parent.spawn(TextBundle::from_section("Settings", TextStyle {
-            font: DefaultFonts::ROBOTO_REGULAR,
-            ..default()
-        }));
+        parent.spawn((NodeBundle::default(), SettingsScreen));
     });
 }
