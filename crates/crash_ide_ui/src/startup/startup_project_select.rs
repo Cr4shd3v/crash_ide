@@ -1,3 +1,4 @@
+use std::fs;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 use crash_ide_config::EditorConfigProjects;
@@ -23,6 +24,7 @@ impl Plugin for StartupProjectSelectPlugin {
 #[derive(Component)]
 struct ProjectRow {
     path: String,
+    folder_exists: bool,
 }
 
 #[derive(Component)]
@@ -104,6 +106,8 @@ fn build_project_select(
             ..default()
         }).with_children(|parent| {
             for (path, project) in &projects.projects {
+                let folder_exists = fs::metadata(path).is_ok();
+
                 parent.spawn((NodeBundle {
                     style: Style {
                         flex_direction: FlexDirection::Row,
@@ -115,8 +119,10 @@ fn build_project_select(
                     background_color: BackgroundColor(Color::NONE),
                     ..default()
                 }, ProjectRow {
-                    path: path.clone()
-                }, Hoverable::new(Color::BLACK.with_a(0.2)), Interaction::None)).with_children(|parent| {
+                    path: path.clone(),
+                    folder_exists,
+                }, Hoverable::new(if folder_exists { Color::BLACK.with_a(0.2) } else { Color::NONE }),
+                              Interaction::None)).with_children(|parent| {
                     parent.spawn(NodeBundle {
                         style: Style {
                             flex_direction: FlexDirection::Column,
@@ -126,7 +132,7 @@ fn build_project_select(
                     }).with_children(|parent| {
                         parent.spawn(TextBundle::from_section(&project.name, TextStyle {
                             font_size: 20.0,
-                            color: Color::WHITE,
+                            color: if folder_exists { Color::WHITE } else { Color::GRAY.with_a(0.8) },
                             font: DefaultFonts::ROBOTO_REGULAR,
                         }));
 
@@ -161,6 +167,10 @@ fn handle_row_click(
 ) {
     for (interaction, row) in query.iter() {
         if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        if !row.folder_exists {
             continue;
         }
 
