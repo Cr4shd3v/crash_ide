@@ -2,21 +2,24 @@ use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 
-use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
-use crash_ide_file_watcher::{CreateKind, EventKind, FileWatcher, FileWatcherInstance, ModifyKind, RemoveKind, RenameMode};
+use crash_ide_file_watcher::FileWatcher;
 use crash_ide_project::FindProjectInParents;
 use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
+pub use file_path::*;
 
 use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::FileContextMenuPlugin;
+use crate::editor::editor_left_menu::filesystem_menu::file_watcher::handle_file_watcher;
 use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
 
 mod file_context_menu;
 mod filename_dialog;
+mod file_path;
+mod file_watcher;
 
 pub struct FilesystemMenuPlugin;
 
@@ -327,35 +330,6 @@ fn double_click_row(
     }
 }
 
-#[derive(SystemParam)]
-pub struct FilePath<'w, 's> {
-    query: Query<'w, 's, (&'static Parent, &'static FileDisplay, Option<&'static ProjectRoot>)>,
-}
-
-impl<'w, 's> FilePath<'w, 's> {
-    pub fn get_full_path(&self, row_entity: Entity) -> String {
-        let mut entity = row_entity;
-        let mut path = vec![];
-
-        loop {
-            let (parent, file_display, root) = self.query.get(entity).unwrap();
-
-            if let Some(root) = root {
-                path.reverse();
-                return format!("{}/{}", root.full_path, path.join("/"));
-            } else {
-                path.push(file_display.filename.clone());
-            }
-
-            entity = parent.get();
-        }
-    }
-
-    pub fn get_directory(&self, row_entity: Entity) -> String {
-        self.get_full_path(self.query.get(row_entity).unwrap().0.get())
-    }
-}
-
 fn expand_directory(
     mut commands: Commands,
     mut event_reader: EventReader<ExpandDirEvent>,
@@ -435,84 +409,6 @@ fn expand_directory(
             }
 
             commands.entity(event.row_entity).push_children(entities.as_slice());
-        }
-    }
-}
-
-fn handle_file_watcher(
-    query: Query<&FileWatcherInstance, With<ProjectRoot>>,
-) {
-    for watcher in query.iter() {
-        let mut modify_from = vec![];
-        let mut modify_to = vec![];
-        let mut modify_both = vec![];
-
-        while let Ok(event) = watcher.receiver().try_recv() {
-            let first_path = event.paths[0].to_str().unwrap().to_string();
-
-            match event.kind {
-                EventKind::Create(create) => {
-                    match create {
-                        CreateKind::File => {
-                            // Create file
-                        }
-                        CreateKind::Folder => {
-                            // Create folder
-                        }
-                        _ => {}
-                    }
-                }
-                EventKind::Modify(modify) => {
-                    match modify {
-                        ModifyKind::Name(name) => {
-                            match name {
-                                RenameMode::To => {
-                                    modify_to.push(first_path);
-                                }
-                                RenameMode::From => {
-                                    modify_from.push(first_path);
-                                }
-                                RenameMode::Both => {
-                                    let to_path = event.paths[1].to_str().unwrap().to_string();
-                                    modify_both.push((first_path.clone(), to_path.clone()));
-
-                                    // Rename
-                                }
-                                _ => {}
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-                EventKind::Remove(remove) => {
-                    match remove {
-                        RemoveKind::File => {
-                            // Remove file
-                        }
-                        RemoveKind::Folder => {
-                            // Remove folder
-                        }
-                        _ => {}
-                    }
-                }
-                _ => {}
-            }
-        }
-
-        for path in modify_to {
-            if modify_both.iter().any(|v| v.1 == path) {
-                continue;
-            }
-
-            // Like create file
-        }
-
-        for path in modify_from {
-            if modify_both.iter().any(|v| v.0 == path) {
-                continue;
-            }
-
-            // Like delete file
         }
     }
 }
