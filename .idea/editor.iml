@@ -18,6 +18,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_notification/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_fs/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_clipboard/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_file_watcher/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
