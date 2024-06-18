@@ -8,6 +8,7 @@ use bevy::ui::FocusPolicy;
 
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
+use crash_ide_file_watcher::{CreateKind, EventKind, FileWatcher, FileWatcherInstance, ModifyKind, RemoveKind, RenameMode};
 use crash_ide_project::FindProjectInParents;
 use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
 
@@ -23,7 +24,10 @@ impl Plugin for FilesystemMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, ((spawn_left_menu, expand_directory), spawn_all_rows).chain())
-            .add_systems(Update, (directory_expand_icon, double_click_row, highlight_clicked_row))
+            .add_systems(Update, (
+                directory_expand_icon, double_click_row, highlight_clicked_row,
+                handle_file_watcher,
+            ))
             .add_event::<ExpandDirEvent>()
             .add_plugins(FileContextMenuPlugin)
         ;
@@ -105,6 +109,9 @@ fn spawn_left_menu(
                 )).with_children(|parent| {
                     parent.spawn((
                         FileDisplay::new(project.crash_ide_project.name.clone(), false, 0),
+                        FileWatcher {
+                            path: full_path.clone(),
+                        },
                         ProjectRoot { display_path, full_path },
                     ));
                 });
@@ -428,6 +435,84 @@ fn expand_directory(
             }
 
             commands.entity(event.row_entity).push_children(entities.as_slice());
+        }
+    }
+}
+
+fn handle_file_watcher(
+    query: Query<&FileWatcherInstance, With<ProjectRoot>>,
+) {
+    for watcher in query.iter() {
+        let mut modify_from = vec![];
+        let mut modify_to = vec![];
+        let mut modify_both = vec![];
+
+        while let Ok(event) = watcher.receiver().try_recv() {
+            let first_path = event.paths[0].to_str().unwrap().to_string();
+
+            match event.kind {
+                EventKind::Create(create) => {
+                    match create {
+                        CreateKind::File => {
+                            // Create file
+                        }
+                        CreateKind::Folder => {
+                            // Create folder
+                        }
+                        _ => {}
+                    }
+                }
+                EventKind::Modify(modify) => {
+                    match modify {
+                        ModifyKind::Name(name) => {
+                            match name {
+                                RenameMode::To => {
+                                    modify_to.push(first_path);
+                                }
+                                RenameMode::From => {
+                                    modify_from.push(first_path);
+                                }
+                                RenameMode::Both => {
+                                    let to_path = event.paths[1].to_str().unwrap().to_string();
+                                    modify_both.push((first_path.clone(), to_path.clone()));
+
+                                    // Rename
+                                }
+                                _ => {}
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+                EventKind::Remove(remove) => {
+                    match remove {
+                        RemoveKind::File => {
+                            // Remove file
+                        }
+                        RemoveKind::Folder => {
+                            // Remove folder
+                        }
+                        _ => {}
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        for path in modify_to {
+            if modify_both.iter().any(|v| v.1 == path) {
+                continue;
+            }
+
+            // Like create file
+        }
+
+        for path in modify_from {
+            if modify_both.iter().any(|v| v.0 == path) {
+                continue;
+            }
+
+            // Like delete file
         }
     }
 }

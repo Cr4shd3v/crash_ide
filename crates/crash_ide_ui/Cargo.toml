@@ -17,3 +17,4 @@ crash_ide_console = { workspace = true }
 crash_ide_util = { workspace = true }
 crash_ide_project = { workspace = true }
 crash_ide_notification = { workspace = true }
+crash_ide_file_watcher = { workspace = true }
