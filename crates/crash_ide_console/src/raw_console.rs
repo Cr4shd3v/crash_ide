@@ -19,7 +19,7 @@ pub struct RawConsole {
 
 impl RawConsole {
     pub fn new(start_dir: impl AsRef<Path>) -> Result<Self, String> {
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
             let mut cmd = Command::new("bash");
         #[cfg(target_os = "windows")]
             let mut cmd = Command::new("cmd");
