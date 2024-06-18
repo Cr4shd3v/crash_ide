@@ -8,6 +8,8 @@ use bevy::ui::RelativeCursorPosition;
 use crash_ide_clipboard::Clipboard;
 use crate::cursor::SetCursorEvent;
 
+const INNER_TEXT_MARGIN: f32 = 5.0;
+
 pub(super) struct TextInputPlugin;
 
 impl Plugin for TextInputPlugin {
@@ -472,7 +474,7 @@ fn create_text_input(
                     ..default()
                 },
                 style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
+                    margin: UiRect::all(Val::Px(INNER_TEXT_MARGIN)),
                     ..default()
                 },
                 ..default()
@@ -680,13 +682,16 @@ fn focus_text_input(
 
         let cursor_pos_relative = cursor_pos_normalized.mul(node_size);
 
-        let calculated_line = cursor_pos_relative.y / font_size;
+        let calculated_line = (cursor_pos_relative.y / font_size).round() as usize;
         let calculated_column = (cursor_pos_relative.x / (font_size * 0.5)).round() as usize;
 
-        let lines = value.0.lines()
-            .take(calculated_line.round() as usize + 1)
+        let lines = value.0.split("\n")
+            .take(calculated_line)
             .collect::<Vec<&str>>();
-        let mut new_pos = lines[..lines.len() - 2].join("\n").len() + calculated_column;
+
+        let mut new_pos = if lines.len() > 1 {
+            lines[..lines.len() - 1].join("\n").len()
+        } else { 0 } + 1; // +1 for last line ending
 
         if calculated_column > lines[lines.len() - 1].len() {
             new_pos += lines[lines.len() - 1].len();
