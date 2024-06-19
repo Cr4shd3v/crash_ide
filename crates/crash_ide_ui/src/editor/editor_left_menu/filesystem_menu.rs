@@ -2,20 +2,24 @@ use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 
-use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
+use crash_ide_file_watcher::FileWatcher;
 use crash_ide_project::FindProjectInParents;
 use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
+pub use file_path::*;
 
 use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::FileContextMenuPlugin;
+use crate::editor::editor_left_menu::filesystem_menu::file_watcher::handle_file_watcher;
 use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
 
 mod file_context_menu;
 mod filename_dialog;
+mod file_path;
+mod file_watcher;
 
 pub struct FilesystemMenuPlugin;
 
@@ -23,7 +27,10 @@ impl Plugin for FilesystemMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, ((spawn_left_menu, expand_directory), spawn_all_rows).chain())
-            .add_systems(Update, (directory_expand_icon, double_click_row, highlight_clicked_row))
+            .add_systems(Update, (
+                directory_expand_icon, double_click_row, highlight_clicked_row,
+                handle_file_watcher,
+            ))
             .add_event::<ExpandDirEvent>()
             .add_plugins(FileContextMenuPlugin)
         ;
@@ -105,6 +112,9 @@ fn spawn_left_menu(
                 )).with_children(|parent| {
                     parent.spawn((
                         FileDisplay::new(project.crash_ide_project.name.clone(), false, 0),
+                        FileWatcher {
+                            path: full_path.clone(),
+                        },
                         ProjectRoot { display_path, full_path },
                     ));
                 });
@@ -317,35 +327,6 @@ fn double_click_row(
                 expand: expanded.is_none(),
             });
         }
-    }
-}
-
-#[derive(SystemParam)]
-pub struct FilePath<'w, 's> {
-    query: Query<'w, 's, (&'static Parent, &'static FileDisplay, Option<&'static ProjectRoot>)>,
-}
-
-impl<'w, 's> FilePath<'w, 's> {
-    pub fn get_full_path(&self, row_entity: Entity) -> String {
-        let mut entity = row_entity;
-        let mut path = vec![];
-
-        loop {
-            let (parent, file_display, root) = self.query.get(entity).unwrap();
-
-            if let Some(root) = root {
-                path.reverse();
-                return format!("{}/{}", root.full_path, path.join("/"));
-            } else {
-                path.push(file_display.filename.clone());
-            }
-
-            entity = parent.get();
-        }
-    }
-
-    pub fn get_directory(&self, row_entity: Entity) -> String {
-        self.get_full_path(self.query.get(row_entity).unwrap().0.get())
     }
 }
 
