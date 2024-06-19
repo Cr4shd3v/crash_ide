@@ -30,11 +30,12 @@ pub trait EditorConfig: Resource + Serialize {
 #[derive(Resource, Default)]
 pub(crate) struct ConfigLoadStatus {
     pub projects: bool,
+    pub general_settings: bool,
 }
 
 pub(crate) fn check_config_load_status(config_load_status: Res<ConfigLoadStatus>, mut load_status: ResMut<EditorLoadStatus>) {
     if config_load_status.is_changed() {
-        if config_load_status.projects {
+        if config_load_status.projects && config_load_status.general_settings {
             load_status.config_loaded = true;
         }
     }

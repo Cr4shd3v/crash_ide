@@ -68,7 +68,6 @@ fn spawn_startup_screen(
                 style: Style {
                     width: Val::Percent(80.0),
                     flex_direction: FlexDirection::Column,
-                    padding: UiRect::all(Val::Percent(1.0)),
                     ..default()
                 },
                 ..default()

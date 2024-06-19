@@ -5,9 +5,11 @@
 mod project;
 mod home_dir;
 mod load;
+mod general;
 
 pub use project::*;
 pub use home_dir::*;
+pub use general::*;
 pub(crate) use load::*;
 use bevy::prelude::*;
 use crash_ide_state::EditorState;
@@ -19,9 +21,12 @@ impl Plugin for CrashIDEConfigPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<ConfigLoadStatus>()
-            .add_systems(Startup, (load_home_dir, load_projects_config).chain())
+            .add_systems(Startup, (load_home_dir, (load_projects_config, load_general_settings)).chain())
             .add_systems(Update, check_config_load_status.run_if(in_state(EditorState::Loading)))
-            .add_systems(Update, save_config_on_change::<EditorConfigProjects>())
+            .add_systems(Update, (
+                save_config_on_change::<EditorConfigProjects>(),
+                save_config_on_change::<GeneralSettings>(),
+            ))
         ;
     }
 }
