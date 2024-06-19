@@ -693,8 +693,14 @@ fn focus_text_input(
             lines[..lines.len() - 1].join("\n").len()
         } else { 0 } + 1; // +1 for last line ending
 
-        if calculated_column > lines[lines.len() - 1].len() {
-            new_pos += lines[lines.len() - 1].len();
+        let line_length = if lines.len() > 0 {
+            lines[lines.len() - 1].len()
+        } else {
+            0
+        };
+
+        if calculated_column > line_length {
+            new_pos += line_length;
         } else {
             new_pos += calculated_column;
         }
