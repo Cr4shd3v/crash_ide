@@ -19,7 +19,6 @@ impl<'w, 's> RowEntityFromPath<'w, 's> {
         };
 
         let remaining_path = strip.split("/").filter(|v| !v.is_empty()).collect::<Vec<&str>>();
-        println!("{:?}", remaining_path);
 
         self.iter_children_for_path(children, remaining_path, 0)
     }
