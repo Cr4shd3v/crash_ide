@@ -6,7 +6,7 @@ mod config;
 use bevy::prelude::*;
 use crash_ide_state::EditorState;
 use crate::activity::{close_project_event, handle_set_activity, set_filename, set_project_activity, set_project_activity_switch_window, trigger_rpc_update};
-use crate::client::{finish_loading, init_client};
+use crate::client::{DiscordRpcClient, finish_loading, init_client};
 use crate::config::{DiscordRpcConfig, DiscordRpcConfigPlugin};
 use crate::status::DiscordRpcActivity;
 
@@ -16,6 +16,7 @@ impl Plugin for CrashIDEDiscordRpcPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<DiscordRpcActivity>()
+            .init_resource::<DiscordRpcClient>()
             .add_systems(OnEnter(EditorState::Loaded), init_client)
             .add_systems(Update, (
                 finish_loading, set_project_activity, handle_set_activity,

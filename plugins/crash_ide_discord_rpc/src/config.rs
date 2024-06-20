@@ -4,6 +4,7 @@ use crash_ide_assets::DefaultFonts;
 use crash_ide_config::{ConfigAppExt, EditorConfig, PluginConfig};
 use crash_ide_ui::settings::{PluginSettingsMenuMarker, SettingsMenuRegistryExt};
 use crash_ide_widget::{Checkbox, CheckboxBundle, CheckboxLabel};
+use crate::client::{create_client_task, DiscordRpcClient, DiscordRpcTask};
 
 pub(super) struct DiscordRpcConfigPlugin;
 
@@ -20,7 +21,7 @@ impl Plugin for DiscordRpcConfigPlugin {
     }
 }
 
-#[derive(Resource, Serialize, Deserialize, Default)]
+#[derive(Resource, Serialize, Deserialize, Default, Clone, Debug)]
 pub struct DiscordRpcConfig {
     pub active: bool,
     pub show_project: bool,
@@ -110,6 +111,30 @@ macro_rules! checkbox_handle {
     };
 }
 
-checkbox_handle!(handle_active_checkbox, DiscordRpcConfig, DiscordRpcActiveCheckbox, active);
+fn handle_active_checkbox(
+    mut commands: Commands,
+    query: Query<Ref<Checkbox>, (Changed<Checkbox>, With<DiscordRpcActiveCheckbox>)>,
+    mut settings: ResMut<DiscordRpcConfig>,
+    mut client: ResMut<DiscordRpcClient>,
+) {
+    for checkbox in query.iter() {
+        if checkbox.is_added() {
+            continue;
+        }
+
+        settings.bypass_change_detection().active = checkbox.is_checked();
+
+        if settings.active {
+            let task = create_client_task();
+
+            commands.spawn(DiscordRpcTask(task));
+        } else {
+            if client.is_some() {
+                client.stop();
+            }
+        }
+    }
+}
+
 checkbox_handle!(handle_show_project_checkbox, DiscordRpcConfig, DiscordRpcShowProjectCheckbox, show_project);
 checkbox_handle!(handle_show_filename_checkbox, DiscordRpcConfig, DiscordRpcShowFilenameCheckbox, show_filename);

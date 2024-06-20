@@ -23,7 +23,7 @@ pub(super) fn close_project_event(
     mut discord_rpc_activity: ResMut<DiscordRpcActivity>,
 ) {
     for _ in event_reader.read() {
-        discord_rpc_activity.project = DiscordRpcActivity::DEFAULT_ACTIVITY.to_string();
+        discord_rpc_activity.project = DiscordRpcActivity::SELECT_PROJECT_ACTIVITY.to_string();
         discord_rpc_activity.filename = None;
     }
 }
@@ -52,7 +52,7 @@ pub(super) fn set_project_activity_switch_window(
             };
             activity.filename = Some(file_view_instance.path.file_name().unwrap().to_str().unwrap().to_string());
         } else {
-            activity.project = DiscordRpcActivity::DEFAULT_ACTIVITY.to_string();
+            activity.project = DiscordRpcActivity::SELECT_PROJECT_ACTIVITY.to_string();
         };
     }
 }
@@ -69,24 +69,29 @@ pub(super) fn set_filename(
 pub(super) fn trigger_rpc_update(
     mut commands: Commands,
     activity: Res<DiscordRpcActivity>,
-    mut discord_rpc: Option<ResMut<DiscordRpcClient>>,
+    mut discord_rpc: ResMut<DiscordRpcClient>,
     settings: Res<DiscordRpcConfig>,
 ) {
-    if let Some(discord_rpc) = &mut discord_rpc {
+    if discord_rpc.is_some() {
         let title = activity.project.clone();
         let filename = activity.filename.clone();
 
-        let task = discord_rpc.set_activity(|act| {
+        let settings = settings.clone();
+        let task = discord_rpc.set_activity(move |act| {
             let mut act = act;
 
-            if settings.show_project {
-                act = act.details(title);
-            }
+            act = if settings.show_project {
+                act.details(title)
+            } else {
+                act.details(DiscordRpcActivity::DEFAULT_ACTIVITY)
+            };
 
             if settings.show_filename {
                 if let Some(filename) = filename {
                     act = act.state(filename);
                 }
+            } else {
+                act = act.state("");
             }
 
             act
