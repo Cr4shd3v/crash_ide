@@ -16,6 +16,9 @@ impl Plugin for GeneralSettingsMenuPlugin {
 #[derive(Component)]
 pub struct GeneralSettingsMenu;
 
+#[derive(Component)]
+struct OpenLastProjectCheckbox;
+
 fn spawn_general_settings_menu(
     mut commands: Commands,
     query: Query<Entity, Added<GeneralSettingsMenu>>,
@@ -32,7 +35,8 @@ fn spawn_general_settings_menu(
                         ..default()
                     })),
                     ..default()
-                }
+                },
+                OpenLastProjectCheckbox,
             ));
         });
     }
