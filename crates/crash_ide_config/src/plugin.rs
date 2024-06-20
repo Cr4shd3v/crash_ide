@@ -2,6 +2,14 @@ use std::fs;
 use bevy::prelude::*;
 use crate::{ConfigLoadStatus, EditorConfig, HomeDir};
 
+/// Extended [EditorConfig] for plugins
+pub trait PluginConfig: EditorConfig {
+    /// Display name of the plugin config.
+    ///
+    /// Used by the settings menu.
+    const DISPLAY_NAME: &'static str;
+}
+
 /// Adds the ability to simply register a plugin config.
 pub trait ConfigAppExt {
     /// Registers a [EditorConfig] as a plugin config.
@@ -22,12 +30,12 @@ fn register_function<T: EditorConfig>(mut load_status: ResMut<ConfigLoadStatus>)
 
 fn load_function<T: EditorConfig>(mut commands: Commands, home_dir: Res<HomeDir>, mut load_status: ResMut<ConfigLoadStatus>) {
     let projects_config_path = home_dir.config_path.join("plugins").join(T::FILENAME);
-    let config = if std::fs::metadata(&projects_config_path).is_err() {
+    let config = if fs::metadata(&projects_config_path).is_err() {
         let config = T::default();
-        std::fs::write(&projects_config_path, serde_json::to_vec(&config).unwrap()).unwrap();
+        fs::write(&projects_config_path, serde_json::to_vec(&config).unwrap()).unwrap();
         config
     } else {
-        serde_json::from_slice::<T>(std::fs::read(&projects_config_path).unwrap().as_slice())
+        serde_json::from_slice::<T>(fs::read(&projects_config_path).unwrap().as_slice())
             .unwrap_or(T::default())
     };
 

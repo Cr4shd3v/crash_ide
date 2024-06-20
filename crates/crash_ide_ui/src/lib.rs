@@ -9,7 +9,7 @@ mod window;
 pub mod editor;
 mod open_project;
 mod switch_project;
-mod settings;
+pub mod settings;
 mod checkbox;
 
 use bevy::prelude::*;

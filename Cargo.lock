@@ -1498,10 +1498,12 @@ name = "crash_ide_discord_rpc"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "crash_ide_assets",
  "crash_ide_config",
  "crash_ide_file",
  "crash_ide_project",
  "crash_ide_ui",
+ "crash_ide_widget",
  "discord-presence",
  "serde",
 ]
