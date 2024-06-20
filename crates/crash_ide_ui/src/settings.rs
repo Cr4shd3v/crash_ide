@@ -1,7 +1,9 @@
 mod general_settings_menu;
 
+use bevy::ecs::system::EntityCommands;
 use bevy::prelude::*;
 use crash_ide_assets::DefaultFonts;
+use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::Hoverable;
 use crate::settings::general_settings_menu::{GeneralSettingsMenu, GeneralSettingsMenuPlugin};
 use crate::window::AllWindows;
@@ -11,7 +13,7 @@ pub(super) struct SettingsPlugin;
 impl Plugin for SettingsPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, (spawn_settings_screen, settings_window))
+            .add_systems(Update, (spawn_settings_screen, settings_window, change_menu))
             .add_plugins(GeneralSettingsMenuPlugin)
         ;
     }
@@ -40,22 +42,28 @@ fn settings_window(
     }
 }
 
-#[derive(Component, Default, PartialEq)]
+#[derive(Component)]
+pub struct PluginSettingsMenuMarker(pub String);
+
+#[derive(Component, Default, PartialEq, Clone)]
 pub enum SettingsScreen {
     #[default]
     General,
+    Plugin(String),
 }
 
 impl SettingsScreen {
-    pub fn title(&self) -> &'static str {
+    pub fn title(&self) -> String {
         match self {
-            SettingsScreen::General => "General",
+            SettingsScreen::General => "General".to_string(),
+            SettingsScreen::Plugin(v) => v.clone(),
         }
     }
 
-    pub fn marker(&self) -> impl Bundle {
+    pub fn marker<'a>(&self, builder: &'a mut ChildBuilder) -> EntityCommands<'a> {
         match self {
-            SettingsScreen::General => GeneralSettingsMenu,
+            SettingsScreen::General => builder.spawn(GeneralSettingsMenu),
+            SettingsScreen::Plugin(v) => builder.spawn(PluginSettingsMenuMarker(v.clone())),
         }
     }
 }
@@ -68,14 +76,14 @@ fn spawn_settings_screen(
         commands.entity(entity).despawn_descendants().with_children(|parent| {
             spawn_left_menu(parent, screen);
 
-            parent.spawn((NodeBundle {
+            screen.marker(parent).insert(NodeBundle {
                 style: Style {
                     width: Val::Percent(80.0),
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
                 ..default()
-            }, screen.marker()));
+            });
         });
     }
 }
@@ -150,3 +158,26 @@ fn left_menu_entry(builder: &mut ChildBuilder, menu: SettingsScreen, active_scre
         }));
     });
 }
+
+fn change_menu(
+    query: Query<(Entity, &SettingsLeftMenuEntry, &Interaction), Changed<Interaction>>,
+    mut settings_screen: ParamSet<(
+        FindComponentInParents<SettingsScreen>,
+        Query<&mut SettingsScreen>,
+    )>,
+) {
+    for (entity, menu_entry, interaction) in query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let screen = settings_screen.p0().find_entity(entity).unwrap();
+        if let Ok(mut screen) = settings_screen.p1().get_mut(screen) {
+            if *screen != menu_entry.0 {
+                *screen = menu_entry.0.clone();
+            }
+        }
+    }
+}
+
+
