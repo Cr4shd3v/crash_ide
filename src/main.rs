@@ -3,6 +3,7 @@
 #![warn(missing_docs)]
 
 use bevy::prelude::*;
+use bevy::render::pipelined_rendering::PipelinedRenderingPlugin;
 use bevy::window::ExitCondition;
 use crash_ide_assets::CrashIDEAssetPlugin;
 use crash_ide_clipboard::CrashIDEClipboardPlugin;
@@ -30,7 +31,7 @@ fn main() {
         #[cfg(all(not(debug_assertions), target_os = "linux"))]
         file_path: "/var/lib/crash-ide".to_string(),
         ..default()
-    }));
+    }).disable::<PipelinedRenderingPlugin>());
 
     app.add_plugins(CrashIDEStatePlugin);
     app.add_plugins(CrashIDEConfigPlugin);

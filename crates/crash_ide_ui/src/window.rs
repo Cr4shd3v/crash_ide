@@ -4,7 +4,7 @@ use bevy::render::camera::RenderTarget;
 use bevy::utils::HashMap;
 use bevy::window::{WindowCreated, WindowRef, WindowResolution};
 use bevy::winit::WinitWindows;
-use crash_ide_config::EditorConfigProjects;
+use crash_ide_config::{EditorConfigProjects, GeneralSettings};
 use crash_ide_project::{CloseProjectEvent, LoadedEditorProject, OpenProjectEvent};
 use crash_ide_state::EditorState;
 use crate::startup::StartupScreenState;
@@ -70,7 +70,12 @@ fn open_last_projects(
     config: Res<EditorConfigProjects>,
     mut open_project: EventWriter<OpenProjectEvent>,
     startup_window: Query<Entity, With<StartupWindow>>,
+    settings: Res<GeneralSettings>,
 ) {
+    if !settings.open_last_project_on_startup {
+        return;
+    }
+
     let window_entity = startup_window.single();
     let mut window_id = Some(window_entity);
 
