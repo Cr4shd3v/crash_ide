@@ -684,8 +684,6 @@ fn focus_text_input(
 
         let calculated_line = (cursor_pos_relative.y / font_size).round() as usize;
         let calculated_column = (cursor_pos_relative.x / (font_size * 0.455)).floor() as usize;
-        println!("Cursor: {:?}, Font Size: {}", cursor_pos_relative, font_size);
-        println!("Calc: {}", calculated_column);
 
         let lines = value.0.split("\n")
             .take(calculated_line)
