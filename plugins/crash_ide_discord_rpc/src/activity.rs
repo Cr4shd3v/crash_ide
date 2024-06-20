@@ -90,8 +90,6 @@ pub(super) fn trigger_rpc_update(
                 if let Some(filename) = filename {
                     act = act.state(filename);
                 }
-            } else {
-                act = act.state("");
             }
 
             act
