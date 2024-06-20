@@ -14,3 +14,4 @@ crash_ide_ui = { workspace = true }
 crash_ide_file = { workspace = true }
 crash_ide_config = { workspace = true }
 crash_ide_assets = { workspace = true }
+crash_ide_state = { workspace = true }

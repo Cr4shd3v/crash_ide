@@ -5,6 +5,7 @@ use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
 use discord_presence::{Client, DiscordError};
 use discord_presence::models::Activity;
+use crate::config::DiscordRpcConfig;
 use crate::status::DiscordRpcActivity;
 
 #[derive(Resource)]
@@ -42,7 +43,12 @@ pub(super) struct DiscordRpcTask<T>(pub DiscordTaskType<T>);
 
 pub(super) fn init_client(
     mut commands: Commands,
+    settings: Res<DiscordRpcConfig>,
 ) {
+    if !settings.active {
+        return;
+    }
+
     let pool = AsyncComputeTaskPool::get();
 
     let task: DiscordTaskType<DiscordRpcClient> = pool.spawn(async move {

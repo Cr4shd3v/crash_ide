@@ -5,6 +5,7 @@ use crash_ide_project::{CloseProjectEvent, LoadedEditorProject, OpenProjectEvent
 use crash_ide_ui::editor::ProjectsFileViews;
 use crash_ide_ui::SwitchProjectWindowEvent;
 use crate::client::{DiscordRpcClient, DiscordRpcTask, SetActivityMarker};
+use crate::config::DiscordRpcConfig;
 use crate::status::DiscordRpcActivity;
 
 pub(super) fn set_project_activity(
@@ -69,16 +70,25 @@ pub(super) fn trigger_rpc_update(
     mut commands: Commands,
     activity: Res<DiscordRpcActivity>,
     mut discord_rpc: Option<ResMut<DiscordRpcClient>>,
+    settings: Res<DiscordRpcConfig>,
 ) {
     if let Some(discord_rpc) = &mut discord_rpc {
         let title = activity.project.clone();
         let filename = activity.filename.clone();
 
         let task = discord_rpc.set_activity(|act| {
-            let mut act = act.details(title);
-            if let Some(filename) = filename {
-                act = act.state(filename);
+            let mut act = act;
+
+            if settings.show_project {
+                act = act.details(title);
             }
+
+            if settings.show_filename {
+                if let Some(filename) = filename {
+                    act = act.state(filename);
+                }
+            }
+
             act
         });
 
