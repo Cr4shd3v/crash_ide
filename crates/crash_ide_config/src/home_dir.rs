@@ -19,6 +19,11 @@ pub(crate) fn load_home_dir(mut commands: Commands) {
         fs::create_dir(&config_path).unwrap();
     }
 
+    let config_plugin_path = config_path.join("plugins");
+    if fs::metadata(&config_plugin_path).is_err() {
+        fs::create_dir(config_plugin_path).unwrap();
+    }
+
     let projects_path = home_path.join("CrashIDEProjects");
     if fs::metadata(&projects_path).is_err() {
         fs::create_dir(&projects_path).unwrap();

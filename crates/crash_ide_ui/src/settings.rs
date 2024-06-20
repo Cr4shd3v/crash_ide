@@ -94,6 +94,32 @@ fn spawn_left_menu(builder: &mut ChildBuilder, active_screen: &SettingsScreen) {
         ..default()
     }).with_children(|parent| {
         left_menu_entry(parent, SettingsScreen::General, active_screen);
+
+        parent.spawn(NodeBundle {
+            style: Style {
+                margin: UiRect::top(Val::Px(15.0)),
+                flex_direction: FlexDirection::Row,
+                justify_content: JustifyContent::Center,
+                width: Val::Percent(100.0),
+                border: UiRect::bottom(Val::Px(2.0)),
+                ..default()
+            },
+            border_color: BorderColor(Color::GRAY.with_a(0.1)),
+            ..default()
+        }).with_children(|parent| {
+            parent.spawn(TextBundle {
+                text: Text::from_section("Plugins", TextStyle {
+                    font: DefaultFonts::ROBOTO_REGULAR,
+                    font_size: 16.0,
+                    ..default()
+                }),
+                style: Style {
+                    margin: UiRect::bottom(Val::Px(5.0)),
+                    ..default()
+                },
+                ..default()
+            });
+        });
     });
 }
 
