@@ -121,10 +121,13 @@ fn save_resolution(
 
 fn process_new_window(
     mut commands: Commands,
-    spawned_windows: Query<Entity, Added<Window>>,
+    resolution: Res<DefaultWindowResolution>,
+    mut spawned_windows: Query<(Entity, &mut Window), Added<Window>>,
     mut all_windows: ResMut<AllWindows>,
 ) {
-    for window_entity in spawned_windows.iter() {
+    for (window_entity, mut window) in spawned_windows.iter_mut() {
+        window.resolution.set_scale_factor_override(resolution.0.scale_factor_override());
+
         let camera_id = commands.spawn(Camera2dBundle {
             camera: Camera {
                 target: RenderTarget::Window(WindowRef::Entity(window_entity)),

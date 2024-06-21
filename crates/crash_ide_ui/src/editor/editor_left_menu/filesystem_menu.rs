@@ -155,8 +155,8 @@ fn spawn_all_rows(
                             ..default()
                         },
                         style: Style {
-                            height: Val::Px(20.0),
-                            margin: UiRect::left(Val::Px(20.0 * file_display.level as f32)),
+                            height: Val::Vh(2.0),
+                            margin: UiRect::left(Val::Vh(2.0 * file_display.level as f32)),
                             ..default()
                         },
                         z_index: ZIndex::Local(1),
@@ -183,9 +183,9 @@ fn spawn_all_rows(
                         ..default()
                     },
                     style: Style {
-                        height: Val::Px(20.0),
+                        height: Val::Vh(2.0),
                         margin: if file_display.is_file {
-                            UiRect::left(Val::Px(20.0 + 20.0 * file_display.level as f32))
+                            UiRect::left(Val::Vh(2.0 + 2.0 * file_display.level as f32))
                         } else {
                             UiRect::default()
                         },

@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use bevy::text::BreakLineOn;
 use bevy::ui::RelativeCursorPosition;
 use crash_ide_clipboard::Clipboard;
+use crate::ActiveWindow;
 use crate::cursor::SetCursorEvent;
 
 const INNER_TEXT_MARGIN: f32 = 5.0;
@@ -655,6 +656,7 @@ fn focus_text_input(
         &mut TextInputCursorPos,
     ), (Changed<Interaction>, With<TextInputValue>)>,
     current_focus: Query<Entity, With<TextInputFocused>>,
+    window: Query<&Window, With<ActiveWindow>>,
     buttons: Res<ButtonInput<MouseButton>>,
     mut cursor_writer: EventWriter<SetCursorEvent>,
 ) {
@@ -680,7 +682,8 @@ fn focus_text_input(
         let cursor_pos_normalized = relative_cursor_pos.normalized.unwrap();
         let font_size = text_style.0.font_size;
 
-        let cursor_pos_relative = cursor_pos_normalized.mul(node_size);
+        let scale = window.single().resolution.scale_factor();
+        let cursor_pos_relative = cursor_pos_normalized.mul(node_size) * scale;
 
         let calculated_line = (cursor_pos_relative.y / font_size).round() as usize;
         let calculated_column = (cursor_pos_relative.x / (font_size * 0.455)).floor() as usize;

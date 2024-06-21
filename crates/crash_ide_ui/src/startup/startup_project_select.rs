@@ -75,7 +75,7 @@ fn build_project_select(
                     font_size: 14.0,
                     font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
-                }));
+                }).with_no_wrap());
             });
 
             parent.spawn((ButtonBundle {
@@ -94,7 +94,7 @@ fn build_project_select(
                     font_size: 14.0,
                     font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
-                }));
+                }).with_no_wrap());
             });
         });
 

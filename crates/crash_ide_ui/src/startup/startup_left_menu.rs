@@ -35,7 +35,7 @@ pub(crate) fn startup_left_menu(builder: &mut ChildBuilder, icons: &Res<DefaultI
                     font: DefaultFonts::ROBOTO_REGULAR,
                     font_size: 16.0,
                     color: Color::GRAY.with_a(0.8),
-                }),
+                }).with_no_wrap(),
                 ..default()
             });
 
