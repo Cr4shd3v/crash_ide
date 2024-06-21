@@ -31,7 +31,7 @@ impl StartupWindow {
     /// Get the startup window resolution
     #[inline]
     pub fn get_resolution() -> WindowResolution {
-        WindowResolution::new(1280.0, 720.0).with_scale_factor_override(1.0)
+        WindowResolution::new(1920.0, 1080.0).with_scale_factor_override(1.0)
     }
 }
 
