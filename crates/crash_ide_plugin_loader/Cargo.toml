@@ -5,5 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { workspace = true }
+wasmtime = { workspace = true }
+wasmtime-wasi = { workspace = true }
 
 crash_ide_config = { workspace = true }

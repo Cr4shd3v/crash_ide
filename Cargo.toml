@@ -59,6 +59,8 @@ rfd = "^0.14"
 discord-presence = "^1.2"
 arboard = { version = "^3.4", default-features = false }
 notify = "^6.1"
+wasmtime = "^22.0"
+wasmtime-wasi = "^22.0"
 
 crash_ide_state = { path = "crates/crash_ide_state" }
 crash_ide_config = { path = "crates/crash_ide_config" }
