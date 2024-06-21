@@ -28,14 +28,6 @@ impl Plugin for EditorWindowPlugin {
 #[derive(Component)]
 pub struct StartupWindow;
 
-impl StartupWindow {
-    /// Get the startup window resolution
-    #[inline]
-    pub fn get_resolution() -> WindowResolution {
-        WindowResolution::new(1280.0, 720.0)
-    }
-}
-
 #[derive(Component)]
 pub struct ProjectWindow {
     pub project_crash_ide_config: Entity,
@@ -61,7 +53,6 @@ fn initial_window(
     mut commands: Commands,
 ) {
     commands.spawn((Window {
-        resolution: StartupWindow::get_resolution(),
         title: String::from("Crash Editor"),
         ..default()
     }, StartupWindow));
@@ -77,6 +68,7 @@ fn set_startup_window_resolution(
             (default_window_resolution.0.width() * 0.75).round() as u32,
             (default_window_resolution.0.height() * 0.75).round() as u32,
         );
+        window.position = WindowPosition::Centered(MonitorSelection::Current);
     }
 }
 
