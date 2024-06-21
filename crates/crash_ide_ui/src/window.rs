@@ -31,7 +31,7 @@ impl StartupWindow {
     /// Get the startup window resolution
     #[inline]
     pub fn get_resolution() -> WindowResolution {
-        WindowResolution::new(1920.0, 1080.0).with_scale_factor_override(1.0)
+        WindowResolution::new(1280.0, 720.0)
     }
 }
 
@@ -109,8 +109,13 @@ fn save_resolution(
     winit_windows: NonSend<WinitWindows>,
 ) {
     for WindowCreated { window } in event_reader.read() {
-        let monitor_size = winit_windows.get_window(window.clone()).unwrap().current_monitor().unwrap().size();
-        resolution.0 = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32).with_scale_factor_override(1.0);
+        let winit_window = winit_windows.get_window(window.clone()).unwrap();
+        let monitor = winit_window.current_monitor().unwrap();
+        let monitor_size = monitor.size();
+        let scale = monitor.scale_factor();
+
+        resolution.0 = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32)
+            .with_scale_factor_override(scale as f32);
     }
 }
 
