@@ -81,8 +81,6 @@ crash_ide_file_watcher = { path = "crates/crash_ide_file_watcher" }
 crash_ide_plugin_loader = { path = "crates/crash_ide_plugin_loader" }
 crash_ide_plugin_types = { path = "crates/crash_ide_plugin_types" }
 
-crash_ide_discord_rpc = { path = "plugins/crash_ide_discord_rpc" }
-
 [profile.dev]
 opt-level = 1
 
