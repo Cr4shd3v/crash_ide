@@ -2,33 +2,43 @@ use std::path::PathBuf;
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use crash_ide_file_watcher::{CreateKind, EventKind, FileWatcherInstance, ModifyKind, RemoveKind, RenameMode};
-use crate::editor::editor_left_menu::{FileDisplay, ProjectRoot};
+use crate::editor::editor_left_menu::{ExpandDirEvent, FileDisplay, ProjectRoot};
+use crate::editor::editor_left_menu::filesystem_menu::DirectoryExpanded;
 
 #[derive(SystemParam)]
 pub struct RowEntityFromPath<'w, 's> {
     root_query: Query<'w, 's, (&'static ProjectRoot, &'static Children)>,
     query: Query<'w, 's, (Entity, &'static Children, &'static FileDisplay)>,
+    expanded: Query<'w, 's, Option<&'static DirectoryExpanded>>,
+    expand_dir_event: EventWriter<'w, ExpandDirEvent>,
 }
 
 impl<'w, 's> RowEntityFromPath<'w, 's> {
     /// Returns new entry entity id
-    pub fn insert_new_entry(&self, commands: &mut Commands, root_entity: Entity, path: &str, is_file: bool) -> Option<Entity> {
+    pub fn insert_new_entry(&mut self, commands: &mut Commands, root_entity: Entity, path: &str, is_file: bool) -> Option<Entity> {
         let path_buf = PathBuf::from(path);
         let filename = path_buf.file_name().unwrap().to_str().unwrap().to_string();
         let dir = path.strip_suffix(&*filename).unwrap();
 
         let row_entity = self.get_row_entity(root_entity, &*dir)?;
         let (_, children, dir_display) = self.query.get(row_entity).unwrap();
+        let is_dir_expanded = self.expanded.get(row_entity).unwrap().is_some();
+        if !is_dir_expanded {
+            self.expand_dir_event.send(ExpandDirEvent {
+                row_entity,
+                expand: true,
+            });
+            return None;
+        }
 
-        let mut index = 0;
+        let mut index = 1;
         for (_, _, display) in self.query.iter_many(children) {
-            index += 1;
-
             if !is_file && display.is_file {
                 break;
             }
 
             if is_file && !display.is_file {
+                index += 1;
                 continue;
             }
 
@@ -39,6 +49,8 @@ impl<'w, 's> RowEntityFromPath<'w, 's> {
             if display.filename > filename {
                 break;
             }
+
+            index += 1;
         }
 
         let new_display = commands.spawn(FileDisplay {
@@ -89,7 +101,7 @@ impl<'w, 's> RowEntityFromPath<'w, 's> {
 pub(super) fn handle_file_watcher(
     mut commands: Commands,
     query: Query<(Entity, &FileWatcherInstance), With<ProjectRoot>>,
-    row_entity_from_path: RowEntityFromPath,
+    mut row_entity_from_path: RowEntityFromPath,
 ) {
     for (entity, watcher) in query.iter() {
         while let Ok(event) = watcher.receiver().try_recv() {
