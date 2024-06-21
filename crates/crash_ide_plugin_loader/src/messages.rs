@@ -25,19 +25,19 @@ fn parse_plugin_message(
             match bincode::decode_from_slice::<PluginMessage, _>(&all_bytes, bincode::config::standard()) {
                 Ok((plugin_message, len)) => {
                     all_bytes.drain(0..len);
-                    println!("{:?}", plugin_message);
                     match plugin_message {
                         PluginMessage::PluginInfo(info) => {
+                            info!("Plugin {} registered", &info.technical_name);
                             commands.entity(entity).insert(LoadedPluginInfo(info));
                             break;
                         }
                         PluginMessage::PrintLn(msg) => {
-                            println!("Message from plugin {}: {}", info.unwrap().0.technical_name, msg);
+                            info!("Plugin {}: {}", info.unwrap().0.technical_name, msg);
                         }
                     }
                 },
                 Err(e) => {
-                    println!("Could not decode plugin message: {}", e);
+                    error!("Could not decode plugin message: {}", e);
                 },
             }
         }

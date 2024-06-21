@@ -1,4 +1,4 @@
-use bevy::prelude::{Commands, Res};
+use bevy::prelude::*;
 use crash_ide_config::HomeDir;
 use crate::GlobalWasmEngine;
 use crate::plugin_instance::PluginInstance;
@@ -16,11 +16,11 @@ pub(super) fn load_plugins(
                     continue;
                 }
 
-                println!("Load plugin {}", path.to_str().unwrap());
+                info!("Load plugin {}", path.to_str().unwrap());
                 let instance = match PluginInstance::new(&wasm_engine.engine, path) {
                     Ok(instance) => instance,
                     Err(e) => {
-                        println!("Error loading plugin: {}", e);
+                        error!("Error loading plugin: {}", e);
                         continue;
                     }
                 };
