@@ -1,5 +1,5 @@
 use std::sync::{Arc, Mutex};
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime};
 use bevy::prelude::*;
 use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
@@ -82,7 +82,7 @@ pub(super) fn init_client(
 pub(super) fn create_client_task() -> DiscordTaskType<Option<Arc<Mutex<Client>>>> {
     let pool = AsyncComputeTaskPool::get();
     let task: DiscordTaskType<Option<Arc<Mutex<Client>>>> = pool.spawn(async move {
-        let mut rpc = Client::new(1251218926595997736);
+        let mut rpc = Client::with_error_config(1251218926595997736, Duration::from_secs(5), Some(10));
 
         rpc.on_ready(|_| {
             println!("Discord RPC started");
