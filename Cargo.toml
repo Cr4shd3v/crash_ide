@@ -39,10 +39,10 @@ crash_ide_assets = { workspace = true }
 crash_ide_file_picker = { workspace = true }
 crash_ide_console = { workspace = true }
 crash_ide_project = { workspace = true }
-crash_ide_discord_rpc = { workspace = true }
 crash_ide_notification = { workspace = true }
 crash_ide_clipboard = { workspace = true }
 crash_ide_file_watcher = { workspace = true }
+crash_ide_plugin_loader = { workspace = true }
 
 [workspace]
 members = ["crates/*", "plugins/*"]
@@ -73,6 +73,7 @@ crash_ide_project = { path = "crates/crash_ide_project" }
 crash_ide_notification = { path = "crates/crash_ide_notification" }
 crash_ide_clipboard = { path = "crates/crash_ide_clipboard" }
 crash_ide_file_watcher = { path = "crates/crash_ide_file_watcher" }
+crash_ide_plugin_loader = { path = "crates/crash_ide_plugin_loader" }
 
 crash_ide_discord_rpc = { path = "plugins/crash_ide_discord_rpc" }
 

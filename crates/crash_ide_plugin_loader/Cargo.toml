@@ -1,0 +1,9 @@
+[package]
+name = "crash_ide_plugin_loader"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true }
+
+crash_ide_config = { workspace = true }

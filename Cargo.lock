@@ -1446,11 +1446,11 @@ dependencies = [
  "crash_ide_clipboard",
  "crash_ide_config",
  "crash_ide_console",
- "crash_ide_discord_rpc",
  "crash_ide_file",
  "crash_ide_file_picker",
  "crash_ide_file_watcher",
  "crash_ide_notification",
+ "crash_ide_plugin_loader",
  "crash_ide_project",
  "crash_ide_state",
  "crash_ide_ui",
@@ -1544,6 +1544,14 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "crash_ide_assets",
+]
+
+[[package]]
+name = "crash_ide_plugin_loader"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "crash_ide_config",
 ]
 
 [[package]]
@@ -2681,6 +2689,10 @@ dependencies = [
  "objc",
  "paste",
 ]
+
+[[package]]
+name = "minimal_plugin"
+version = "0.1.0"
 
 [[package]]
 name = "miniz_oxide"
