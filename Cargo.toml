@@ -62,6 +62,8 @@ notify = "^6.1"
 wasmtime = "^22.0"
 wasmtime-wasi = "^22.0"
 bincode = "^2.0.0-rc.3"
+bytes = "^1.6"
+async-trait = "^0.1"
 
 crash_ide_state = { path = "crates/crash_ide_state" }
 crash_ide_config = { path = "crates/crash_ide_config" }
