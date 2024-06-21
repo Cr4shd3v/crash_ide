@@ -61,6 +61,7 @@ arboard = { version = "^3.4", default-features = false }
 notify = "^6.1"
 wasmtime = "^22.0"
 wasmtime-wasi = "^22.0"
+bincode = "^2.0.0-rc.3"
 
 crash_ide_state = { path = "crates/crash_ide_state" }
 crash_ide_config = { path = "crates/crash_ide_config" }
@@ -76,6 +77,7 @@ crash_ide_notification = { path = "crates/crash_ide_notification" }
 crash_ide_clipboard = { path = "crates/crash_ide_clipboard" }
 crash_ide_file_watcher = { path = "crates/crash_ide_file_watcher" }
 crash_ide_plugin_loader = { path = "crates/crash_ide_plugin_loader" }
+crash_ide_plugin_types = { path = "crates/crash_ide_plugin_types" }
 
 crash_ide_discord_rpc = { path = "plugins/crash_ide_discord_rpc" }
 

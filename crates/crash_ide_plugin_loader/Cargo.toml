@@ -7,5 +7,9 @@ edition = "2021"
 bevy = { workspace = true }
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
+bincode = { workspace = true }
+bytes = "1.6.0"
+async-trait = "0.1.80"
 
 crash_ide_config = { workspace = true }
+crash_ide_plugin_types = { workspace = true }

@@ -1091,6 +1091,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "bincode"
+version = "2.0.0-rc.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f11ea1a0346b94ef188834a65c068a03aec181c94896d481d7a0a40d85b0ce95"
+dependencies = [
+ "bincode_derive",
+ "serde",
+]
+
+[[package]]
+name = "bincode_derive"
+version = "2.0.0-rc.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e30759b3b99a1b802a7a3aa21c85c3ded5c28e1c83170d82d70f08bbf7f3e4c"
+dependencies = [
+ "virtue",
+]
+
+[[package]]
 name = "bit-set"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1803,10 +1822,21 @@ dependencies = [
 name = "crash_ide_plugin_loader"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "bevy",
+ "bincode",
+ "bytes",
  "crash_ide_config",
+ "crash_ide_plugin_types",
  "wasmtime",
  "wasmtime-wasi",
+]
+
+[[package]]
+name = "crash_ide_plugin_types"
+version = "0.1.0"
+dependencies = [
+ "bincode",
 ]
 
 [[package]]
@@ -3199,6 +3229,9 @@ dependencies = [
 [[package]]
 name = "minimal_plugin"
 version = "0.1.0"
+dependencies = [
+ "crash_ide_plugin_types",
+]
 
 [[package]]
 name = "miniz_oxide"
@@ -4886,6 +4919,12 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "virtue"
+version = "0.0.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dcc60c0624df774c82a0ef104151231d37da4962957d691c011c852b2473314"
 
 [[package]]
 name = "walkdir"
