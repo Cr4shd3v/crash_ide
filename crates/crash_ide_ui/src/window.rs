@@ -17,6 +17,7 @@ impl Plugin for EditorWindowPlugin {
             .add_systems(PreStartup, initial_window)
             .add_systems(OnEnter(EditorState::Loaded), open_last_projects)
             .add_systems(PreUpdate, (process_new_window, save_resolution))
+            .add_systems(Update, set_startup_window_resolution)
             .add_systems(PostUpdate, (despawn_window, check_for_exit, on_startup_window_despawn, track_open_projects))
             .init_resource::<DefaultWindowResolution>()
             .init_resource::<AllWindows>()
@@ -64,6 +65,19 @@ fn initial_window(
         title: String::from("Crash Editor"),
         ..default()
     }, StartupWindow));
+}
+
+fn set_startup_window_resolution(
+    mut query: Query<&mut Window, Added<StartupWindow>>,
+    default_window_resolution: Res<DefaultWindowResolution>,
+) {
+    for mut window in query.iter_mut() {
+        window.resolution = default_window_resolution.0.clone();
+        window.resolution.set_physical_resolution(
+            (default_window_resolution.0.width() * 0.75).round() as u32,
+            (default_window_resolution.0.height() * 0.75).round() as u32,
+        );
+    }
 }
 
 fn open_last_projects(
