@@ -173,8 +173,9 @@ impl Default for TextInputSettings {
 #[derive(Component, Default)]
 pub struct TextInputSubmitted(pub Option<String>);
 
+/// Marker component that a [Text] belongs to a text input
 #[derive(Component)]
-struct TextInputInner;
+pub struct TextInputInner;
 
 #[derive(Component)]
 struct TextInputPlaceholderInner;
@@ -185,6 +186,7 @@ struct InnerText<'w, 's> {
     text_query: Query<'w, 's, &'static mut Text, With<TextInputInner>>,
     children_query: Query<'w, 's, &'static Children>,
 }
+
 impl<'w, 's> InnerText<'w, 's> {
     fn get_mut(&mut self, entity: Entity) -> Option<Mut<'_, Text>> {
         self.children_query
