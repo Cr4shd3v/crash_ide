@@ -12,19 +12,21 @@ use wasmtime_wasi::preview1::WasiP1Ctx;
 
 use crash_ide_plugin_types::PluginInfo;
 
-use crate::stream::WasmIoOutStream;
+use crate::stream::{WasmIoInStream, WasmIoOutStream};
 
 #[derive(Component)]
 pub struct PluginInstance {
+    pub path: PathBuf,
     #[allow(unused)]
     handle: JoinHandle<Result<(), String>>,
     stdout: Arc<Mutex<Receiver<Vec<u8>>>>,
     stderr: Arc<Mutex<Receiver<Vec<u8>>>>,
+    stdin: WasmIoInStream,
 }
 
 impl PluginInstance {
     pub fn new(engine: &Engine, path: PathBuf) -> Result<Self, Box<dyn Error>> {
-        let module = Module::from_file(engine, path)?;
+        let module = Module::from_file(engine, &path)?;
 
         let mut linker: Linker<WasiP1Ctx> = Linker::new(engine);
         preview1::add_to_linker_sync(&mut linker, |t| t)?;
@@ -34,9 +36,11 @@ impl PluginInstance {
         let (stderr_tx, stderr_rx) = channel();
         let stdout = WasmIoOutStream::new(stdout_tx);
         let stderr = WasmIoOutStream::new(stderr_tx);
+        let stdin = WasmIoInStream::default();
         let wasi_ctx = WasiCtxBuilder::new()
             .stdout(stdout)
             .stderr(stderr)
+            .stdin(stdin.clone())
             .build_p1();
 
         let mut store = Store::new(engine, wasi_ctx);
@@ -49,14 +53,24 @@ impl PluginInstance {
         });
 
         Ok(Self {
+            path,
             handle,
             stdout: Arc::new(Mutex::new(stdout_rx)),
             stderr: Arc::new(Mutex::new(stderr_rx)),
+            stdin,
         })
     }
 
-    pub fn try_read(&self) -> Result<Vec<u8>, TryRecvError> {
+    pub(crate) fn try_read(&self) -> Result<Vec<u8>, TryRecvError> {
         self.stdout.lock().unwrap().try_recv()
+    }
+
+    pub(crate) fn try_read_error(&self) -> Result<Vec<u8>, TryRecvError> {
+        self.stderr.lock().unwrap().try_recv()
+    }
+
+    pub fn send(&self, bytes: Vec<u8>) {
+        self.stdin.bytes.lock().unwrap().extend(bytes);
     }
 }
 

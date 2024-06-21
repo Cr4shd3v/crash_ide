@@ -50,13 +50,13 @@ impl StdoutStream for WasmIoOutStream {
 
 #[derive(Clone)]
 pub struct WasmIoInStream {
-    bytes: Arc<Mutex<Bytes>>,
+    pub(crate) bytes: Arc<Mutex<Vec<u8>>>,
 }
 
 impl Default for WasmIoInStream {
     fn default() -> Self {
         Self {
-            bytes: Arc::new(Mutex::new(Bytes::new()))
+            bytes: Arc::new(Mutex::new(vec![]))
         }
     }
 }
@@ -70,8 +70,8 @@ impl HostInputStream for WasmIoInStream {
     fn read(&mut self, size: usize) -> StreamResult<Bytes> {
         let mut buffer = self.bytes.lock().unwrap();
         let size = size.min(buffer.len());
-        let read = buffer.split_to(size);
-        Ok(read)
+        let read = buffer.drain(0..size).collect::<Vec<u8>>();
+        Ok(Bytes::from(read))
     }
 }
 
