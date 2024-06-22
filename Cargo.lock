@@ -1819,6 +1819,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "crash_ide_plugin_api"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+]
+
+[[package]]
 name = "crash_ide_plugin_manager"
 version = "0.1.0"
 dependencies = [
@@ -1827,16 +1834,9 @@ dependencies = [
  "bincode",
  "bytes",
  "crash_ide_config",
- "crash_ide_plugin_types",
+ "crash_ide_plugin_api",
  "wasmtime",
  "wasmtime-wasi",
-]
-
-[[package]]
-name = "crash_ide_plugin_types"
-version = "0.1.0"
-dependencies = [
- "bincode",
 ]
 
 [[package]]
@@ -3230,7 +3230,7 @@ dependencies = [
 name = "minimal_plugin"
 version = "0.1.0"
 dependencies = [
- "crash_ide_plugin_types",
+ "crash_ide_plugin_api",
 ]
 
 [[package]]

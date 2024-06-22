@@ -2,12 +2,17 @@ use std::io::{stdout, Write};
 use bincode::{Decode, Encode};
 
 mod plugin_info;
+mod println;
+
 pub use plugin_info::*;
+pub use println::*;
+use crate::UpdateConfigFields;
 
 #[derive(Encode, Decode, Debug)]
 pub enum ServerboundPluginMessage {
     PluginInfo(PluginInfo),
-    PrintLn(String),
+    PrintLn(PrintLn),
+    UpdateConfigFields(UpdateConfigFields),
 }
 
 impl ServerboundPluginMessage {

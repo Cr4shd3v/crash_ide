@@ -10,7 +10,7 @@ use wasmtime::{Engine, Linker, Module, Store};
 use wasmtime_wasi::{preview1, WasiCtxBuilder};
 use wasmtime_wasi::preview1::WasiP1Ctx;
 
-use crash_ide_plugin_types::PluginInfo;
+use crash_ide_plugin_api::PluginInfo;
 
 use crate::stream::{WasmIoInStream, WasmIoOutStream};
 

@@ -79,7 +79,7 @@ crash_ide_notification = { path = "crates/crash_ide_notification" }
 crash_ide_clipboard = { path = "crates/crash_ide_clipboard" }
 crash_ide_file_watcher = { path = "crates/crash_ide_file_watcher" }
 crash_ide_plugin_manager = { path = "crates/crash_ide_plugin_manager" }
-crash_ide_plugin_types = { path = "crates/crash_ide_plugin_types" }
+crash_ide_plugin_api = { path = "crates/crash_ide_plugin_api" }
 
 [profile.dev]
 opt-level = 1

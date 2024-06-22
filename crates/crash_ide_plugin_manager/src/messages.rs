@@ -1,5 +1,6 @@
+use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-use crash_ide_plugin_types::{PluginboundMessage, ServerboundPluginMessage};
+use crash_ide_plugin_api::{PluginboundMessage, ServerboundPluginMessage, UpdateConfigFields};
 use crate::plugin_instance::{LoadedPluginInfo, PluginInstance};
 
 pub(super) struct PluginMessagesPlugin;
@@ -10,7 +11,7 @@ impl Plugin for PluginMessagesPlugin {
             .add_systems(PreUpdate, (parse_plugin_info, parse_plugin_message, plugin_error_messages))
             .add_systems(PostUpdate, send_plugin_messages)
             .add_event::<SendPluginMessage>()
-            .add_event::<ReceivedPluginMessage>()
+            .add_event::<ReceivedPluginMessage<UpdateConfigFields>>()
         ;
     }
 }
@@ -31,14 +32,14 @@ impl SendPluginMessage {
 }
 
 #[derive(Event)]
-pub struct ReceivedPluginMessage {
-    pub message: ServerboundPluginMessage,
+pub struct ReceivedPluginMessage<T> {
+    pub message: T,
     pub plugin_entity: Entity,
 }
 
 fn parse_plugin_info(
     mut commands: Commands,
-    query: Query<(Entity, &PluginInstance)>,
+    query: Query<(Entity, &PluginInstance), Without<LoadedPluginInfo>>,
 ) {
     'outer: for (entity, instance) in query.iter() {
         while let Ok(bytes) = instance.try_read() {
@@ -64,21 +65,29 @@ fn parse_plugin_info(
     }
 }
 
+#[derive(SystemParam)]
+struct PluginMessageEventWriter<'w> {
+    update_config_fields: EventWriter<'w, ReceivedPluginMessage<UpdateConfigFields>>,
+}
+
 fn parse_plugin_message(
     query: Query<(Entity, &PluginInstance, &LoadedPluginInfo)>,
-    mut event_writer: EventWriter<ReceivedPluginMessage>,
+    mut event_writer: PluginMessageEventWriter,
 ) {
     for (entity, instance, info) in query.iter() {
         while let Ok(bytes) = instance.try_read() {
             match bincode::decode_from_slice::<ServerboundPluginMessage, _>(&bytes, bincode::config::standard()) {
                 Ok((plugin_message, _)) => {
                     match plugin_message {
-                        ServerboundPluginMessage::PrintLn(msg) => {
-                            info!("Plugin {}: {}", info.0.technical_name, msg);
+                        ServerboundPluginMessage::PluginInfo(_) => {
+                            warn!("Plugin {} sent a second plugin info", info.0.technical_name);
                         }
-                        _ => {
-                            event_writer.send(ReceivedPluginMessage {
-                                message: plugin_message,
+                        ServerboundPluginMessage::PrintLn(msg) => {
+                            info!("Plugin {}: {}", info.0.technical_name, msg.text);
+                        }
+                        ServerboundPluginMessage::UpdateConfigFields(update_fields) => {
+                            event_writer.update_config_fields.send(ReceivedPluginMessage {
+                                message: update_fields,
                                 plugin_entity: entity,
                             });
                         }

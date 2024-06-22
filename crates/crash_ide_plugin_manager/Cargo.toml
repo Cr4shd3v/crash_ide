@@ -12,4 +12,4 @@ bytes = { workspace = true }
 async-trait = { workspace = true }
 
 crash_ide_config = { workspace = true }
-crash_ide_plugin_types = { workspace = true }
+crash_ide_plugin_api = { workspace = true }
