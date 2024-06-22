@@ -1766,7 +1766,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "crash_ide_discord_rpc"
+name = "crash_ide_discord_rpc_old"
 version = "0.1.0"
 dependencies = [
  "bevy",
