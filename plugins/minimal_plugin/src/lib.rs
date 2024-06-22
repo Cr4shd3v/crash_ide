@@ -1,6 +1,6 @@
 use std::thread::sleep;
 use std::time::Duration;
-use crash_ide_plugin_types::{PluginInfo, PluginMessage};
+use crash_ide_plugin_types::{PluginInfo, ServerboundPluginMessage};
 
 #[no_mangle]
 fn _plugin_main() {
@@ -10,7 +10,7 @@ fn _plugin_main() {
     }.register();
 
     loop {
-        PluginMessage::PrintLn("Hello from plugin!".to_string()).send();
+        ServerboundPluginMessage::PrintLn("Hello from plugin!".to_string()).send();
         sleep(Duration::from_secs(1));
     }
 }

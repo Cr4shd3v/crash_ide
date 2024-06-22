@@ -14,7 +14,7 @@ use crash_ide_file::CrashIDEFilePlugin;
 use crash_ide_file_picker::CrashIDEFilePickerPlugin;
 use crash_ide_file_watcher::CrashIDEFileWatcherPlugin;
 use crash_ide_notification::CrashIDENotificationPlugin;
-use crash_ide_plugin_loader::CrashIDEPluginLoaderPlugin;
+use crash_ide_plugin_manager::CrashIDEPluginManagerPlugin;
 use crash_ide_project::CrashIDEProjectPlugin;
 use crash_ide_state::CrashIDEStatePlugin;
 use crash_ide_ui::CrashIDEUiPlugin;
@@ -45,7 +45,7 @@ fn main() {
     app.add_plugins(CrashIDENotificationPlugin);
     app.add_plugins(CrashIDEClipboardPlugin);
     app.add_plugins(CrashIDEFileWatcherPlugin);
-    app.add_plugins(CrashIDEPluginLoaderPlugin);
+    app.add_plugins(CrashIDEPluginManagerPlugin);
 
     app.run();
 }

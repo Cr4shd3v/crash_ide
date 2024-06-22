@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use wasmtime::Engine;
 
 use crate::load::load_plugins;
-use crate::messages::PluginMessagesPlugin;
 
 mod plugin_instance;
 mod stream;
@@ -10,10 +9,11 @@ mod load;
 mod messages;
 
 pub use plugin_instance::*;
+pub use messages::*;
 
-pub struct CrashIDEPluginLoaderPlugin;
+pub struct CrashIDEPluginManagerPlugin;
 
-impl Plugin for CrashIDEPluginLoaderPlugin {
+impl Plugin for CrashIDEPluginManagerPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<GlobalWasmEngine>()
