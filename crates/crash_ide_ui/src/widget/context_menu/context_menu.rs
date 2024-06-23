@@ -19,7 +19,7 @@ impl ContextMenu {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),
+            background_color: BackgroundColor(DefaultColors::DEFAULT_BACKGROUND),
             border_color: BorderColor(Color::GRAY.with_a(0.1)),
             z_index: ZIndex::Global(1),
             focus_policy: FocusPolicy::Block,

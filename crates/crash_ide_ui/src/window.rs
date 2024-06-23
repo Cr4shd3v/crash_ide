@@ -4,6 +4,7 @@ use bevy::render::camera::RenderTarget;
 use bevy::utils::HashMap;
 use bevy::window::{WindowCreated, WindowRef, WindowResolution};
 use bevy::winit::WinitWindows;
+use crash_ide_assets::DefaultColors;
 use crash_ide_config::{EditorConfigProjects, GeneralSettings};
 use crash_ide_project::{CloseProjectEvent, LoadedEditorProject, OpenProjectEvent};
 use crash_ide_state::EditorState;
@@ -151,6 +152,7 @@ fn process_new_window(
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
+                background_color: BackgroundColor(DefaultColors::DEFAULT_BACKGROUND),
                 ..default()
             },
         )).id();

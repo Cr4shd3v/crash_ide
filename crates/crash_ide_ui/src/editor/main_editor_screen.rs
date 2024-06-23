@@ -83,7 +83,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                         width: Val::Percent(20.0),
                         ..default()
                     },
-                    background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),
+                    background_color: BackgroundColor(DefaultColors::DEFAULT_BACKGROUND),
                     ..default()
                 }, EditorLeftMenu));
 

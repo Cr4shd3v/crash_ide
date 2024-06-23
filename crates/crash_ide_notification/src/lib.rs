@@ -88,7 +88,7 @@ fn handle_new_notifications(
                 border: UiRect::all(Val::Px(2.0)),
                 ..default()
             },
-            background_color: BackgroundColor(DefaultColors::LEFT_MENU_BACKGROUND),
+            background_color: BackgroundColor(DefaultColors::DEFAULT_BACKGROUND),
             border_color: BorderColor(Color::GRAY.with_a(0.1)),
             focus_policy: FocusPolicy::Block,
             ..default()
