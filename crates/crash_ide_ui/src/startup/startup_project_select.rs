@@ -60,7 +60,7 @@ fn build_project_select(
             border_color: BorderColor(Color::GRAY.with_a(0.1)),
             ..default()
         }).with_children(|parent| {
-            parent.spawn((ButtonBundle {
+            parent.spawn((NodeBundle {
                 style: Style {
                     padding: UiRect::axes(Val::Vw(2.0), Val::Vh(0.6)),
                     justify_content: JustifyContent::Center,
@@ -70,7 +70,7 @@ fn build_project_select(
                 ..default()
             }, CreateProjectButton {
                 base_window: Some(startup_window),
-            })).with_children(|parent| {
+            }, Interaction::None, Button)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("New Project", TextStyle {
                     font_size: 14.0,
                     font: DefaultFonts::ROBOTO_REGULAR,
@@ -78,7 +78,7 @@ fn build_project_select(
                 }).with_no_wrap());
             });
 
-            parent.spawn((ButtonBundle {
+            parent.spawn((NodeBundle {
                 style: Style {
                     padding: UiRect::axes(Val::Vw(2.0), Val::Vh(0.6)),
                     justify_content: JustifyContent::Center,
@@ -89,7 +89,7 @@ fn build_project_select(
                 ..default()
             }, OpenProjectButton {
                 base_window: Some(startup_window),
-            })).with_children(|parent| {
+            }, Interaction::None, Button)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Open", TextStyle {
                     font_size: 14.0,
                     font: DefaultFonts::ROBOTO_REGULAR,

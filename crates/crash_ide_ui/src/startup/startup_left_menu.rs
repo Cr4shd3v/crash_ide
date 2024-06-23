@@ -67,7 +67,7 @@ impl StartupLeftMenuEntry {
 }
 
 fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreenState) {
-    builder.spawn((ButtonBundle {
+    builder.spawn((NodeBundle {
         style: Style {
             padding: UiRect::axes(Val::Percent(5.0), Val::Percent(4.0)),
             justify_content: JustifyContent::FlexEnd,
@@ -75,7 +75,7 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
         },
         background_color: BackgroundColor(Color::NONE),
         ..default()
-    }, StartupLeftMenuEntry::new(next_state), Hoverable::new(Color::GRAY.with_a(0.2)),
+    }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state), Hoverable::new(Color::GRAY.with_a(0.2)),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(next_state.title(), TextStyle {
             font_size: 16.0,

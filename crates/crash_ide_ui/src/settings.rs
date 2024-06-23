@@ -147,7 +147,7 @@ struct SettingsLeftMenuEntry(SettingsScreen);
 fn left_menu_entry(builder: &mut ChildBuilder, menu: SettingsScreen, active_screen: &SettingsScreen) {
     let title = menu.title();
 
-    builder.spawn((ButtonBundle {
+    builder.spawn((NodeBundle {
         style: Style {
             padding: UiRect::axes(Val::Percent(5.0), Val::Percent(4.0)),
             justify_content: JustifyContent::FlexEnd,
@@ -159,7 +159,7 @@ fn left_menu_entry(builder: &mut ChildBuilder, menu: SettingsScreen, active_scre
             Color::NONE
         }),
         ..default()
-    }, SettingsLeftMenuEntry(menu), Hoverable::new(Color::GRAY.with_a(0.2)),
+    }, Interaction::None, Button, SettingsLeftMenuEntry(menu), Hoverable::new(Color::GRAY.with_a(0.2)),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(title, TextStyle {
             font_size: 16.0,

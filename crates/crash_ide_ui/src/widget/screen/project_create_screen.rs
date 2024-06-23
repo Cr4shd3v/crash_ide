@@ -103,7 +103,7 @@ fn spawn_project_create_screen(
                     ..default()
                 }).with_children(|parent| {
                     parent.spawn((
-                        ButtonBundle {
+                        NodeBundle {
                             style: Style {
                                 padding: UiRect::all(Val::Px(5.0)),
                                 margin: UiRect::top(Val::Vh(2.5)),
@@ -112,6 +112,8 @@ fn spawn_project_create_screen(
                             background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
                             ..default()
                         },
+                        Interaction::None,
+                        Button,
                         CreateProjectConfirmButton,
                     )).with_children(|parent| {
                         parent.spawn(TextBundle::from_section("Create", TextStyle {
