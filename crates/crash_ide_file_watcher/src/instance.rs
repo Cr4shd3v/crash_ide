@@ -2,7 +2,7 @@ use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::sync::mpsc::{channel, Receiver};
 
-use bevy::prelude::{Added, Commands, Component, Entity, Query};
+use bevy::prelude::*;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 pub use notify::{Event, event::*};
 
@@ -39,7 +39,7 @@ pub(super) fn spawn_file_watcher(
                     tx.send(event).ok();
                 }
                 Err(e) => {
-                    println!("Error receiving watcher event: {}", e);
+                    error!("Error receiving watcher event: {}", e);
                 }
             }
         });
@@ -49,7 +49,7 @@ pub(super) fn spawn_file_watcher(
         };
 
         if let Err(e) = watcher_instance.watch(Path::new(&watcher.path), RecursiveMode::Recursive) {
-            println!("Failed to watch directory {}: {}", &watcher.path, e);
+            error!("Failed to watch directory {}: {}", &watcher.path, e);
         }
 
         commands.entity(entity).insert(FileWatcherInstance {

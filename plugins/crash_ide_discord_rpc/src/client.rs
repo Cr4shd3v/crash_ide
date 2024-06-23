@@ -85,7 +85,7 @@ pub(super) fn create_client_task() -> DiscordTaskType<Option<Arc<Mutex<Client>>>
         let mut rpc = Client::with_error_config(1251218926595997736, Duration::from_secs(5), Some(10));
 
         rpc.on_ready(|_| {
-            println!("Discord RPC started");
+            info!("Discord RPC started");
         }).persist();
 
         rpc.start();
@@ -121,7 +121,7 @@ pub(super) fn finish_loading(
                 discord_rpc_client.rpc_client = client;
             },
             Err(e) => {
-                println!("Discord RPC could not be initialized: {}", e);
+                error!("Discord RPC could not be initialized: {}", e);
             }
         }
 

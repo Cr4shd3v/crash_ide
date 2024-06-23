@@ -68,7 +68,7 @@ impl<'w, 's> RowEntityFromPath<'w, 's> {
         let (root, children) = self.root_query.get(root_entity).unwrap();
 
         let Some(strip) = path.strip_prefix(&*root.full_path) else {
-            println!("Path not from this project, {} expected, got {}", root.full_path, path);
+            warn!("Path not from this project, {} expected, got {}", root.full_path, path);
             return None;
         };
 
@@ -113,13 +113,13 @@ pub(super) fn handle_file_watcher(
                         CreateKind::File => {
                             // Create file
                             if let None = row_entity_from_path.insert_new_entry(&mut commands, entity, &*first_path, true) {
-                                println!("Could not create file from watcher");
+                                error!("Could not create file {} from watcher", &*first_path);
                             }
                         }
                         CreateKind::Folder => {
                             // Create folder
                             if let None = row_entity_from_path.insert_new_entry(&mut commands, entity, &*first_path, false) {
-                                println!("Could not create folder from watcher");
+                                error!("Could not create folder {} from watcher", &*first_path);
                             }
                         }
                         _ => {}
@@ -132,7 +132,7 @@ pub(super) fn handle_file_watcher(
                                 RenameMode::To => {
                                     // Like create file
                                     if let None = row_entity_from_path.insert_new_entry(&mut commands, entity, &*first_path, PathBuf::from(&first_path).is_file()) {
-                                        println!("Could not create file from watcher");
+                                        error!("Could not create file {} from watcher", &*first_path);
                                     }
                                 }
                                 RenameMode::From => {

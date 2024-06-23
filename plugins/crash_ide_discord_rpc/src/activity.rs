@@ -106,7 +106,7 @@ pub(super) fn handle_set_activity(
     for (entity, mut task) in query.iter_mut() {
         if let Some(result) = block_on(poll_once(&mut task.0)) {
             if let Err(e) = result {
-                println!("Error occurred while setting activity: {}", e);
+                error!("Error occurred while setting activity: {}", e);
             }
 
             commands.entity(entity).despawn();

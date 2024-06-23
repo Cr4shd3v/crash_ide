@@ -353,7 +353,6 @@ fn expand_directory(
         let is_expanded = expanded.is_some();
 
         if is_expanded == event.expand {
-            println!("Directory already expanded");
             continue;
         }
 

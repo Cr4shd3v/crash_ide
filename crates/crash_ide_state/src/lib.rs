@@ -39,7 +39,7 @@ fn check_loading_finished(loading_status: Res<EditorLoadStatus>, mut next_state:
     if loading_status.is_changed() {
         if loading_status.config_loaded {
             next_state.set(EditorState::Loaded);
-            println!("Loading finished, switching to project select...");
+            info!("Loading finished, switching to project select...");
         }
     }
 }
