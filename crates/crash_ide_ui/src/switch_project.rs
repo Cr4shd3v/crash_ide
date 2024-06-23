@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::WindowFocused;
+use crash_ide_plugin_api::{ActiveProject, PluginboundMessage};
+use crash_ide_plugin_manager::SendPluginMessage;
+use crash_ide_project::LoadedEditorProject;
 use crate::window::{ProjectWindow, StartupWindow};
 
 pub(super) struct SwitchProjectPlugin;
@@ -26,6 +29,8 @@ fn check_switch_window(
     mut event_reader: EventReader<WindowFocused>,
     query: Query<(Option<&ProjectWindow>, Option<&StartupWindow>)>,
     mut event_writer: EventWriter<SwitchProjectWindowEvent>,
+    mut plugin_ew: EventWriter<SendPluginMessage>,
+    project_query: Query<&LoadedEditorProject>,
 ) {
     for event in event_reader.read() {
         if !event.focused {
@@ -51,6 +56,14 @@ fn check_switch_window(
         event_writer.send(SwitchProjectWindowEvent {
             new_project: Some(project_window.project_crash_ide_config),
         });
+
+        let project = project_query.get(project_window.project_crash_ide_config).unwrap();
+        plugin_ew.send(SendPluginMessage::new(PluginboundMessage::ActiveProject(ActiveProject {
+            name: project.crash_ide_project.name.clone(),
+            path: project.crash_ide_project.path.clone(),
+            opened: false,
+            active_file: None,
+        }), None));
     }
 }
 

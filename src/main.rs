@@ -10,6 +10,7 @@ use crash_ide_clipboard::CrashIDEClipboardPlugin;
 
 use crash_ide_config::CrashIDEConfigPlugin;
 use crash_ide_console::CrashIDEConsolePlugin;
+use crash_ide_discord_rpc::CrashIDEDiscordRpcPlugin;
 use crash_ide_file::CrashIDEFilePlugin;
 use crash_ide_file_picker::CrashIDEFilePickerPlugin;
 use crash_ide_file_watcher::CrashIDEFileWatcherPlugin;
@@ -46,6 +47,9 @@ fn main() {
     app.add_plugins(CrashIDEClipboardPlugin);
     app.add_plugins(CrashIDEFileWatcherPlugin);
     app.add_plugins(CrashIDEPluginManagerPlugin);
+
+    // Built-in Plugins
+    app.add_plugins(CrashIDEDiscordRpcPlugin);
 
     app.run();
 }

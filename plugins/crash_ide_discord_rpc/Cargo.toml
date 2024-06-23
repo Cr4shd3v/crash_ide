@@ -1,5 +1,5 @@
 [package]
-name = "crash_ide_discord_rpc_old"
+name = "crash_ide_discord_rpc"
 version = "0.1.0"
 edition = "2021"
 

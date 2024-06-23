@@ -1718,6 +1718,7 @@ dependencies = [
  "crash_ide_clipboard",
  "crash_ide_config",
  "crash_ide_console",
+ "crash_ide_discord_rpc",
  "crash_ide_file",
  "crash_ide_file_picker",
  "crash_ide_file_watcher",
@@ -1766,7 +1767,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "crash_ide_discord_rpc_old"
+name = "crash_ide_discord_rpc"
 version = "0.1.0"
 dependencies = [
  "bevy",
@@ -1866,6 +1867,8 @@ dependencies = [
  "crash_ide_file_picker",
  "crash_ide_file_watcher",
  "crash_ide_notification",
+ "crash_ide_plugin_api",
+ "crash_ide_plugin_manager",
  "crash_ide_project",
  "crash_ide_state",
  "crash_ide_util",

@@ -8,6 +8,8 @@ use bevy::ui::FocusPolicy;
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crash_ide_file::{FileEventData, FileExtensionManager, RawOpenFileEvent};
 use crash_ide_file_watcher::FileWatcher;
+use crash_ide_plugin_api::{ActiveFile, PluginboundMessage};
+use crash_ide_plugin_manager::SendPluginMessage;
 use crash_ide_project::FindProjectInParents;
 use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
 pub use file_path::*;
@@ -301,6 +303,7 @@ fn double_click_row(
     file_path: FilePath,
     find_project_in_parents: FindProjectInParents,
     projects_file_views: Res<ProjectsFileViews>,
+    mut plugin_ew: EventWriter<SendPluginMessage>,
 ) {
     for parent in query.iter() {
         let entity = parent.get();
@@ -314,6 +317,11 @@ fn double_click_row(
                 commands.entity(entity).despawn_recursive();
                 continue;
             }
+
+            plugin_ew.send(SendPluginMessage::new(PluginboundMessage::ActiveFile(ActiveFile {
+                path: path.to_str().unwrap().to_string(),
+                filename: path.file_name().unwrap().to_str().unwrap().to_string(),
+            }), None));
 
             file_event_writer.send(RawOpenFileEvent {
                 event_data: FileEventData {
