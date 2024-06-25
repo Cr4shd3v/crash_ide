@@ -738,7 +738,7 @@ fn set_section_values(value: &str, cursor_pos: usize, sections: &mut [TextSectio
     sections[2].value = after;
 
     if cursor_pos >= value.chars().count() {
-        sections[1].value = "|".to_string();
+        sections[1].value = "}".to_string();
     } else {
         sections[1].value = "|".to_string();
     }
