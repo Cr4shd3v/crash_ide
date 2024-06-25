@@ -22,6 +22,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_file_watcher/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/minimal_plugin/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_plugin_manager/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_code_view/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/crash_ide_plugin_api/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
