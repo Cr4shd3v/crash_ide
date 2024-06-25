@@ -7,7 +7,7 @@ use bevy::render::pipelined_rendering::PipelinedRenderingPlugin;
 use bevy::window::ExitCondition;
 use crash_ide_assets::CrashIDEAssetPlugin;
 use crash_ide_clipboard::CrashIDEClipboardPlugin;
-
+use crash_ide_code_view::CrashIDECodeViewPlugin;
 use crash_ide_config::CrashIDEConfigPlugin;
 use crash_ide_console::CrashIDEConsolePlugin;
 use crash_ide_discord_rpc::CrashIDEDiscordRpcPlugin;
@@ -47,6 +47,7 @@ fn main() {
     app.add_plugins(CrashIDEClipboardPlugin);
     app.add_plugins(CrashIDEFileWatcherPlugin);
     app.add_plugins(CrashIDEPluginManagerPlugin);
+    app.add_plugins(CrashIDECodeViewPlugin);
 
     // Built-in Plugins
     app.add_plugins(CrashIDEDiscordRpcPlugin);

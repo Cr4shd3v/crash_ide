@@ -1716,6 +1716,7 @@ dependencies = [
  "bevy",
  "crash_ide_assets",
  "crash_ide_clipboard",
+ "crash_ide_code_view",
  "crash_ide_config",
  "crash_ide_console",
  "crash_ide_discord_rpc",

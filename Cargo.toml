@@ -43,6 +43,8 @@ crash_ide_notification = { workspace = true }
 crash_ide_clipboard = { workspace = true }
 crash_ide_file_watcher = { workspace = true }
 crash_ide_plugin_manager = { workspace = true }
+crash_ide_code_view = { workspace = true }
+
 crash_ide_discord_rpc = { workspace = true }
 
 [workspace]
@@ -81,6 +83,7 @@ crash_ide_clipboard = { path = "crates/crash_ide_clipboard" }
 crash_ide_file_watcher = { path = "crates/crash_ide_file_watcher" }
 crash_ide_plugin_manager = { path = "crates/crash_ide_plugin_manager" }
 crash_ide_plugin_api = { path = "crates/crash_ide_plugin_api" }
+crash_ide_code_view = { path = "crates/crash_ide_code_view" }
 
 crash_ide_discord_rpc = { path = "plugins/crash_ide_discord_rpc" }
 
