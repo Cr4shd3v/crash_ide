@@ -1796,6 +1796,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "crash_ide_assets",
+ "crash_ide_code_view",
  "crash_ide_config",
  "crash_ide_notification",
  "crash_ide_widget",

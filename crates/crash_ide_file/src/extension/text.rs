@@ -1,13 +1,18 @@
 //! This module contains the implementation for .txt files
 
 use std::fs;
+
 use bevy::prelude::*;
 use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
+
 use crash_ide_assets::DefaultFonts;
+use crash_ide_code_view::{CodeViewBundle, CodeViewContent, CodeViewStyle};
 use crash_ide_notification::{Notification, NotificationIcon};
-use crash_ide_widget::{ActiveWindow, Scrollable, ScrollableContent, TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
+use crash_ide_widget::{ActiveWindow, Scrollable, ScrollableContent, TextInputValue};
+
 use crate::{default_file_handler_impl, FileEventData, FileHandlerAppExtension, FileViewInstance, OpenFileEvent};
+use crate as crash_ide_file;
 
 pub(super) struct TextPlugin;
 
@@ -23,7 +28,6 @@ impl Plugin for TextPlugin {
 /// [FileHandler](crate::FileHandler) for .txt files
 pub struct TextFile;
 
-use crate as crash_ide_file;
 default_file_handler_impl!(TextFile, ["txt"], "text.png");
 
 #[derive(Component)]
@@ -75,28 +79,31 @@ fn spawn_file_view(
 
         commands.entity(loading_task.1.view_entity).despawn_descendants().with_children(|parent| {
             parent.spawn((NodeBundle::default(), Scrollable::default(), Interaction::None)).with_children(|parent| {
-                parent.spawn((TextInputBundle {
-                    text_input_value: TextInputValue(content),
-                    text_input_text_style: TextInputTextStyle(TextStyle {
-                        font: DefaultFonts::JETBRAINS_MONO_REGULAR,
-                        font_size: 18.0,
-                        ..default()
-                    }),
-                    text_input_settings: TextInputSettings {
-                        with_border: false,
-                        multiline: true,
+                parent.spawn((
+                    CodeViewBundle {
+                        node_bundle: NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                ..default()
+                            },
+                            ..default()
+                        },
+                        content: CodeViewContent::from_string(content),
+                        code_view_style: CodeViewStyle {
+                            font_size: 18.0,
+                            regular_font: DefaultFonts::JETBRAINS_MONO_REGULAR,
+                            bold_font: DefaultFonts::JETBRAINS_MONO_BOLD,
+                            italic_font: DefaultFonts::JETBRAINS_MONO_ITALIC,
+                            bold_italic_font: DefaultFonts::JETBRAINS_MONO_BOLD_ITALIC,
+                        },
                         ..default()
                     },
-                    ..default()
-                }, NodeBundle {
-                    style: Style {
-                        width: Val::Percent(100.0),
-                        ..default()
+                    FileViewInstance {
+                        path: loading_task.1.path.clone(),
                     },
-                    ..default()
-                }, FileViewInstance {
-                    path: loading_task.1.path.clone(),
-                }, ScrollableContent::default(), TextFileView));
+                    ScrollableContent::default(),
+                    TextFileView,
+                ));
             });
         });
     }

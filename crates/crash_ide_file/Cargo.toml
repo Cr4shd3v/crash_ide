@@ -12,3 +12,4 @@ crash_ide_config = { workspace = true }
 crash_ide_widget = { workspace = true }
 crash_ide_assets = { workspace = true }
 crash_ide_notification = { workspace = true }
+crash_ide_code_view = { workspace = true }
