@@ -11,7 +11,7 @@ use bevy::prelude::*;
 pub use bundle::*;
 pub use component::*;
 use crate::create::create_code_view;
-use crate::cursor::{cursor_blinking, init_cursor, update_cursor_pos};
+use crate::cursor::{cursor_blinking, cursor_to_click, init_cursor, update_cursor_pos};
 use crate::focus::focus_code_view;
 
 /// Plugin implementing the code view of the editor.
@@ -26,6 +26,7 @@ impl Plugin for CrashIDECodeViewPlugin {
                 update_cursor_pos,
                 cursor_blinking,
                 focus_code_view,
+                cursor_to_click,
             ))
         ;
     }

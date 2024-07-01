@@ -1748,9 +1748,10 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_code_view"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bevy",
+ "crash_ide_util",
  "crash_ide_widget",
 ]
 

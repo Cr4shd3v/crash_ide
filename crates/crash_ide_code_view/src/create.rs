@@ -1,5 +1,6 @@
 use bevy::prelude::*;
-use crate::{CodeView, CodeViewContent, CodeViewStyle};
+use bevy::ui::RelativeCursorPosition;
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewStyle};
 use crate::component::CodeViewLine;
 
 pub(super) fn create_code_view(
@@ -8,25 +9,17 @@ pub(super) fn create_code_view(
 ) {
     for (entity, code_view_style, content, mut style) in query.iter_mut() {
         style.width = Val::Percent(100.0);
-        style.flex_direction = FlexDirection::Column;
+        style.flex_direction = FlexDirection::Row;
 
-        commands.entity(entity).with_children(|parent| {
-            for (index, line) in content.lines.iter().enumerate() {
-                parent.spawn((
-                    NodeBundle {
-                        style: Style {
-                            width: Val::Percent(100.0),
-                            flex_direction: FlexDirection::Row,
-                            align_items: AlignItems::Center,
-                            height: Val::Px(code_view_style.font_size + 2.0),
-                            ..default()
-                        },
-                        ..default()
-                    },
-                    CodeViewLine {
-                        line_index: index,
-                    },
-                )).with_children(|parent| {
+        commands.entity(entity).despawn_descendants().with_children(|parent| {
+            parent.spawn(NodeBundle {
+                style: Style {
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                ..default()
+            }).with_children(|parent| {
+                for (index, _) in content.lines.iter().enumerate() {
                     parent.spawn(NodeBundle {
                         style: Style {
                             border: UiRect::right(Val::Px(1.0)),
@@ -53,19 +46,46 @@ pub(super) fn create_code_view(
                             ..default()
                         });
                     });
+                }
+            });
 
-                    for token in line {
-                        parent.spawn(TextBundle {
-                            text: Text::from_section(&token.content, TextStyle {
-                                font: code_view_style.get_font_for_token(token),
-                                font_size: code_view_style.font_size,
+            parent.spawn((NodeBundle {
+                style: Style {
+                    flex_direction: FlexDirection::Column,
+                    flex_grow: 1.0,
+                    ..default()
+                },
+                ..default()
+            }, Interaction::None, RelativeCursorPosition::default(), CodeViewContainer)).with_children(|parent| {
+                for (index, line) in content.lines.iter().enumerate() {
+                    parent.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                flex_direction: FlexDirection::Row,
+                                align_items: AlignItems::Center,
+                                height: Val::Px(code_view_style.font_size + 2.0),
                                 ..default()
-                            }).with_no_wrap(),
+                            },
                             ..default()
-                        });
-                    }
-                });
-            }
+                        },
+                        CodeViewLine {
+                            line_index: index,
+                        },
+                    )).with_children(|parent| {
+                        for token in line {
+                            parent.spawn(TextBundle {
+                                text: Text::from_section(&token.content, TextStyle {
+                                    font: code_view_style.get_font_for_token(token),
+                                    font_size: code_view_style.font_size,
+                                    ..default()
+                                }).with_no_wrap(),
+                                ..default()
+                            });
+                        }
+                    });
+                }
+            });
         });
     }
 }

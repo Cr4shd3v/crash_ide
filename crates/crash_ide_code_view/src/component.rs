@@ -14,3 +14,7 @@ pub struct CursorEntityRef(pub Entity);
 /// Component marking a code view as focused
 #[derive(Component)]
 pub struct CodeViewFocused;
+
+/// Marker component for the actual code view
+#[derive(Component)]
+pub struct CodeViewContainer;

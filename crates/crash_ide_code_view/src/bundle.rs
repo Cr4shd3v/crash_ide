@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::ui::RelativeCursorPosition;
 
 /// Spawns a code view.
 #[derive(Bundle, Default)]
@@ -18,8 +17,6 @@ pub struct CodeViewBundle {
     pub cursor_pos: CodeViewCursorPosition,
     /// Timer for cursor blinking
     pub cursor_timer: CodeViewCursorTimer,
-    /// Internally used for click position calculation
-    pub relative_cursor_position: RelativeCursorPosition,
 }
 
 /// Defines styles of the code view.

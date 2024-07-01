@@ -1,18 +1,27 @@
+use std::ops::Mul;
 use bevy::prelude::*;
-use crate::{CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewStyle, CursorEntityRef};
+use bevy::ui::RelativeCursorPosition;
+use crash_ide_util::FindComponentInParents;
+use crash_ide_widget::ActiveWindow;
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewStyle, CursorEntityRef};
 
 pub(crate) const FONT_MULTIPLIER: f32 = 0.606;
 
 pub(super) fn init_cursor(
     mut commands: Commands,
-    query: Query<(Entity, &CodeViewCursorPosition, &CodeViewStyle), Added<CodeViewCursorPosition>>,
+    query: Query<(Entity, &Parent), Added<CodeViewContainer>>,
+    find_code_view: FindComponentInParents<CodeView>,
+    view_query: Query<(&CodeViewCursorPosition, &CodeViewStyle)>,
 ) {
-    for (entity, cursor, style) in query.iter() {
+    for (container_entity, parent) in query.iter() {
+        let code_view_entity = find_code_view.find_entity(parent.get()).unwrap();
+        let (cursor, style) = view_query.get(code_view_entity).unwrap();
+
         let cursor_id = commands.spawn(NodeBundle {
             style: Style {
                 position_type: PositionType::Absolute,
                 top: Val::Px(((style.font_size + 2.0) * cursor.cursor_pos.y as f32) + 1.0),
-                left: Val::Px((style.font_size * 1.5) + 28.0 + ((style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32)),
+                left: Val::Px((style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32),
                 width: Val::Px(2.0),
                 height: Val::Px(style.font_size),
                 ..default()
@@ -22,7 +31,8 @@ pub(super) fn init_cursor(
             ..default()
         }).id();
 
-        commands.entity(entity).add_child(cursor_id).insert(CursorEntityRef(cursor_id));
+        commands.entity(container_entity).add_child(cursor_id);
+        commands.entity(code_view_entity).insert(CursorEntityRef(cursor_id));
     }
 }
 
@@ -34,7 +44,7 @@ pub(super) fn update_cursor_pos(
         code_style, mut timer) in query.iter_mut() {
         let mut style = style_query.get_mut(cursor_entity.0).unwrap();
         style.top = Val::Px(((code_style.font_size + 2.0) * cursor.cursor_pos.y as f32) + 1.0);
-        style.left = Val::Px((code_style.font_size * 1.5) + 28.0 + ((code_style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32));
+        style.left = Val::Px((code_style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32);
         println!("Top: {:?}, Left: {:?}, Cursor: {:?}", style.top, style.left, cursor.cursor_pos);
         timer.reset = true;
     }
@@ -70,5 +80,49 @@ pub(super) fn cursor_blinking(
                 background.0 = Color::WHITE;
             }
         }
+    }
+}
+
+pub(super) fn cursor_to_click(
+    query: Query<(
+        &Interaction,
+        &RelativeCursorPosition,
+        &Node,
+        &Parent,
+    ), (Changed<Interaction>, With<CodeViewContainer>)>,
+    find_code_view: FindComponentInParents<CodeViewContent>,
+    mut code_view_query: Query<(
+        &CodeViewStyle,
+        &mut CodeViewCursorPosition,
+        &CodeViewContent,
+    )>,
+    window: Query<&Window, With<ActiveWindow>>,
+) {
+    for (interaction, relative_cursor_pos, node, parent) in query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        let code_view_entity = find_code_view.find_entity(parent.get()).unwrap();
+        let (code_style, mut cursor_pos, content) = code_view_query.get_mut(code_view_entity).unwrap();
+
+        let node_size = node.size();
+        let cursor_pos_normalized = relative_cursor_pos.normalized.unwrap();
+        let font_size = code_style.font_size;
+
+        let scale = window.single().resolution.scale_factor();
+        let cursor_pos_relative = cursor_pos_normalized.mul(node_size) * scale;
+
+        let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as i32;
+        let mut calculated_column = ((cursor_pos_relative.x / (font_size * FONT_MULTIPLIER)).round() as i32).max(0);
+
+        if let Some(line_content) = content.lines.get(calculated_line as usize) {
+            let length = line_content.iter().map(|v| v.content.len()).sum::<usize>() as i32;
+            if calculated_column > length {
+                calculated_column = length;
+            }
+        }
+
+        cursor_pos.cursor_pos = IVec2::new(calculated_column, calculated_line);
     }
 }
