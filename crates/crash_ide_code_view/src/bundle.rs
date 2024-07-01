@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::ui::RelativeCursorPosition;
 
 /// Spawns a code view.
 #[derive(Bundle, Default)]
@@ -13,6 +14,12 @@ pub struct CodeViewBundle {
     pub code_view: CodeView,
     /// Content of the code view
     pub content: CodeViewContent,
+    /// Cursor position
+    pub cursor_pos: CodeViewCursorPosition,
+    /// Timer for cursor blinking
+    pub cursor_timer: CodeViewCursorTimer,
+    /// Internally used for click position calculation
+    pub relative_cursor_position: RelativeCursorPosition,
 }
 
 /// Defines styles of the code view.
@@ -91,6 +98,33 @@ impl CodeViewContent {
                 content: v.to_string(),
                 ..default()
             }]).collect(),
+        }
+    }
+}
+
+/// Information about the cursor in the current code view
+#[derive(Component, Default)]
+pub struct CodeViewCursorPosition {
+    /// Current cursor position.
+    ///
+    /// X = Column, Y = Line
+    pub cursor_pos: IVec2,
+}
+
+/// Contains the timer for blinking cursor
+#[derive(Component)]
+pub struct CodeViewCursorTimer {
+    /// Timer for cursor blinking
+    pub timer: Timer,
+    /// Should the timer reset?
+    pub reset: bool,
+}
+
+impl Default for CodeViewCursorTimer {
+    fn default() -> Self {
+        Self {
+            timer: Timer::from_seconds(0.5, TimerMode::Repeating),
+            reset: false,
         }
     }
 }

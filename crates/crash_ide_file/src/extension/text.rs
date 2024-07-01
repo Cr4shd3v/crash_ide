@@ -78,7 +78,13 @@ fn spawn_file_view(
         };
 
         commands.entity(loading_task.1.view_entity).despawn_descendants().with_children(|parent| {
-            parent.spawn((NodeBundle::default(), Scrollable::default(), Interaction::None)).with_children(|parent| {
+            parent.spawn((NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    ..default()
+                },
+                ..default()
+            }, Scrollable::default(), Interaction::None)).with_children(|parent| {
                 parent.spawn((
                     CodeViewBundle {
                         node_bundle: NodeBundle {
