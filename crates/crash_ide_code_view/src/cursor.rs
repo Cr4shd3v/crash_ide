@@ -45,7 +45,6 @@ pub(super) fn update_cursor_pos(
         let mut style = style_query.get_mut(cursor_entity.0).unwrap();
         style.top = Val::Px(((code_style.font_size + 2.0) * cursor.cursor_pos.y as f32) + 1.0);
         style.left = Val::Px((code_style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32);
-        println!("Top: {:?}, Left: {:?}, Cursor: {:?}", style.top, style.left, cursor.cursor_pos);
         timer.reset = true;
     }
 }

@@ -1711,7 +1711,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
@@ -1733,14 +1733,14 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_assets"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
 ]
 
 [[package]]
 name = "crash_ide_clipboard"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "arboard",
  "bevy",
@@ -1748,7 +1748,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_code_view"
-version = "0.1.1"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_util",
@@ -1757,7 +1757,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_config"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_project",
@@ -1769,7 +1769,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_console"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
@@ -1778,7 +1778,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_discord_rpc"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
@@ -1794,7 +1794,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_file"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
@@ -1808,7 +1808,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_file_picker"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "rfd",
@@ -1816,7 +1816,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_file_watcher"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "notify",
@@ -1824,7 +1824,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_notification"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
@@ -1832,14 +1832,14 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_plugin_api"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bincode",
 ]
 
 [[package]]
 name = "crash_ide_plugin_manager"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "async-trait",
  "bevy",
@@ -1853,7 +1853,7 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_project"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "serde",
@@ -1861,14 +1861,14 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_state"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
 ]
 
 [[package]]
 name = "crash_ide_ui"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
@@ -1889,14 +1889,14 @@ dependencies = [
 
 [[package]]
 name = "crash_ide_util"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
 ]
 
 [[package]]
 name = "crash_ide_widget"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_clipboard",
@@ -3242,7 +3242,7 @@ dependencies = [
 
 [[package]]
 name = "minimal_plugin"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 dependencies = [
  "crash_ide_plugin_api",
 ]
