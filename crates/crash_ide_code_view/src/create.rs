@@ -40,6 +40,7 @@ pub(super) fn create_code_view(
                             }),
                             style: Style {
                                 width: Val::Px(code_view_style.font_size * 1.5),
+                                height: Val::Px(code_view_style.font_size + 2.0),
                                 margin: UiRect::new(Val::Px(10.0), Val::Px(15.0), Val::ZERO, Val::ZERO),
                                 ..default()
                             },
