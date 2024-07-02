@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
-use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewStyle};
+use bevy::utils::HashMap;
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewLineRegistry, CodeViewLineRegistryEntry, CodeViewStyle};
 use crate::component::CodeViewLine;
 
 pub(super) fn create_code_view(
@@ -10,6 +11,8 @@ pub(super) fn create_code_view(
     for (entity, code_view_style, content, mut style) in query.iter_mut() {
         style.width = Val::Percent(100.0);
         style.flex_direction = FlexDirection::Row;
+        let mut line_counts = HashMap::new();
+        let mut lines = HashMap::new();
 
         commands.entity(entity).despawn_descendants().with_children(|parent| {
             parent.spawn(NodeBundle {
@@ -20,7 +23,7 @@ pub(super) fn create_code_view(
                 ..default()
             }).with_children(|parent| {
                 for (index, _) in content.lines.iter().enumerate() {
-                    parent.spawn(NodeBundle {
+                    let line_count_id = parent.spawn(NodeBundle {
                         style: Style {
                             border: UiRect::right(Val::Px(1.0)),
                             margin: UiRect::right(Val::Px(3.0)),
@@ -46,7 +49,9 @@ pub(super) fn create_code_view(
                             },
                             ..default()
                         });
-                    });
+                    }).id();
+
+                    line_counts.insert(index, line_count_id);
                 }
             });
 
@@ -59,7 +64,7 @@ pub(super) fn create_code_view(
                 ..default()
             }, Interaction::None, RelativeCursorPosition::default(), CodeViewContainer)).with_children(|parent| {
                 for (index, line) in content.lines.iter().enumerate() {
-                    parent.spawn((
+                    let line_content_id = parent.spawn((
                         NodeBundle {
                             style: Style {
                                 width: Val::Percent(100.0),
@@ -84,9 +89,17 @@ pub(super) fn create_code_view(
                                 ..default()
                             });
                         }
+                    }).id();
+
+                    lines.insert(index, CodeViewLineRegistryEntry {
+                        line_content: line_content_id,
+                        line_count: line_counts[&index],
                     });
                 }
             });
+        }).insert(CodeViewLineRegistry {
+            lines,
+            active: 0,
         });
     }
 }

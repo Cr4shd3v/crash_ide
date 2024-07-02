@@ -1,9 +1,12 @@
 use std::ops::Mul;
+
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
+
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::ActiveWindow;
-use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewStyle, CursorEntityRef};
+
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineRegistry, CodeViewStyle, CursorEntityRef};
 
 pub(crate) const FONT_MULTIPLIER: f32 = 0.606;
 
@@ -37,15 +40,33 @@ pub(super) fn init_cursor(
 }
 
 pub(super) fn update_cursor_pos(
-    mut query: Query<(&CodeViewCursorPosition, &CursorEntityRef, &CodeViewStyle, &mut CodeViewCursorTimer), Changed<CodeViewCursorPosition>>,
+    mut query: Query<(
+        &CodeViewCursorPosition,
+        &CursorEntityRef,
+        &CodeViewStyle,
+        &mut CodeViewCursorTimer,
+        &mut CodeViewLineRegistry,
+    ), Changed<CodeViewCursorPosition>>,
     mut style_query: Query<&mut Style>,
+    mut background_query: Query<&mut BackgroundColor>,
 ) {
     for (cursor, cursor_entity,
-        code_style, mut timer) in query.iter_mut() {
+        code_style, mut timer, mut lines) in query.iter_mut() {
         let mut style = style_query.get_mut(cursor_entity.0).unwrap();
         style.top = Val::Px(((code_style.font_size + 2.0) * cursor.cursor_pos.y as f32) + 1.0);
         style.left = Val::Px((code_style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32);
         timer.reset = true;
+
+        if let Some(active_line) = lines.lines.get(&lines.active) {
+            background_query.get_mut(active_line.line_content).unwrap().0 = Color::NONE;
+            background_query.get_mut(active_line.line_count).unwrap().0 = Color::NONE;
+        }
+
+        let line = lines.lines.get(&(cursor.cursor_pos.y as usize)).unwrap();
+        background_query.get_mut(line.line_content).unwrap().0 = Color::GRAY.with_a(0.1);
+        background_query.get_mut(line.line_count).unwrap().0 = Color::GRAY.with_a(0.1);
+
+        lines.active = cursor.cursor_pos.y as usize;
     }
 }
 
