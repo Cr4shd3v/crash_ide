@@ -76,6 +76,13 @@ pub struct CodeViewContent {
     pub lines: Vec<Vec<CodeViewToken>>,
 }
 
+impl CodeViewContent {
+    /// Returns the length of a line or None, if the line does not exist
+    pub fn get_line_length(&self, line: usize) -> Option<usize> {
+        self.lines.get(line).map(|m| m.iter().map(|v| v.content.len()).sum::<usize>())
+    }
+}
+
 /// Token describing a part of a line
 #[derive(Default, Debug)]
 pub struct CodeViewToken {

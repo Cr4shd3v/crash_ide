@@ -25,19 +25,48 @@ pub(super) fn keyboard_input(
 
             match event.key_code {
                 KeyCode::ArrowLeft => {
-                    cursor_pos.cursor_pos.x -= 1;
+                    if cursor_pos.cursor_pos.x == 0 {
+                        if cursor_pos.cursor_pos.y > 0 {
+                            cursor_pos.cursor_pos.y -= 1;
+                            cursor_pos.cursor_pos.x =
+                                content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
+                        }
+                    } else {
+                        cursor_pos.cursor_pos.x -= 1;
+                    }
+                    timer.reset = true;
                     continue;
                 }
                 KeyCode::ArrowRight => {
                     cursor_pos.cursor_pos.x += 1;
+                    let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
+                    if cursor_pos.cursor_pos.x > line_len {
+                        if content.lines.len() - 1 > cursor_pos.cursor_pos.y as usize {
+                            cursor_pos.cursor_pos.y += 1;
+                            cursor_pos.cursor_pos.x = 0;
+                        } else {
+                            cursor_pos.cursor_pos.x -= 1;
+                        }
+                    }
+                    timer.reset = true;
                     continue;
                 }
                 KeyCode::ArrowUp => {
                     cursor_pos.cursor_pos.y -= 1;
+                    let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
+                    if cursor_pos.cursor_pos.x > line_len {
+                        cursor_pos.cursor_pos.x = line_len;
+                    }
+                    timer.reset = true;
                     continue;
                 }
                 KeyCode::ArrowDown => {
                     cursor_pos.cursor_pos.y += 1;
+                    let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
+                    if cursor_pos.cursor_pos.x > line_len {
+                        cursor_pos.cursor_pos.x = line_len;
+                    }
+                    timer.reset = true;
                     continue;
                 }
                 KeyCode::KeyV => {

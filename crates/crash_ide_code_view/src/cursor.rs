@@ -8,7 +8,7 @@ use crash_ide_widget::ActiveWindow;
 
 use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineRegistry, CodeViewStyle, CursorEntityRef};
 
-pub(crate) const FONT_MULTIPLIER: f32 = 0.606;
+pub(crate) const FONT_MULTIPLIER: f32 = 0.6075;
 
 pub(super) fn init_cursor(
     mut commands: Commands,
@@ -136,10 +136,9 @@ pub(super) fn cursor_to_click(
         let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as u32;
         let mut calculated_column = ((cursor_pos_relative.x / (font_size * FONT_MULTIPLIER)).round() as u32).max(0);
 
-        if let Some(line_content) = content.lines.get(calculated_line as usize) {
-            let length = line_content.iter().map(|v| v.content.len()).sum::<usize>() as u32;
-            if calculated_column > length {
-                calculated_column = length;
+        if let Some(length) = content.get_line_length(calculated_line as usize) {
+            if calculated_column > length as u32 {
+                calculated_column = length as u32;
             }
         }
 
