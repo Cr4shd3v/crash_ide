@@ -24,6 +24,7 @@ pub struct CrashIDECodeViewPlugin;
 impl Plugin for CrashIDECodeViewPlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_systems(PreUpdate, keyboard_input)
             .add_systems(Update, (
                 create_code_view,
                 init_cursor,
@@ -31,7 +32,6 @@ impl Plugin for CrashIDECodeViewPlugin {
                 cursor_blinking,
                 focus_code_view,
                 cursor_to_click,
-                keyboard_input,
             ))
         ;
     }

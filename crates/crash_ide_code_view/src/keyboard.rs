@@ -1,12 +1,13 @@
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use crash_ide_clipboard::Clipboard;
-use crate::{CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineContainer};
+use crate::{CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineContainer, CodeViewStyle};
 use crate::update_text::UpdateText;
 
 pub(super) fn keyboard_input(
     mut query: Query<(
         &CodeViewLineContainer,
+        &CodeViewStyle,
         &mut CodeViewCursorPosition,
         &mut CodeViewContent,
         &mut CodeViewCursorTimer,
@@ -16,7 +17,7 @@ pub(super) fn keyboard_input(
     clipboard: Res<Clipboard>,
     mut update_text: UpdateText,
 ) {
-    for (line_registry, mut cursor_pos,
+    for (lines, code_view_style, mut cursor_pos,
         mut content, mut timer) in query.iter_mut() {
         for event in events.read() {
             if !event.state.is_pressed() {
@@ -70,7 +71,13 @@ pub(super) fn keyboard_input(
                     continue;
                 }
                 KeyCode::Space => {
-                    update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), line_registry, " ");
+                    update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), lines, " ");
+                    timer.reset = true;
+
+                    continue;
+                }
+                KeyCode::Enter => {
+                    update_text.insert_new_line(content.as_mut(), cursor_pos.as_mut(), lines, code_view_style);
                     timer.reset = true;
 
                     continue;
@@ -78,7 +85,7 @@ pub(super) fn keyboard_input(
                 KeyCode::KeyV => {
                     if keys.pressed(KeyCode::ControlLeft) {
                         let text = clipboard.get_text().unwrap_or(String::new());
-                        update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), line_registry, &*text);
+                        update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), lines, &*text);
                         timer.reset = true;
 
                         continue;
@@ -88,7 +95,7 @@ pub(super) fn keyboard_input(
             }
 
             if let Key::Character(ref s) = event.logical_key {
-                update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), line_registry, s.as_str());
+                update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), lines, s.as_str());
                 timer.reset = true;
             }
         }

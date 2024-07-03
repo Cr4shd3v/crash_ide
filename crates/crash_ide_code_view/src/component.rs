@@ -1,15 +1,16 @@
 use bevy::prelude::*;
 
-/// Component used in every line. Stores the line index.
+/// Component used in every line.
 #[derive(Component)]
-pub struct CodeViewLine {
-    /// Line index, this is 0-indexed
-    pub line_index: usize,
-}
+pub struct CodeViewLine;
 
 /// Marker component for the active line
 #[derive(Component)]
 pub struct HighlightedLine;
+
+/// Marker component for the active line count
+#[derive(Component)]
+pub struct HighlightedLineCount;
 
 /// Component holding information of the cursor entity of a code view.
 #[derive(Component)]

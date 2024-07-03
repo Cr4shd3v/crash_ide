@@ -6,7 +6,7 @@ use bevy::ui::RelativeCursorPosition;
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::ActiveWindow;
 
-use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLine, CodeViewLineContainer, CodeViewStyle, CursorEntityRef, HighlightedLine};
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineContainer, CodeViewStyle, CursorEntityRef, HighlightedLine, HighlightedLineCount};
 use crate::line_container::GetLineContainer;
 
 pub(crate) const FONT_MULTIPLIER: f32 = 0.6075;
@@ -52,7 +52,8 @@ pub(super) fn update_cursor_pos(
     mut style_query: Query<&mut Style>,
     mut background_query: Query<&mut BackgroundColor>,
     get_line_container: GetLineContainer,
-    highlighted_query: Query<&CodeViewLine, With<HighlightedLine>>,
+    highlighted_line_query: Query<Entity, With<HighlightedLine>>,
+    highlighted_line_count_query: Query<Entity, With<HighlightedLineCount>>,
     children_query: Query<&Children>,
 ) {
     for (cursor, cursor_entity,
@@ -62,17 +63,23 @@ pub(super) fn update_cursor_pos(
         style.left = Val::Px((code_style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32);
         timer.reset = true;
 
-        for line in highlighted_query.iter_many(children_query.get(lines.line_content_container).unwrap()) {
-            let (line_count, line_content) = get_line_container.get_line(lines, line.line_index);
-            background_query.get_mut(line_count).unwrap().0 = Color::NONE;
-            background_query.get_mut(line_content).unwrap().0 = Color::NONE;
-            commands.entity(line_content).remove::<HighlightedLine>();
+        let line_children = children_query.get(lines.line_content_container).unwrap();
+        for line_entity in highlighted_line_query.iter_many(line_children) {
+            background_query.get_mut(line_entity).unwrap().0 = Color::NONE;
+            commands.entity(line_entity).remove::<HighlightedLine>();
+        }
+
+        let line_count_children = children_query.get(lines.line_count_container).unwrap();
+        for line_entity in highlighted_line_count_query.iter_many(line_count_children) {
+            background_query.get_mut(line_entity).unwrap().0 = Color::NONE;
+            commands.entity(line_entity).remove::<HighlightedLineCount>();
         }
 
         let (line_count, line_content) = get_line_container.get_line(lines, cursor.cursor_pos.y as usize);
         background_query.get_mut(line_count).unwrap().0 = Color::GRAY.with_a(0.1);
         background_query.get_mut(line_content).unwrap().0 = Color::GRAY.with_a(0.1);
         commands.entity(line_content).insert(HighlightedLine);
+        commands.entity(line_count).insert(HighlightedLineCount);
     }
 }
 
