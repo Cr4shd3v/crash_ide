@@ -69,6 +69,12 @@ pub(super) fn keyboard_input(
                     timer.reset = true;
                     continue;
                 }
+                KeyCode::Space => {
+                    update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), line_registry, " ");
+                    timer.reset = true;
+
+                    continue;
+                }
                 KeyCode::KeyV => {
                     if keys.pressed(KeyCode::ControlLeft) {
                         let text = clipboard.get_text().unwrap_or(String::new());
