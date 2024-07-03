@@ -8,6 +8,7 @@ mod cursor;
 mod focus;
 mod keyboard;
 mod update_text;
+mod line_container;
 
 use bevy::prelude::*;
 pub use bundle::*;

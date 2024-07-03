@@ -1,12 +1,12 @@
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use crash_ide_clipboard::Clipboard;
-use crate::{CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineRegistry};
+use crate::{CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineContainer};
 use crate::update_text::UpdateText;
 
 pub(super) fn keyboard_input(
     mut query: Query<(
-        &CodeViewLineRegistry,
+        &CodeViewLineContainer,
         &mut CodeViewCursorPosition,
         &mut CodeViewContent,
         &mut CodeViewCursorTimer,

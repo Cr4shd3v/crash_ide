@@ -6,7 +6,8 @@ use bevy::ui::RelativeCursorPosition;
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::ActiveWindow;
 
-use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineRegistry, CodeViewStyle, CursorEntityRef};
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLine, CodeViewLineContainer, CodeViewStyle, CursorEntityRef, HighlightedLine};
+use crate::line_container::GetLineContainer;
 
 pub(crate) const FONT_MULTIPLIER: f32 = 0.6075;
 
@@ -40,33 +41,38 @@ pub(super) fn init_cursor(
 }
 
 pub(super) fn update_cursor_pos(
+    mut commands: Commands,
     mut query: Query<(
         &CodeViewCursorPosition,
         &CursorEntityRef,
         &CodeViewStyle,
         &mut CodeViewCursorTimer,
-        &mut CodeViewLineRegistry,
+        &CodeViewLineContainer,
     ), Changed<CodeViewCursorPosition>>,
     mut style_query: Query<&mut Style>,
     mut background_query: Query<&mut BackgroundColor>,
+    get_line_container: GetLineContainer,
+    highlighted_query: Query<&CodeViewLine, With<HighlightedLine>>,
+    children_query: Query<&Children>,
 ) {
     for (cursor, cursor_entity,
-        code_style, mut timer, mut lines) in query.iter_mut() {
+        code_style, mut timer, lines) in query.iter_mut() {
         let mut style = style_query.get_mut(cursor_entity.0).unwrap();
         style.top = Val::Px(((code_style.font_size + 2.0) * cursor.cursor_pos.y as f32) + 1.0);
         style.left = Val::Px((code_style.font_size * FONT_MULTIPLIER) * cursor.cursor_pos.x as f32);
         timer.reset = true;
 
-        if let Some(active_line) = lines.lines.get(&lines.active) {
-            background_query.get_mut(active_line.line_content).unwrap().0 = Color::NONE;
-            background_query.get_mut(active_line.line_count).unwrap().0 = Color::NONE;
+        for line in highlighted_query.iter_many(children_query.get(lines.line_content_container).unwrap()) {
+            let (line_count, line_content) = get_line_container.get_line(lines, line.line_index);
+            background_query.get_mut(line_count).unwrap().0 = Color::NONE;
+            background_query.get_mut(line_content).unwrap().0 = Color::NONE;
+            commands.entity(line_content).remove::<HighlightedLine>();
         }
 
-        let line = lines.lines.get(&(cursor.cursor_pos.y as usize)).unwrap();
-        background_query.get_mut(line.line_content).unwrap().0 = Color::GRAY.with_a(0.1);
-        background_query.get_mut(line.line_count).unwrap().0 = Color::GRAY.with_a(0.1);
-
-        lines.active = cursor.cursor_pos.y as usize;
+        let (line_count, line_content) = get_line_container.get_line(lines, cursor.cursor_pos.y as usize);
+        background_query.get_mut(line_count).unwrap().0 = Color::GRAY.with_a(0.1);
+        background_query.get_mut(line_content).unwrap().0 = Color::GRAY.with_a(0.1);
+        commands.entity(line_content).insert(HighlightedLine);
     }
 }
 
