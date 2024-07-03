@@ -1751,6 +1751,7 @@ name = "crash_ide_code_view"
 version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
+ "crash_ide_clipboard",
  "crash_ide_util",
  "crash_ide_widget",
 ]

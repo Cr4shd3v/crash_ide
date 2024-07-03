@@ -105,7 +105,7 @@ pub struct CodeViewCursorPosition {
     /// Current cursor position.
     ///
     /// X = Column, Y = Line
-    pub cursor_pos: IVec2,
+    pub cursor_pos: UVec2,
 }
 
 /// Contains the timer for blinking cursor

@@ -26,28 +26,32 @@ pub(super) fn create_code_view(
                     let line_count_id = parent.spawn(NodeBundle {
                         style: Style {
                             border: UiRect::right(Val::Px(1.0)),
-                            margin: UiRect::right(Val::Px(3.0)),
                             height: Val::Percent(100.0),
                             flex_direction: FlexDirection::Column,
-                            justify_content: JustifyContent::Center,
                             ..default()
                         },
                         border_color: BorderColor(Color::GRAY.with_a(0.1)),
                         ..default()
                     }).with_children(|parent| {
-                        parent.spawn(TextBundle {
-                            text: Text::from_section((index + 1).to_string(), TextStyle {
-                                font: code_view_style.regular_font.clone(),
-                                font_size: code_view_style.font_size,
-                                ..default()
-                            }),
+                        parent.spawn(NodeBundle {
                             style: Style {
+                                flex_direction: FlexDirection::Row,
+                                align_items: AlignItems::Center,
                                 width: Val::Px(code_view_style.font_size * 1.5),
                                 height: Val::Px(code_view_style.font_size + 2.0),
                                 margin: UiRect::new(Val::Px(10.0), Val::Px(15.0), Val::ZERO, Val::ZERO),
                                 ..default()
                             },
                             ..default()
+                        }).with_children(|parent| {
+                            parent.spawn(TextBundle {
+                                text: Text::from_section((index + 1).to_string(), TextStyle {
+                                    font: code_view_style.regular_font.clone(),
+                                    font_size: code_view_style.font_size,
+                                    ..default()
+                                }),
+                                ..default()
+                            });
                         });
                     }).id();
 
@@ -71,6 +75,7 @@ pub(super) fn create_code_view(
                                 flex_direction: FlexDirection::Row,
                                 align_items: AlignItems::Center,
                                 height: Val::Px(code_view_style.font_size + 2.0),
+                                padding: UiRect::left(Val::Px(3.0)),
                                 ..default()
                             },
                             ..default()

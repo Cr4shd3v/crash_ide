@@ -34,7 +34,7 @@ pub(super) fn init_cursor(
             ..default()
         }).id();
 
-        commands.entity(container_entity).add_child(cursor_id);
+        commands.entity(container_entity).insert_children(0, &[cursor_id]);
         commands.entity(code_view_entity).insert(CursorEntityRef(cursor_id));
     }
 }
@@ -133,16 +133,16 @@ pub(super) fn cursor_to_click(
         let scale = window.single().resolution.scale_factor();
         let cursor_pos_relative = cursor_pos_normalized.mul(node_size) * scale;
 
-        let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as i32;
-        let mut calculated_column = ((cursor_pos_relative.x / (font_size * FONT_MULTIPLIER)).round() as i32).max(0);
+        let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as u32;
+        let mut calculated_column = ((cursor_pos_relative.x / (font_size * FONT_MULTIPLIER)).round() as u32).max(0);
 
         if let Some(line_content) = content.lines.get(calculated_line as usize) {
-            let length = line_content.iter().map(|v| v.content.len()).sum::<usize>() as i32;
+            let length = line_content.iter().map(|v| v.content.len()).sum::<usize>() as u32;
             if calculated_column > length {
                 calculated_column = length;
             }
         }
 
-        cursor_pos.cursor_pos = IVec2::new(calculated_column, calculated_line);
+        cursor_pos.cursor_pos = UVec2::new(calculated_column, calculated_line);
     }
 }
