@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
-use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewLineContainer, CodeViewStyle, CodeViewToken};
+use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewContentLine, CodeViewLineContainer, CodeViewStyle};
 use crate::component::CodeViewLine;
 
 pub(super) fn create_code_view(
@@ -43,13 +43,13 @@ pub(super) fn create_code_view(
     }
 }
 
-pub(crate) fn build_line_command(commands: &mut Commands, code_view_style: &CodeViewStyle, line: &Vec<CodeViewToken>) -> Entity {
+pub(crate) fn build_line_command(commands: &mut Commands, code_view_style: &CodeViewStyle, line: &CodeViewContentLine) -> Entity {
     commands.spawn(create_line_bundle(code_view_style)).with_children(|parent| {
         spawn_lines(parent, code_view_style, line);
     }).id()
 }
 
-pub(crate) fn build_line_parent(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: &Vec<CodeViewToken>) {
+pub(crate) fn build_line_parent(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: &CodeViewContentLine) {
     parent.spawn(create_line_bundle(code_view_style)).with_children(|parent| {
         spawn_lines(parent, code_view_style, line);
     });
@@ -72,8 +72,8 @@ fn create_line_bundle(code_view_style: &CodeViewStyle) -> impl Bundle {
     )
 }
 
-fn spawn_lines(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: &Vec<CodeViewToken>) {
-    for token in line {
+fn spawn_lines(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: &CodeViewContentLine) {
+    for token in line.tokens.iter() {
         parent.spawn(TextBundle {
             text: Text::from_section(&token.content, TextStyle {
                 font: code_view_style.get_font_for_token(token),

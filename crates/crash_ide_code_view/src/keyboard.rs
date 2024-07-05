@@ -75,7 +75,7 @@ pub(super) fn keyboard_input(
                     continue;
                 }
                 KeyCode::Backspace => {
-                    let prev_line_len = if cursor_pos.cursor_pos.y > 0 {
+                    let prev_line_len = if cursor_pos.cursor_pos.y > 0 && cursor_pos.cursor_pos.x == 0 {
                         content.get_line_length((cursor_pos.cursor_pos.y - 1) as usize)
                     } else {
                         None

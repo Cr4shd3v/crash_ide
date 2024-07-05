@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::{CodeViewContent, CodeViewToken};
 
 /// Spawns a code view.
 #[derive(Bundle, Default)]
@@ -68,43 +69,6 @@ impl CodeViewStyle {
 /// Marker struct for a code view.
 #[derive(Component, Default)]
 pub struct CodeView;
-
-/// Content of a code view
-#[derive(Component, Default, Debug)]
-pub struct CodeViewContent {
-    /// All lines
-    pub lines: Vec<Vec<CodeViewToken>>,
-}
-
-impl CodeViewContent {
-    /// Returns the length of a line or None, if the line does not exist
-    pub fn get_line_length(&self, line: usize) -> Option<usize> {
-        self.lines.get(line).map(|m| m.iter().map(|v| v.content.len()).sum::<usize>())
-    }
-}
-
-/// Token describing a part of a line
-#[derive(Default, Debug)]
-pub struct CodeViewToken {
-    /// Content of this token
-    pub content: String,
-    /// Text should be bold
-    pub bold: bool,
-    /// Text should be italic
-    pub italic: bool,
-}
-
-impl CodeViewContent {
-    /// Constructs a [CodeViewContent] from a string without any styling.
-    pub fn from_string(string: String) -> Self {
-        Self {
-            lines: string.split("\n").map(|v| vec![CodeViewToken {
-                content: v.to_string(),
-                ..default()
-            }]).collect(),
-        }
-    }
-}
 
 /// Information about the cursor in the current code view
 #[derive(Component, Default)]
