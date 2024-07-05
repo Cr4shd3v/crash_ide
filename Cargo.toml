@@ -55,7 +55,7 @@ resolver = "2"
 bevy = { version = "0.13.2", default-features = false }
 serde = "^1.0"
 serde_json = "^1.0"
-homedir = "^0.2"
+homedir = "^0.3"
 open = "^5.2"
 image = "^0.24"
 rfd = "^0.14"
