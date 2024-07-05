@@ -11,6 +11,7 @@ mod open_project;
 mod switch_project;
 pub mod settings;
 mod checkbox;
+mod text_scale;
 
 use bevy::prelude::*;
 use crash_ide_state::EditorState;
@@ -21,6 +22,7 @@ use crate::checkbox::init_checkbox;
 use crate::editor::EditorPlugin;
 use crate::settings::SettingsPlugin;
 use crate::startup::StartupScreenPlugin;
+use crate::text_scale::{scale_text, scale_text_input};
 use crate::widget::EditorWidgetPlugin;
 use crate::window::EditorWindowPlugin;
 
@@ -31,7 +33,7 @@ impl Plugin for CrashIDEUiPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(OnEnter(EditorState::Loaded), init_checkbox)
-            .add_systems(Update, button_cursor)
+            .add_systems(Update, (button_cursor, scale_text, scale_text_input))
             .add_plugins((
                 StartupScreenPlugin, EditorWidgetPlugin, EditorPlugin,
                 EditorWindowPlugin, OpenProjectPlugin, SwitchProjectPlugin,
