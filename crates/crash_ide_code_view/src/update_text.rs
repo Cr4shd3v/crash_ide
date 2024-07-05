@@ -73,32 +73,33 @@ impl<'w, 's> UpdateText<'w, 's> {
     }
 
     pub fn remove_text(&mut self, content: &mut CodeViewContent, cursor_pos: &mut CodeViewCursorPosition, lines: &CodeViewLineContainer, backspace: bool) {
-        let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap();
-        let Some((token_index, insert_index, token)) =
-            content.get_line_mut(cursor_pos.cursor_pos.y as usize).unwrap()
-                .get_token_mut(cursor_pos.cursor_pos.x as usize + if backspace { 0 } else { 1 }) else {
-            return;
-        };
         let mut line_to_line = None;
 
-        if cursor_pos.cursor_pos.x == 0 && backspace {
-            if cursor_pos.cursor_pos.y > 0 {
-                // this line to prev line
-                line_to_line = Some((cursor_pos.cursor_pos.y as usize, cursor_pos.cursor_pos.y as usize - 1));
+        if let Some((token_index, insert_index, token)) =
+            content.get_line_mut(cursor_pos.cursor_pos.y as usize).unwrap()
+                .get_token_mut(cursor_pos.cursor_pos.x as usize + if backspace { 0 } else { 1 }) {
+            if cursor_pos.cursor_pos.x == 0 && backspace {
+                if cursor_pos.cursor_pos.y > 0 {
+                    // this line to prev line
+                    line_to_line = Some((cursor_pos.cursor_pos.y as usize, cursor_pos.cursor_pos.y as usize - 1));
+                }
+            } else if insert_index <= token.content.len() {
+                token.content.remove(insert_index - 1);
+
+                let texts_in_line = self.children_query.get(
+                    self.get_line_container.get_line(lines, cursor_pos.cursor_pos.y as usize).1,
+                ).unwrap();
+
+                let mut text = self.text_query.get_mut(texts_in_line.get(token_index).unwrap().clone()).unwrap();
+                text.sections[0].value = token.content.clone();
             }
-        } else if cursor_pos.cursor_pos.x as usize == line_len && !backspace {
-            // Next line to this line
-            line_to_line = Some((cursor_pos.cursor_pos.y as usize + 1, cursor_pos.cursor_pos.y as usize));
-        } else if insert_index <= token.content.len() {
-            token.content.remove(insert_index - 1);
-
-            let texts_in_line = self.children_query.get(
-                self.get_line_container.get_line(lines, cursor_pos.cursor_pos.y as usize).1,
-            ).unwrap();
-
-            let mut text = self.text_query.get_mut(texts_in_line.get(token_index).unwrap().clone()).unwrap();
-            text.sections[0].value = token.content.clone();
-        }
+        } else {
+            let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap();
+            if cursor_pos.cursor_pos.x as usize == line_len && !backspace {
+                // Next line to this line
+                line_to_line = Some((cursor_pos.cursor_pos.y as usize + 1, cursor_pos.cursor_pos.y as usize));
+            }
+        };
 
         if let Some((from, to)) = line_to_line {
             let from_lines = content.lines.remove(from);
