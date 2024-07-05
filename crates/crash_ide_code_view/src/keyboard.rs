@@ -26,15 +26,7 @@ pub(super) fn keyboard_input(
 
             match event.key_code {
                 KeyCode::ArrowLeft => {
-                    if cursor_pos.cursor_pos.x == 0 {
-                        if cursor_pos.cursor_pos.y > 0 {
-                            cursor_pos.cursor_pos.y -= 1;
-                            cursor_pos.cursor_pos.x =
-                                content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
-                        }
-                    } else {
-                        cursor_pos.cursor_pos.x -= 1;
-                    }
+                    move_cursor_left(cursor_pos.as_mut(), content.as_ref());
                     timer.reset = true;
                     continue;
                 }
@@ -82,6 +74,35 @@ pub(super) fn keyboard_input(
 
                     continue;
                 }
+                KeyCode::Backspace => {
+                    let prev_line_len = if cursor_pos.cursor_pos.y > 0 {
+                        content.get_line_length((cursor_pos.cursor_pos.y - 1) as usize)
+                    } else {
+                        None
+                    };
+                    update_text.remove_text(content.as_mut(), cursor_pos.as_mut(), lines, true);
+                    move_cursor_left(cursor_pos.as_mut(), content.as_ref());
+
+                    if let Some(prev_line_len) = prev_line_len {
+                        cursor_pos.cursor_pos.x = prev_line_len as u32;
+                    }
+
+                    timer.reset = true;
+
+                    continue;
+                }
+                KeyCode::Delete => {
+                    update_text.remove_text(content.as_mut(), cursor_pos.as_mut(), lines, false);
+                    timer.reset = true;
+
+                    continue;
+                }
+                KeyCode::Tab => {
+                    update_text.insert_text(content.as_mut(), cursor_pos.as_mut(), lines, "    ");
+                    timer.reset = true;
+
+                    continue;
+                }
                 KeyCode::KeyV => {
                     if keys.pressed(KeyCode::ControlLeft) {
                         let text = clipboard.get_text().unwrap_or(String::new());
@@ -99,5 +120,17 @@ pub(super) fn keyboard_input(
                 timer.reset = true;
             }
         }
+    }
+}
+
+fn move_cursor_left(cursor_pos: &mut CodeViewCursorPosition, content: &CodeViewContent) {
+    if cursor_pos.cursor_pos.x == 0 {
+        if cursor_pos.cursor_pos.y > 0 {
+            cursor_pos.cursor_pos.y -= 1;
+            cursor_pos.cursor_pos.x =
+                content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
+        }
+    } else {
+        cursor_pos.cursor_pos.x -= 1;
     }
 }
