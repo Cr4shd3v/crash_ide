@@ -214,7 +214,7 @@ fn spawn_all_rows(
                         text: Text::from_section(root.display_path.clone(), TextStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
                             font_size: 14.0,
-                            color: Color::GRAY.with_a(0.5),
+                            color: DefaultColors::GRAY.with_alpha(0.5),
                         }),
                         style: Style {
                             margin: UiRect::left(Val::Px(2.0)),

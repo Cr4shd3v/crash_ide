@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crash_ide_widget::Hoverable;
-use crash_ide_assets::{DefaultFonts, DefaultIcons};
+use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crate::startup::StartupScreenState;
 use crate::widget::button::GithubButton;
 
@@ -13,7 +13,7 @@ pub(crate) fn startup_left_menu(builder: &mut ChildBuilder, icons: &Res<DefaultI
             border: UiRect::right(Val::Px(2.0)),
             ..default()
         },
-        border_color: BorderColor(Color::GRAY.with_a(0.16)),
+        border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.16)),
         ..default()
     }).with_children(|parent| {
         startup_left_menu_entry(parent, StartupScreenState::ProjectSelect);
@@ -34,7 +34,7 @@ pub(crate) fn startup_left_menu(builder: &mut ChildBuilder, icons: &Res<DefaultI
                 text: Text::from_section(format!("Crash IDE v{}", env!("CARGO_PKG_VERSION")), TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
                     font_size: 16.0,
-                    color: Color::GRAY.with_a(0.8),
+                    color: DefaultColors::GRAY.with_alpha(0.8),
                 }).with_no_wrap(),
                 ..default()
             });
@@ -75,7 +75,7 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
         },
         background_color: BackgroundColor(Color::NONE),
         ..default()
-    }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state), Hoverable::new(Color::GRAY.with_a(0.2)),
+    }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(next_state.title(), TextStyle {
             font_size: 16.0,
@@ -109,7 +109,7 @@ pub(crate) fn handle_left_menu_state_change(
 
     for (mut color, menu_entry) in color_query.iter_mut() {
         if menu_entry.next_state.title() == active_title {
-            color.0 = Color::GRAY.with_a(0.4);
+            color.0 = DefaultColors::GRAY.with_alpha(0.4);
         } else {
             color.0 = Color::NONE;
         }

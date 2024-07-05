@@ -1,3 +1,4 @@
+use bevy::color::palettes::css::GRAY;
 use bevy::prelude::*;
 
 pub(super) struct CheckboxPlugin;
@@ -115,7 +116,7 @@ fn create_checkbox(
                 align_items: AlignItems::Center,
                 ..default()
             },
-            border_color: BorderColor(Color::GRAY.with_a(0.1)),
+            border_color: BorderColor(Color::from(GRAY).with_alpha(0.1)),
             ..default()
         }).with_children(|parent| {
             if value.is_checked() {

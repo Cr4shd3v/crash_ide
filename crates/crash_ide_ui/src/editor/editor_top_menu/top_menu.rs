@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_widget::Hoverable;
 
 use crate::editor::editor_top_menu::file_menu::FileMenu;
@@ -32,7 +32,7 @@ fn spawn_menu_entry(parent: &mut ChildBuilder, marker: impl Bundle, title: &str)
         },
         ..default()
     },
-                  Hoverable::new(Color::GRAY.with_a(0.2)),
+                  Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
                   Interaction::None,
                   marker,
     )).with_children(|parent| {

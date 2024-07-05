@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::editor::main_editor_screen::EditorFileView;
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 
 pub(super) fn spawn_default_file_view(
     mut commands: Commands,
@@ -22,7 +22,7 @@ pub(super) fn spawn_default_file_view(
                     text: Text::from_section("No File opened", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
                         font_size: 16.0,
-                        color: Color::GRAY.with_a(0.5),
+                        color: DefaultColors::GRAY.with_alpha(0.5),
                     }),
                     ..default()
                 });

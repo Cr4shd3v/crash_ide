@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
-
+use bevy::color::palettes::css::RED;
 use bevy::prelude::*;
 
 use crash_ide_config::{EditorConfigProjects, HomeDir};
@@ -85,7 +85,7 @@ fn spawn_project_create_screen(
                 parent.spawn((TextBundle {
                     text: Text::from_section("", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
-                        color: Color::RED,
+                        color: RED.into(),
                         font_size: 18.0,
                     }),
                     style: Style {

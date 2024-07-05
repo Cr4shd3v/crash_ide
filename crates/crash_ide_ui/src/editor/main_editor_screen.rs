@@ -64,7 +64,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                     ..default()
                 },
                 background_color: BackgroundColor(DefaultColors::MAIN_VIEW_BACKGROUND),
-                border_color: BorderColor(Color::GRAY.with_a(0.1)),
+                border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
                 ..default()
             }, EditorTopMenu, ProjectRef(project_window.project_crash_ide_config)));
 
@@ -107,7 +107,7 @@ pub(super) fn spawn_main_crash_ide_screen(
                     border: UiRect::top(Val::Px(2.0)),
                     ..default()
                 },
-                border_color: BorderColor(Color::GRAY.with_a(0.1)),
+                border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
                 background_color: BackgroundColor(DefaultColors::MAIN_VIEW_BACKGROUND),
                 ..default()
             }, EditorBottomMenu, ProjectRef(project_window.project_crash_ide_config)));

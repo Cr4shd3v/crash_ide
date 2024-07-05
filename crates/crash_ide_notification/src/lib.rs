@@ -89,7 +89,7 @@ fn handle_new_notifications(
                 ..default()
             },
             background_color: BackgroundColor(DefaultColors::DEFAULT_BACKGROUND),
-            border_color: BorderColor(Color::GRAY.with_a(0.1)),
+            border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
             focus_policy: FocusPolicy::Block,
             ..default()
         }).with_children(|parent| {

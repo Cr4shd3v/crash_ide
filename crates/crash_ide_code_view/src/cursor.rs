@@ -2,7 +2,7 @@ use std::ops::Mul;
 
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
-
+use crash_ide_assets::DefaultColors;
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::ActiveWindow;
 
@@ -76,8 +76,8 @@ pub(super) fn update_cursor_pos(
         }
 
         let (line_count, line_content) = get_line_container.get_line(lines, cursor.cursor_pos.y as usize);
-        background_query.get_mut(line_count).unwrap().0 = Color::GRAY.with_a(0.1);
-        background_query.get_mut(line_content).unwrap().0 = Color::GRAY.with_a(0.1);
+        background_query.get_mut(line_count).unwrap().0 = DefaultColors::GRAY.with_alpha(0.1);
+        background_query.get_mut(line_content).unwrap().0 = DefaultColors::GRAY.with_alpha(0.1);
         commands.entity(line_content).insert(HighlightedLine);
         commands.entity(line_count).insert(HighlightedLineCount);
     }

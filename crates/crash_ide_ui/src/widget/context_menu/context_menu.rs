@@ -20,7 +20,7 @@ impl ContextMenu {
                 ..default()
             },
             background_color: BackgroundColor(DefaultColors::DEFAULT_BACKGROUND),
-            border_color: BorderColor(Color::GRAY.with_a(0.1)),
+            border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
             z_index: ZIndex::Global(1),
             focus_policy: FocusPolicy::Block,
             ..default()

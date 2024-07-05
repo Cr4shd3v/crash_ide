@@ -2,7 +2,7 @@ use std::ops::Neg;
 
 use bevy::prelude::*;
 
-use crash_ide_assets::{DefaultFonts, DefaultIcons};
+use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 
 use crate::widget::button::{GithubButton, GithubIssueButton};
 use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
@@ -50,7 +50,7 @@ fn open_help_menu(
                         text: Text::from_section(format!("v{}", env!("CARGO_PKG_VERSION")), TextStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
                             font_size: 16.0,
-                            color: Color::GRAY.with_a(0.8),
+                            color: DefaultColors::GRAY.with_alpha(0.8),
                         }),
                         ..default()
                     });

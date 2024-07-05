@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
+use crash_ide_assets::DefaultColors;
 use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewContentLine, CodeViewLineContainer, CodeViewStyle};
 use crate::component::CodeViewLine;
 
@@ -93,7 +94,7 @@ pub(crate) fn build_line_count(parent: &mut ChildBuilder, code_view_style: &Code
             flex_direction: FlexDirection::Column,
             ..default()
         },
-        border_color: BorderColor(Color::GRAY.with_a(0.1)),
+        border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
         ..default()
     }).with_children(|parent| {
         parent.spawn(NodeBundle {

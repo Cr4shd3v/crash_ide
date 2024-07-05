@@ -1,5 +1,6 @@
 use std::ops::Mul;
 use bevy::asset::load_internal_binary_asset;
+use bevy::color::palettes::css::GRAY;
 use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
@@ -523,7 +524,7 @@ fn create_text_input(
         if settings.with_border {
             let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
             style.border = UiRect::all(Val::Px(1.0));
-            border_color.0 = Color::GRAY;
+            border_color.0 = GRAY.into();
         }
 
         commands.entity(overflow_container).add_child(text);
@@ -745,7 +746,7 @@ fn set_section_values(value: &str, cursor_pos: usize, sections: &mut [TextSectio
 }
 
 fn placeholder_style(style: &TextStyle) -> TextStyle {
-    let color = style.color.with_a(style.color.a() * 0.25);
+    let color = style.color.with_alpha(style.color.alpha() * 0.25);
     TextStyle {
         color,
         ..style.clone()

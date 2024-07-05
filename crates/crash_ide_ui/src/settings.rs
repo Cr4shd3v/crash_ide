@@ -5,7 +5,7 @@ mod plugin;
 
 use bevy::ecs::system::EntityCommands;
 use bevy::prelude::*;
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::Hoverable;
 use crate::settings::general_settings_menu::{GeneralSettingsMenu, GeneralSettingsMenuPlugin};
@@ -92,7 +92,7 @@ fn spawn_settings_screen(
                     border: UiRect::right(Val::Px(2.0)),
                     ..default()
                 },
-                border_color: BorderColor(Color::GRAY.with_a(0.16)),
+                border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.16)),
                 ..default()
             }).with_children(|parent| {
                 left_menu_entry(parent, SettingsScreen::General, screen);
@@ -106,7 +106,7 @@ fn spawn_settings_screen(
                         border: UiRect::bottom(Val::Px(2.0)),
                         ..default()
                     },
-                    border_color: BorderColor(Color::GRAY.with_a(0.1)),
+                    border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
                     ..default()
                 }).with_children(|parent| {
                     parent.spawn(TextBundle {
@@ -154,12 +154,12 @@ fn left_menu_entry(builder: &mut ChildBuilder, menu: SettingsScreen, active_scre
             ..default()
         },
         background_color: BackgroundColor(if *active_screen == menu {
-            Color::GRAY.with_a(0.2)
+            DefaultColors::GRAY.with_alpha(0.2)
         } else {
             Color::NONE
         }),
         ..default()
-    }, Interaction::None, Button, SettingsLeftMenuEntry(menu), Hoverable::new(Color::GRAY.with_a(0.2)),
+    }, Interaction::None, Button, SettingsLeftMenuEntry(menu), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(title, TextStyle {
             font_size: 16.0,

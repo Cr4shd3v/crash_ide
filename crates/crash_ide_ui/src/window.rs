@@ -178,7 +178,7 @@ fn check_for_exit(
     window_query: Query<(), Or<(With<StartupWindow>, With<ProjectWindow>)>>
 ) {
     if window_query.is_empty() {
-        app_exit.send(AppExit);
+        app_exit.send_default();
     }
 }
 

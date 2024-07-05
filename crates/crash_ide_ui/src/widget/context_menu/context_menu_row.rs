@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crash_ide_assets::DefaultFonts;
+use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_widget::Hoverable;
 
 /// Component for context menu entries
@@ -19,7 +19,7 @@ impl ContextMenuRow {
                 ..default()
             },
             ..default()
-        }, Interaction::None, ContextMenuRow, marker, Hoverable::new(Color::GRAY.with_a(0.2)))).with_children(|parent| {
+        }, Interaction::None, ContextMenuRow, marker, Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)))).with_children(|parent| {
             let has_pre_icon = pre_icon.is_some();
             if let Some(icon) = pre_icon {
                 parent.spawn(ImageBundle {

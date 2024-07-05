@@ -29,7 +29,7 @@ assets = [
 ]
 
 [dependencies]
-bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland", "multi-threaded"] }
+bevy = { workspace = true, features = ["bevy_asset", "x11", "wayland", "multi_threaded"] }
 crash_ide_state = { workspace = true }
 crash_ide_config = { workspace = true }
 crash_ide_ui = { workspace = true }
@@ -52,12 +52,12 @@ members = ["crates/*", "plugins/*"]
 resolver = "2"
 
 [workspace.dependencies]
-bevy = { version = "0.13.2", default-features = false }
+bevy = { version = "0.14.0", default-features = false }
 serde = "^1.0"
 serde_json = "^1.0"
 homedir = "^0.3"
 open = "^5.2"
-image = "^0.24"
+image = "^0.25"
 rfd = "^0.14"
 discord-presence = "^1.2"
 arboard = { version = "^3.4", default-features = false }

@@ -57,7 +57,7 @@ fn build_project_select(
                 padding: UiRect::bottom(Val::Vh(1.0)),
                 ..default()
             },
-            border_color: BorderColor(Color::GRAY.with_a(0.1)),
+            border_color: BorderColor(DefaultColors::GRAY.with_alpha(0.1)),
             ..default()
         }).with_children(|parent| {
             parent.spawn((NodeBundle {
@@ -121,7 +121,7 @@ fn build_project_select(
                 }, ProjectRow {
                     path: path.clone(),
                     folder_exists,
-                }, Hoverable::new(if folder_exists { Color::BLACK.with_a(0.2) } else { Color::NONE }),
+                }, Hoverable::new(if folder_exists { Color::BLACK.with_alpha(0.2) } else { Color::NONE }),
                               Interaction::None)).with_children(|parent| {
                     parent.spawn(NodeBundle {
                         style: Style {
@@ -132,13 +132,13 @@ fn build_project_select(
                     }).with_children(|parent| {
                         parent.spawn(TextBundle::from_section(&project.name, TextStyle {
                             font_size: 20.0,
-                            color: if folder_exists { Color::WHITE } else { Color::GRAY.with_a(0.8) },
+                            color: if folder_exists { Color::WHITE } else { DefaultColors::GRAY.with_alpha(0.8) },
                             font: DefaultFonts::ROBOTO_REGULAR,
                         }));
 
                         parent.spawn(TextBundle::from_section(path, TextStyle {
                             font_size: 13.0,
-                            color: Color::GRAY,
+                            color: DefaultColors::GRAY,
                             font: DefaultFonts::ROBOTO_REGULAR,
                         }));
                     });
