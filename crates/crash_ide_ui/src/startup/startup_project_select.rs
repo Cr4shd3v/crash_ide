@@ -67,6 +67,7 @@ fn build_project_select(
                     ..default()
                 },
                 background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
+                border_radius: BorderRadius::all(Val::Px(2.0)),
                 ..default()
             }, CreateProjectButton {
                 base_window: Some(startup_window),
@@ -86,6 +87,7 @@ fn build_project_select(
                     ..default()
                 },
                 background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
+                border_radius: BorderRadius::all(Val::Px(2.0)),
                 ..default()
             }, OpenProjectButton {
                 base_window: Some(startup_window),
@@ -117,6 +119,7 @@ fn build_project_select(
                         ..default()
                     },
                     background_color: BackgroundColor(Color::NONE),
+                    border_radius: BorderRadius::all(Val::Px(2.0)),
                     ..default()
                 }, ProjectRow {
                     path: path.clone(),

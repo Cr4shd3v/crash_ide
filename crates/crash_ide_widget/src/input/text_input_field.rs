@@ -432,7 +432,7 @@ fn create_text_input(
         Option<&TextInputFocused>,
         &TextInputSettings,
     ), Added<TextInputValue>>,
-    mut style_query: Query<(&mut Style, &mut BorderColor)>
+    mut style_query: Query<(&mut Style, &mut BorderColor, &mut BorderRadius)>
 ) {
     for (entity, value, style, placeholder,
         initial_cursor_pos, inactive, focused,
@@ -522,9 +522,10 @@ fn create_text_input(
         }).id();
 
         if settings.with_border {
-            let (mut style, mut border_color) = style_query.get_mut(entity).unwrap();
+            let (mut style, mut border_color, mut radius) = style_query.get_mut(entity).unwrap();
             style.border = UiRect::all(Val::Px(1.0));
             border_color.0 = GRAY.into();
+            *radius = BorderRadius::all(Val::Px(2.0));
         }
 
         commands.entity(overflow_container).add_child(text);

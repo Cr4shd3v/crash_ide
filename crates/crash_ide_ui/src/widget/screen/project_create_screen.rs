@@ -106,11 +106,12 @@ fn spawn_project_create_screen(
                     parent.spawn((
                         NodeBundle {
                             style: Style {
-                                padding: UiRect::all(Val::Px(5.0)),
+                                padding: UiRect::axes(Val::Px(5.0), Val::Px(2.5)),
                                 margin: UiRect::top(Val::Vh(2.5)),
                                 ..default()
                             },
                             background_color: BackgroundColor(DefaultColors::PRIMARY_BUTTON),
+                            border_radius: BorderRadius::all(Val::Px(2.0)),
                             ..default()
                         },
                         Interaction::None,

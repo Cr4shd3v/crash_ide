@@ -74,6 +74,7 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
             ..default()
         },
         background_color: BackgroundColor(Color::NONE),
+        border_radius: BorderRadius::all(Val::Px(2.0)),
         ..default()
     }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
     )).with_children(|parent| {

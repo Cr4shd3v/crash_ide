@@ -158,6 +158,7 @@ fn left_menu_entry(builder: &mut ChildBuilder, menu: SettingsScreen, active_scre
         } else {
             Color::NONE
         }),
+        border_radius: BorderRadius::all(Val::Px(2.0)),
         ..default()
     }, Interaction::None, Button, SettingsLeftMenuEntry(menu), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
     )).with_children(|parent| {
