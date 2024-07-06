@@ -152,15 +152,49 @@ fn create_project_confirm(
             return;
         }
 
-        if fs::metadata(&path).is_err() {
-            if let Err(e) = fs::create_dir_all(&path) {
+        let path_buf = PathBuf::from_str(&*path).unwrap();
+        let name = path_buf.file_name().unwrap().to_str().unwrap().to_string();
+
+        if fs::metadata(&path_buf).is_err() {
+            if let Err(e) = fs::create_dir_all(&path_buf) {
                 error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
                 continue;
             };
         }
 
+        let readme_file = path_buf.join("Readme.md");
+        if fs::metadata(&readme_file).is_err() {
+            fs::write(readme_file, format!("# {}\n", name)).ok();
+        }
+
+        let gitignore_file = path_buf.join(".gitignore");
+        if fs::metadata(&gitignore_file).is_err() {
+            fs::write(gitignore_file, "").ok();
+        }
+
+        let config_folder = path_buf.join(".crash_ide");
+        if fs::metadata(&config_folder).is_err() {
+            if let Err(e) = fs::create_dir_all(&config_folder) {
+                error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
+                continue;
+            }
+        }
+
+        let config_gitignore = config_folder.join(".gitignore");
+        if fs::metadata(&config_gitignore).is_err() {
+            fs::write(config_gitignore, "cache").ok();
+        }
+
+        let cache_folder = config_folder.join("cache");
+        if fs::metadata(&cache_folder).is_err() {
+            if let Err(e) = fs::create_dir_all(&cache_folder) {
+                error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
+                continue;
+            }
+        }
+
         let config = EditorProject {
-            name: PathBuf::from_str(&*path).unwrap().file_name().unwrap().to_str().unwrap().to_string(),
+            name,
             path: path.clone(),
         };
 
