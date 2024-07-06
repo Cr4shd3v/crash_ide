@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 use crash_ide_assets::DefaultIcons;
 use crash_ide_file_picker::{DirectoryPicked, DirectoryPicker};
-use crash_ide_widget::{TextInputCursorPos, TextInputValue};
+use crash_ide_widget::{TextInputCursorPos, TextInputTextStyle, TextInputValue};
 
 pub(super) struct FolderInputPlugin;
 
@@ -28,10 +28,10 @@ struct FolderInputButton;
 
 fn spawn_button(
     mut commands: Commands,
-    query: Query<(Entity, &Node), (Added<TextInputCursorPos>, With<FolderInput>)>,
+    query: Query<(Entity, &TextInputTextStyle), (Added<TextInputCursorPos>, With<FolderInput>)>,
     default_icons: Res<DefaultIcons>,
 ) {
-    for (entity, node) in query.iter() {
+    for (entity, style) in query.iter() {
         commands.entity(entity).with_children(|parent| {
             parent.spawn((ImageBundle {
                 image: UiImage {
@@ -40,7 +40,8 @@ fn spawn_button(
                 },
                 style: Style {
                     max_width: Val::Percent(4.0),
-                    height: Val::Px(node.size().y),
+                    height: Val::Px(style.0.font_size + 5.0),
+                    align_self: AlignSelf::Center,
                     ..default()
                 },
                 z_index: ZIndex::Local(1),

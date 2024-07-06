@@ -57,6 +57,7 @@ fn spawn_project_create_screen(
             }).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Project Path", TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
+                    font_size: 14.0,
                     ..default()
                 }));
 

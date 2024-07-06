@@ -1,4 +1,6 @@
 use bevy::app::AppExit;
+use bevy::ecs::component::{ComponentHooks, StorageType};
+use bevy::ecs::world::DeferredWorld;
 use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
 use bevy::utils::HashMap;
@@ -19,15 +21,24 @@ impl Plugin for EditorWindowPlugin {
             .add_systems(OnEnter(EditorState::Loaded), open_last_projects)
             .add_systems(PreUpdate, (process_new_window, save_resolution))
             .add_systems(Update, set_startup_window_resolution)
-            .add_systems(PostUpdate, (despawn_window, check_for_exit, on_startup_window_despawn, track_open_projects))
+            .add_systems(PostUpdate, (despawn_window, check_for_exit, track_open_projects))
             .init_resource::<DefaultWindowResolution>()
             .init_resource::<AllWindows>()
         ;
     }
 }
 
-#[derive(Component)]
 pub struct StartupWindow;
+
+impl Component for StartupWindow {
+    const STORAGE_TYPE: StorageType = StorageType::Table;
+
+    fn register_component_hooks(hooks: &mut ComponentHooks) {
+        hooks.on_remove(|mut world: DeferredWorld, _targeted_entity, _component_id| {
+            world.resource_mut::<NextState<StartupScreenState>>().set(StartupScreenState::None);
+        });
+    }
+}
 
 #[derive(Component)]
 pub struct ProjectWindow {
@@ -95,15 +106,6 @@ fn open_last_projects(
 
             window_id = None;
         }
-    }
-}
-
-fn on_startup_window_despawn(
-    mut removed: RemovedComponents<StartupWindow>,
-    mut next_state: ResMut<NextState<StartupScreenState>>,
-) {
-    for _ in removed.read() {
-        next_state.set(StartupScreenState::None);
     }
 }
 

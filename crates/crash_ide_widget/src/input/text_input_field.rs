@@ -99,7 +99,7 @@ pub struct TextInputTextStyle(pub TextStyle);
 impl Default for TextInputTextStyle {
     fn default() -> Self {
         Self(TextStyle {
-            font_size: 18.0,
+            font_size: 14.0,
             ..default()
         })
     }
