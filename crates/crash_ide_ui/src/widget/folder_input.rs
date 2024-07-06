@@ -12,7 +12,7 @@ pub(super) struct FolderInputPlugin;
 impl Plugin for FolderInputPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, (spawn_button, folder_input_button, folder_picked))
+            .add_systems(Update, (spawn_button, folder_input_button))
         ;
     }
 }
@@ -68,15 +68,15 @@ fn folder_input_button(
         commands.entity(parent_entity).insert(DirectoryPicker {
             start_directory: Some(PathBuf::from(&current_value.0)),
             title: "Select project path".to_string(),
-        });
+        }).observe(folder_picked);
     }
 }
 
 fn folder_picked(
-    mut input_query: Query<(&DirectoryPicked, &mut TextInputValue), (With<FolderInput>, Added<DirectoryPicked>)>,
+    trigger: Trigger<DirectoryPicked>,
+    mut input_query: Query<&mut TextInputValue>,
 ) {
-    for (directory, mut input) in input_query.iter_mut() {
-        input.0 = directory.0.path().to_str().unwrap().to_string();
-    }
+    let mut input  = input_query.get_mut(trigger.entity()).unwrap();
+    input.0 = trigger.event().0.path().to_str().unwrap().to_string();
 }
 

@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use bevy::prelude::{Added, Commands, Component, Entity, Query};
+use bevy::prelude::*;
 use bevy::tasks::{AsyncComputeTaskPool, block_on, Task};
 use bevy::tasks::futures_lite::future;
 use rfd::FileHandle;
@@ -22,7 +22,7 @@ impl Default for DirectoryPicker {
 #[derive(Component)]
 pub(super) struct DirectoryPickerTask(Task<Option<FileHandle>>);
 
-#[derive(Component)]
+#[derive(Event)]
 pub struct DirectoryPicked(pub FileHandle);
 
 pub(super) fn start_directory_picker(
@@ -46,7 +46,7 @@ pub(super) fn start_directory_picker(
             dialog.pick_folder().await
         });
 
-        commands.entity(entity).insert(DirectoryPickerTask(task)).remove::<(DirectoryPicker, DirectoryPicked)>();
+        commands.entity(entity).insert(DirectoryPickerTask(task)).remove::<DirectoryPicker>();
     }
 }
 
@@ -62,7 +62,7 @@ pub(super) fn handle_picked_directory(
         commands.entity(entity).remove::<DirectoryPickerTask>();
 
         if let Some(file) = result {
-            commands.entity(entity).insert(DirectoryPicked(file));
+            commands.trigger_targets(DirectoryPicked(file), entity);
         }
     }
 }

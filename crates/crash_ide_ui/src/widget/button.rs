@@ -17,7 +17,7 @@ impl Plugin for ButtonPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, (
             open_project_button,
-            open_project_directory_picked,
+            observe_button,
             create_project_button,
             open_github_link,
             open_github_issue_link,

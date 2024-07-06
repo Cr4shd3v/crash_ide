@@ -26,7 +26,7 @@ impl Default for FilePicker {
 #[derive(Component)]
 pub(super) struct FilePickerTask(Task<Option<FileHandle>>);
 
-#[derive(Component)]
+#[derive(Event)]
 pub struct FilePicked(pub FileHandle);
 
 pub(super) fn start_file_picker(
@@ -58,7 +58,7 @@ pub(super) fn start_file_picker(
             }
         });
 
-        commands.entity(entity).insert(FilePickerTask(task)).remove::<(FilePicker, FilePicked)>();
+        commands.entity(entity).insert(FilePickerTask(task)).remove::<FilePicker>();
     }
 }
 
@@ -74,7 +74,7 @@ pub(super) fn handle_picked_file(
         commands.entity(entity).remove::<FilePickerTask>();
 
         if let Some(file) = result {
-            commands.entity(entity).insert(FilePicked(file));
+            commands.trigger_targets(FilePicked(file), entity);
         }
     }
 }
