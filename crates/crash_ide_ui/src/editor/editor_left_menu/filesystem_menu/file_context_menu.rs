@@ -9,7 +9,6 @@ use crash_ide_widget::{ActiveWindow, RightClicked, TextInputSubmitted};
 
 use crate::editor::editor_left_menu::{FileDisplay, FilePath, ProjectRoot};
 use crate::editor::editor_left_menu::filesystem_menu::filename_dialog::FilenameDialog;
-use crate::editor::editor_left_menu::filesystem_menu::SelfFileRow;
 use crate::widget::context_menu::{ContextMenu, ContextMenuRow};
 use crate::window::AllWindows;
 
@@ -19,7 +18,7 @@ impl Plugin for FileContextMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, (
-                file_context_menu, handle_file_delete, handle_create_file,
+                handle_file_delete, handle_create_file,
                 create_file_submenu, handle_create_file_submit, handle_file_rename,
                 handle_rename_file_submit,
             ))
@@ -30,45 +29,45 @@ impl Plugin for FileContextMenuPlugin {
 #[derive(Component, Clone)]
 struct FileContextRef(Entity);
 
-fn file_context_menu(
+pub(super) fn file_context_menu(
+    trigger: Trigger<RightClicked>,
     mut commands: Commands,
-    query: Query<&Parent, (Added<RightClicked>, With<SelfFileRow>)>,
+    parent_query: Query<&Parent>,
     file_display_query: Query<(Entity, &FileDisplay, Option<&ProjectRoot>)>,
     window_query: Query<(Entity, &Window), With<ActiveWindow>>,
     all_windows: Res<AllWindows>,
     icons: Res<DefaultIcons>,
 ) {
-    for parent in query.iter() {
-        let entity = parent.get();
-        let Ok((file_display_entity, file_display, root)) = file_display_query.get(entity) else {
-            continue;
-        };
+    let parent = parent_query.get(trigger.entity()).unwrap();
+    let entity = parent.get();
+    let Ok((file_display_entity, file_display, root)) = file_display_query.get(entity) else {
+        return;
+    };
 
-        let Ok((window_entity, window)) = window_query.get_single() else {
-            continue;
-        };
+    let Ok((window_entity, window)) = window_query.get_single() else {
+        return;
+    };
 
-        let Some(cursor_pos) = window.cursor_position() else {
-            continue;
-        };
+    let Some(cursor_pos) = window.cursor_position() else {
+        return;
+    };
 
-        commands.entity(all_windows.get(&window_entity).ui_root).with_children(|parent| {
-            parent.spawn((
-                ContextMenu::new_at_cursor(cursor_pos),
-                FileContextRef(file_display_entity),
-            )).with_children(|parent| {
-                if !file_display.is_file {
-                    ContextMenuRow::new(parent, "Create", CreateButton::default(), None, Some(icons.right.clone()));
-                }
+    commands.entity(all_windows.get(&window_entity).ui_root).with_children(|parent| {
+        parent.spawn((
+            ContextMenu::new_at_cursor(cursor_pos),
+            FileContextRef(file_display_entity),
+        )).with_children(|parent| {
+            if !file_display.is_file {
+                ContextMenuRow::new(parent, "Create", CreateButton::default(), None, Some(icons.right.clone()));
+            }
 
-                if root.is_none() {
-                    ContextMenuRow::new(parent, "Delete", DeleteFileButton, None, None);
-                }
+            if root.is_none() {
+                ContextMenuRow::new(parent, "Delete", DeleteFileButton, None, None);
+            }
 
-                ContextMenuRow::new(parent, "Rename", RenameFileButton, None, None);
-            });
+            ContextMenuRow::new(parent, "Rename", RenameFileButton, None, None);
         });
-    }
+    });
 }
 
 #[derive(Component)]

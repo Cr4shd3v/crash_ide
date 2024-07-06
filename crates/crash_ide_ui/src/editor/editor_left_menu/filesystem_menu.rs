@@ -11,10 +11,10 @@ use crash_ide_file_watcher::FileWatcher;
 use crash_ide_plugin_api::{ActiveFile, PluginboundMessage};
 use crash_ide_plugin_manager::SendPluginMessage;
 use crash_ide_project::FindProjectInParents;
-use crash_ide_widget::{DoubleClickButton, DoubleClicked, Scrollable, ScrollableContent};
+use crash_ide_widget::{DoubleClickButton, DoubleClicked, RightClickable, Scrollable, ScrollableContent};
 pub use file_path::*;
 
-use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::FileContextMenuPlugin;
+use crate::editor::editor_left_menu::filesystem_menu::file_context_menu::{file_context_menu, FileContextMenuPlugin};
 use crate::editor::editor_left_menu::filesystem_menu::file_watcher::handle_file_watcher;
 use crate::editor::main_editor_screen::{EditorLeftMenu, ProjectsFileViews};
 
@@ -30,7 +30,7 @@ impl Plugin for FilesystemMenuPlugin {
         app
             .add_systems(Update, ((spawn_left_menu, expand_directory), spawn_all_rows).chain())
             .add_systems(Update, (
-                directory_expand_icon, double_click_row, highlight_clicked_row,
+                directory_expand_icon, highlight_clicked_row,
                 handle_file_watcher,
             ))
             .add_event::<ExpandDirEvent>()
@@ -149,7 +149,10 @@ fn spawn_all_rows(
                     ..default()
                 },
                 ..default()
-            }, SelfFileRow, DoubleClickButton::default(), Interaction::None)).with_children(|parent| {
+            }, SelfFileRow, DoubleClickButton::default(), RightClickable, Interaction::None))
+                .observe(file_context_menu)
+                .observe(double_click_row)
+                .with_children(|parent| {
                 if !file_display.is_file {
                     parent.spawn((ImageBundle {
                         image: UiImage {
@@ -295,8 +298,9 @@ fn highlight_clicked_row(
 }
 
 fn double_click_row(
+    trigger: Trigger<DoubleClicked>,
     mut commands: Commands,
-    query: Query<&Parent, (Added<DoubleClicked>, With<SelfFileRow>)>,
+    parent_query: Query<&Parent>,
     file_display_query: Query<(&FileDisplay, Option<&DirectoryExpanded>)>,
     mut dir_event_writer: EventWriter<ExpandDirEvent>,
     mut file_event_writer: EventWriter<RawOpenFileEvent>,
@@ -305,36 +309,35 @@ fn double_click_row(
     projects_file_views: Res<ProjectsFileViews>,
     mut plugin_ew: EventWriter<SendPluginMessage>,
 ) {
-    for parent in query.iter() {
-        let entity = parent.get();
-        let (file_display, expanded) = file_display_query.get(entity).unwrap();
+    let parent = parent_query.get(trigger.entity()).unwrap();
+    let entity = parent.get();
+    let (file_display, expanded) = file_display_query.get(entity).unwrap();
 
-        if file_display.is_file {
-            let project = find_project_in_parents.find_project_ref(entity);
-            let path = PathBuf::from(file_path.get_full_path(entity));
+    if file_display.is_file {
+        let project = find_project_in_parents.find_project_ref(entity);
+        let path = PathBuf::from(file_path.get_full_path(entity));
 
-            if fs::metadata(&path).is_err() {
-                commands.entity(entity).despawn_recursive();
-                continue;
-            }
-
-            plugin_ew.send(SendPluginMessage::new(PluginboundMessage::ActiveFile(ActiveFile {
-                path: path.to_str().unwrap().to_string(),
-                filename: path.file_name().unwrap().to_str().unwrap().to_string(),
-            }), None));
-
-            file_event_writer.send(RawOpenFileEvent {
-                event_data: FileEventData {
-                    path,
-                    view_entity: projects_file_views.get(project),
-                },
-            });
-        } else {
-            dir_event_writer.send(ExpandDirEvent {
-                row_entity: entity,
-                expand: expanded.is_none(),
-            });
+        if fs::metadata(&path).is_err() {
+            commands.entity(entity).despawn_recursive();
+            return;
         }
+
+        plugin_ew.send(SendPluginMessage::new(PluginboundMessage::ActiveFile(ActiveFile {
+            path: path.to_str().unwrap().to_string(),
+            filename: path.file_name().unwrap().to_str().unwrap().to_string(),
+        }), None));
+
+        file_event_writer.send(RawOpenFileEvent {
+            event_data: FileEventData {
+                path,
+                view_entity: projects_file_views.get(project),
+            },
+        });
+    } else {
+        dir_event_writer.send(ExpandDirEvent {
+            row_entity: entity,
+            expand: expanded.is_none(),
+        });
     }
 }
 

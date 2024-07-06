@@ -8,6 +8,5 @@ pub(super) struct ButtonPlugin;
 impl Plugin for ButtonPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PreUpdate, double_click_detection);
-        app.add_systems(PostUpdate, remove_double_click);
     }
 }
