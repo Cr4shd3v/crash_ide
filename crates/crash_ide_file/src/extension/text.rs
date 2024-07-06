@@ -9,7 +9,7 @@ use bevy::tasks::futures_lite::future;
 use crash_ide_assets::DefaultFonts;
 use crash_ide_code_view::{CodeViewBundle, CodeViewContent, CodeViewStyle};
 use crash_ide_notification::{Notification, NotificationIcon};
-use crash_ide_widget::{ActiveWindow, Scrollable, ScrollableContent, TextInputValue};
+use crash_ide_widget::{ActiveWindow, Scrollable, ScrollableContent};
 
 use crate::{default_file_handler_impl, FileEventData, FileHandlerAppExtension, FileViewInstance, OpenFileEvent};
 use crate as crash_ide_file;
@@ -117,7 +117,7 @@ fn spawn_file_view(
 
 fn save_edited_content_timer(
     mut commands: Commands,
-    mut query: Query<(Entity, Option<&mut TextFilePendingChanges>), (Changed<TextInputValue>, With<TextFileView>)>,
+    mut query: Query<(Entity, Option<&mut TextFilePendingChanges>), (Changed<CodeViewContent>, With<TextFileView>)>,
 ) {
     for (entity, pending) in query.iter_mut() {
         if let Some(mut timer) = pending {
@@ -130,7 +130,7 @@ fn save_edited_content_timer(
 
 fn save_edited_content(
     mut commands: Commands,
-    mut query: Query<(&TextInputValue, &FileViewInstance, &mut TextFilePendingChanges), With<TextFileView>>,
+    mut query: Query<(&CodeViewContent, &FileViewInstance, &mut TextFilePendingChanges), With<TextFileView>>,
     window: Query<Entity, With<ActiveWindow>>,
     time: Res<Time>,
 ) {
@@ -138,7 +138,7 @@ fn save_edited_content(
         pending.0.tick(time.delta());
 
         if pending.0.finished() {
-            if let Err(e) = fs::write(&view_instance.path, &input_value.0) {
+            if let Err(e) = fs::write(&view_instance.path, input_value.to_string()) {
                 commands.spawn(Notification::new(
                     window.single(),
                     "Error while writing to disk".to_string(),

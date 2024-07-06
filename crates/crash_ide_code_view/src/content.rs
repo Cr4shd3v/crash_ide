@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use bevy::prelude::*;
 
 /// Content of a code view
@@ -33,6 +34,12 @@ impl CodeViewContent {
     /// Returns the length of a line or None, if the line does not exist
     pub fn get_line_length(&self, line: usize) -> Option<usize> {
         self.lines.get(line).map(|m| m.len())
+    }
+}
+
+impl Display for CodeViewContent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.lines.iter().map(|v| v.tokens.iter().map(|v| v.content.clone()).collect::<String>()).collect::<String>())
     }
 }
 
