@@ -36,7 +36,7 @@ impl ContextMenuRow {
             parent.spawn(TextBundle {
                 text: Text::from_section(title, TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
-                    font_size: 18.0,
+                    font_size: 14.0,
                     ..default()
                 }).with_no_wrap(),
                 style: Style {

@@ -72,7 +72,7 @@ fn build_project_select(
                 base_window: Some(startup_window),
             }, Interaction::None, Button)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("New Project", TextStyle {
-                    font_size: 14.0,
+                    font_size: 12.0,
                     font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
                 }).with_no_wrap());
@@ -91,7 +91,7 @@ fn build_project_select(
                 base_window: Some(startup_window),
             }, Interaction::None, Button)).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Open", TextStyle {
-                    font_size: 14.0,
+                    font_size: 12.0,
                     font: DefaultFonts::ROBOTO_REGULAR,
                     ..default()
                 }).with_no_wrap());
@@ -131,13 +131,13 @@ fn build_project_select(
                         ..default()
                     }).with_children(|parent| {
                         parent.spawn(TextBundle::from_section(&project.name, TextStyle {
-                            font_size: 20.0,
+                            font_size: 16.0,
                             color: if folder_exists { Color::WHITE } else { DefaultColors::GRAY.with_alpha(0.8) },
                             font: DefaultFonts::ROBOTO_REGULAR,
                         }));
 
                         parent.spawn(TextBundle::from_section(path, TextStyle {
-                            font_size: 13.0,
+                            font_size: 11.0,
                             color: DefaultColors::GRAY,
                             font: DefaultFonts::ROBOTO_REGULAR,
                         }));

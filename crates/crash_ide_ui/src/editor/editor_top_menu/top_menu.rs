@@ -38,7 +38,7 @@ fn spawn_menu_entry(parent: &mut ChildBuilder, marker: impl Bundle, title: &str)
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(title, TextStyle {
             font: DefaultFonts::ROBOTO_REGULAR,
-            font_size: 18.0,
+            font_size: 14.0,
             ..default()
         }));
     });

@@ -49,9 +49,9 @@ fn open_help_menu(
                     parent.spawn(TextBundle {
                         text: Text::from_section(format!("v{}", env!("CARGO_PKG_VERSION")), TextStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
-                            font_size: 16.0,
+                            font_size: 12.0,
                             color: DefaultColors::GRAY.with_alpha(0.8),
-                        }),
+                        }).with_no_wrap(),
                         ..default()
                     });
                 });

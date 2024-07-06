@@ -61,7 +61,7 @@ fn spawn_discord_rpc_setting_menu(
                     checkbox: Checkbox::from_bool(settings.active),
                     label: CheckboxLabel::End(TextSection::new("Active", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
-                        font_size: 18.0,
+                        font_size: 14.0,
                         ..default()
                     })),
                     ..default()
@@ -74,7 +74,7 @@ fn spawn_discord_rpc_setting_menu(
                     checkbox: Checkbox::from_bool(settings.show_project),
                     label: CheckboxLabel::End(TextSection::new("Show project", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
-                        font_size: 18.0,
+                        font_size: 14.0,
                         ..default()
                     })),
                     ..default()
@@ -87,7 +87,7 @@ fn spawn_discord_rpc_setting_menu(
                     checkbox: Checkbox::from_bool(settings.show_filename),
                     label: CheckboxLabel::End(TextSection::new("Show filename", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
-                        font_size: 18.0,
+                        font_size: 14.0,
                         ..default()
                     })),
                     ..default()
