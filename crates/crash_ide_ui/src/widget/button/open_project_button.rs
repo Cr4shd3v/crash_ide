@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crash_ide_config::{EditorConfigProjects, HomeDir};
 use crash_ide_file_picker::{DirectoryPicked, DirectoryPicker};
-use crash_ide_project::{EditorProject, OpenProjectEvent};
+use crash_ide_project::{EditorProject, OpenProjectEvent, ProjectFiles};
 
 #[derive(Component, Default)]
 pub struct OpenProjectButton {
@@ -48,6 +48,10 @@ pub(super) fn open_project_directory_picked(
     let config = if let Some(config) = projects_config.projects.get(&picked_path) {
         config.clone()
     } else {
+        if let Err(e) = ProjectFiles::create_config_files(&picked.0.path().to_path_buf()) {
+            error!("Error while creating config files: {}", e);
+        }
+
         let config = EditorProject {
             name: picked.0.file_name(),
             path: picked_path.clone(),

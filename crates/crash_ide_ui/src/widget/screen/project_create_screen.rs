@@ -8,7 +8,7 @@ use crash_ide_config::{EditorConfigProjects, HomeDir};
 use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 
 use crash_ide_assets::{DefaultColors, DefaultFonts};
-use crash_ide_project::{EditorProject, OpenProjectEvent};
+use crash_ide_project::{EditorProject, OpenProjectEvent, ProjectFiles};
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
 
@@ -162,35 +162,9 @@ fn create_project_confirm(
             };
         }
 
-        let readme_file = path_buf.join("Readme.md");
-        if fs::metadata(&readme_file).is_err() {
-            fs::write(readme_file, format!("# {}\n", name)).ok();
-        }
-
-        let gitignore_file = path_buf.join(".gitignore");
-        if fs::metadata(&gitignore_file).is_err() {
-            fs::write(gitignore_file, "").ok();
-        }
-
-        let config_folder = path_buf.join(".crash_ide");
-        if fs::metadata(&config_folder).is_err() {
-            if let Err(e) = fs::create_dir_all(&config_folder) {
-                error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
-                continue;
-            }
-        }
-
-        let config_gitignore = config_folder.join(".gitignore");
-        if fs::metadata(&config_gitignore).is_err() {
-            fs::write(config_gitignore, "cache").ok();
-        }
-
-        let cache_folder = config_folder.join("cache");
-        if fs::metadata(&cache_folder).is_err() {
-            if let Err(e) = fs::create_dir_all(&cache_folder) {
-                error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
-                continue;
-            }
+        if let Err(e) = ProjectFiles::create_new_project_files(&path_buf, &name) {
+            error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
+            continue;
         }
 
         let config = EditorProject {
