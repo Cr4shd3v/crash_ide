@@ -34,12 +34,14 @@ fn on_open_project(
             crash_ide_project: open_project_event.crash_ide_project.clone(),
         }).id();
 
-        if let Some(window) = open_project_event.base_window {
-            commands.entity(window).remove::<(StartupWindow, CreateProjectWindow, ProjectWindow)>().insert(ProjectWindow {
+        if let Some(window_entity) = open_project_event.base_window {
+            commands.entity(window_entity).remove::<(StartupWindow, CreateProjectWindow, ProjectWindow)>().insert(ProjectWindow {
                 project_crash_ide_config: project,
             });
 
-            window_query_resize.get_mut(window).unwrap().resolution = default_window_resolution.0.clone();
+            let mut window = window_query_resize.get_mut(window_entity).unwrap();
+            window.resolution = default_window_resolution.0.clone();
+            window.title = open_project_event.crash_ide_project.name.clone();
         } else {
             commands.spawn((
                 Window {

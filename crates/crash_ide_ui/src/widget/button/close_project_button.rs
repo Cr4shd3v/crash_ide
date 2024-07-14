@@ -34,6 +34,7 @@ pub(super) fn close_project_button(
             window_query.get_mut(startup_window).unwrap().focused = true;
             commands.entity(button.window_entity).despawn_recursive();
         } else {
+            window_query.get_mut(button.window_entity).unwrap().decorations = true;
             commands.entity(button.window_entity).remove::<ProjectWindow>().insert(StartupWindow);
         }
     }
