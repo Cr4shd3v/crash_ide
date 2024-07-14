@@ -117,27 +117,30 @@ fn spawn_file_view(
 
 fn save_edited_content_timer(
     mut commands: Commands,
-    mut query: Query<(Entity, Option<&mut TextFilePendingChanges>), (Changed<CodeViewContent>, With<TextFileView>)>,
+    mut query: Query<(Entity, Option<&mut TextFilePendingChanges>, Ref<CodeViewContent>), (Changed<CodeViewContent>, With<TextFileView>)>,
 ) {
-    for (entity, pending) in query.iter_mut() {
+    for (entity, pending, content) in query.iter_mut() {
         if let Some(mut timer) = pending {
             timer.0.reset();
         } else {
-            commands.entity(entity).insert(TextFilePendingChanges(Timer::from_seconds(1.0, TimerMode::Once)));
+            if !content.is_added() {
+                commands.entity(entity).insert(TextFilePendingChanges(Timer::from_seconds(1.0, TimerMode::Once)));
+            }
         }
     }
 }
 
 fn save_edited_content(
     mut commands: Commands,
-    mut query: Query<(&CodeViewContent, &FileViewInstance, &mut TextFilePendingChanges), With<TextFileView>>,
+    mut query: Query<(Entity, &CodeViewContent, &FileViewInstance, &mut TextFilePendingChanges), With<TextFileView>>,
     window: Query<Entity, With<ActiveWindow>>,
     time: Res<Time>,
 ) {
-    for (input_value, view_instance, mut pending) in query.iter_mut() {
+    for (entity, input_value, view_instance, mut pending) in query.iter_mut() {
         pending.0.tick(time.delta());
 
         if pending.0.finished() {
+            commands.entity(entity).remove::<TextFilePendingChanges>();
             if let Err(e) = fs::write(&view_instance.path, input_value.to_string()) {
                 commands.spawn(Notification::new(
                     window.single(),

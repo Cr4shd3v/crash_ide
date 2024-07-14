@@ -39,7 +39,7 @@ impl CodeViewContent {
 
 impl Display for CodeViewContent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.lines.iter().map(|v| v.tokens.iter().map(|v| v.content.clone()).collect::<String>()).collect::<String>())
+        write!(f, "{}", self.lines.iter().map(|v| v.tokens.iter().map(|v| v.content.clone()).collect::<String>()).collect::<Vec<String>>().join("\n"))
     }
 }
 
