@@ -6,13 +6,14 @@ use bevy::ui::FocusPolicy;
 use crash_ide_assets::DefaultIcons;
 use crash_ide_file_picker::{DirectoryPicked, DirectoryPicker};
 use crash_ide_widget::{TextInputCursorPos, TextInputTextStyle, TextInputValue};
+use crate::trigger::Clicked;
 
 pub(super) struct FolderInputPlugin;
 
 impl Plugin for FolderInputPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, (spawn_button, folder_input_button))
+            .add_systems(Update, spawn_button)
         ;
     }
 }
@@ -47,29 +48,24 @@ fn spawn_button(
                 z_index: ZIndex::Local(1),
                 focus_policy: FocusPolicy::Block,
                 ..default()
-            }, FolderInputButton, Interaction::None, Button));
+            }, FolderInputButton, Interaction::None, Button)).observe(folder_input_button);
         });
     }
 }
 
 fn folder_input_button(
+    trigger: Trigger<Clicked>,
     mut commands: Commands,
-    query: Query<(&Interaction, &Parent), (Changed<Interaction>, With<FolderInputButton>)>,
+    parent_query: Query<&Parent>,
     text_input_query: Query<&TextInputValue>,
 ) {
-    for (interaction, parent) in query.iter() {
-        if *interaction != Interaction::Pressed {
-            continue;
-        }
+    let parent_entity = parent_query.get(trigger.entity()).unwrap().get();
+    let current_value = text_input_query.get(parent_entity).unwrap();
 
-        let parent_entity = parent.get();
-        let current_value = text_input_query.get(parent_entity).unwrap();
-
-        commands.entity(parent_entity).insert(DirectoryPicker {
-            start_directory: Some(PathBuf::from(&current_value.0)),
-            title: "Select project path".to_string(),
-        }).observe(folder_picked);
-    }
+    commands.entity(parent_entity).insert(DirectoryPicker {
+        start_directory: Some(PathBuf::from(&current_value.0)),
+        title: "Select project path".to_string(),
+    }).observe(folder_picked);
 }
 
 fn folder_picked(

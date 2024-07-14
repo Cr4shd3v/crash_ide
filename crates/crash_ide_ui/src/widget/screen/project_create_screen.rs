@@ -9,6 +9,7 @@ use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, T
 
 use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_project::{EditorProject, OpenProjectEvent, ProjectFiles};
+use crate::trigger::Clicked;
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
 
@@ -17,7 +18,7 @@ pub(super) struct ProjectCreateScreenPlugin;
 impl Plugin for ProjectCreateScreenPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, (spawn_project_create_screen, create_project_confirm))
+            .add_systems(Update, spawn_project_create_screen)
         ;
     }
 }
@@ -117,7 +118,7 @@ fn spawn_project_create_screen(
                         Interaction::None,
                         Button,
                         CreateProjectConfirmButton,
-                    )).with_children(|parent| {
+                    )).observe(create_project_confirm).with_children(|parent| {
                         parent.spawn(TextBundle::from_section("Create", TextStyle {
                             font_size: 18.0,
                             font: DefaultFonts::ROBOTO_REGULAR,
@@ -131,51 +132,45 @@ fn spawn_project_create_screen(
 }
 
 fn create_project_confirm(
+    _: Trigger<Clicked>,
     mut commands: Commands,
-    interaction_query: Query<&Interaction, (With<CreateProjectConfirmButton>, Changed<Interaction>)>,
     window_query: Query<(Entity, &CreateProjectWindow)>,
     path_input_query: Query<&TextInputValue, With<ProjectPathInput>>,
     mut projects: ResMut<EditorConfigProjects>,
     mut event_writer: EventWriter<OpenProjectEvent>,
     mut error_text: Query<&mut Text, With<CreateProjectPathErrorText>>,
 ) {
-    for interaction in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
-            continue;
-        }
+    let (entity, create_project_window) = window_query.single();
+    let path = path_input_query.single().0.clone();
 
-        let (entity, create_project_window) = window_query.single();
-        let path = path_input_query.single().0.clone();
-
-        if projects.projects.contains_key(&path) {
-            error_text.single_mut().sections[0].value = "A project already exists at this path".to_string();
-            return;
-        }
-
-        let path_buf = PathBuf::from_str(&*path).unwrap();
-        let name = path_buf.file_name().unwrap().to_str().unwrap().to_string();
-
-        if fs::metadata(&path_buf).is_err() {
-            if let Err(e) = fs::create_dir_all(&path_buf) {
-                error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
-                continue;
-            };
-        }
-
-        if let Err(e) = ProjectFiles::create_new_project_files(&path_buf, &name) {
-            error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
-            continue;
-        }
-
-        let config = EditorProject {
-            name,
-            path: path.clone(),
-        };
-
-        projects.projects.insert(path, config.clone());
-
-        commands.entity(entity).despawn();
-
-        event_writer.send(OpenProjectEvent::new(config, create_project_window.base_window));
+    if projects.projects.contains_key(&path) {
+        error_text.single_mut().sections[0].value = "A project already exists at this path".to_string();
+        return;
     }
+
+    let path_buf = PathBuf::from_str(&*path).unwrap();
+    let name = path_buf.file_name().unwrap().to_str().unwrap().to_string();
+
+    if fs::metadata(&path_buf).is_err() {
+        if let Err(e) = fs::create_dir_all(&path_buf) {
+            error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
+            return;
+        };
+    }
+
+    if let Err(e) = ProjectFiles::create_new_project_files(&path_buf, &name) {
+        error_text.single_mut().sections[0].value = format!("Failed to create folder: {}", e);
+        return;
+    }
+
+    let config = EditorProject {
+        name,
+        path: path.clone(),
+    };
+
+    projects.projects.insert(path, config.clone());
+
+    commands.entity(entity).despawn();
+
+    event_writer.send(OpenProjectEvent::new(config, create_project_window.base_window));
 }

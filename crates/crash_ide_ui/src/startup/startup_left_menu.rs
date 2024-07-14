@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use crash_ide_widget::Hoverable;
 use crash_ide_assets::{DefaultColors, DefaultFonts, DefaultIcons};
 use crate::startup::StartupScreenState;
 use crate::widget::button::GithubButton;
@@ -76,7 +75,7 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
         background_color: BackgroundColor(Color::NONE),
         border_radius: BorderRadius::all(Val::Px(2.0)),
         ..default()
-    }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
+    }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(next_state.title(), TextStyle {
             font_size: 16.0,
@@ -102,10 +101,6 @@ pub(crate) fn handle_left_menu_state_change(
     state: Res<State<StartupScreenState>>,
     mut color_query: Query<(&mut BackgroundColor, &StartupLeftMenuEntry)>,
 ) {
-    if !state.is_changed() {
-        return;
-    }
-
     let active_title = state.title();
 
     for (mut color, menu_entry) in color_query.iter_mut() {
