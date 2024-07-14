@@ -39,14 +39,12 @@ fn on_open_project(
                 project_crash_ide_config: project,
             });
 
-            window_query_resize.get_mut(window).unwrap().resolution = default_window_resolution.0.clone()
-                .with_scale_factor_override(1.0);
+            window_query_resize.get_mut(window).unwrap().resolution = default_window_resolution.0.clone();
         } else {
             commands.spawn((
                 Window {
                     title: open_project_event.crash_ide_project.name.clone(),
-                    resolution: default_window_resolution.0.clone()
-                        .with_scale_factor_override(1.0),
+                    resolution: default_window_resolution.0.clone(),
                     ..default()
                 },
                 ProjectWindow {

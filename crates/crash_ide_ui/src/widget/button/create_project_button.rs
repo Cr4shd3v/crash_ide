@@ -21,7 +21,7 @@ pub(super) fn create_project_button(
                     commands.spawn((
                         Window {
                             title: "Create Project".to_string(),
-                            resolution: WindowResolution::new(1000.0, 700.0).with_scale_factor_override(1.0),
+                            resolution: WindowResolution::new(1000.0, 700.0),
                             ..default()
                         },
                         CreateProjectWindow {

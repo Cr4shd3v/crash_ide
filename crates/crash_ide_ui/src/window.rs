@@ -119,10 +119,8 @@ fn save_resolution(
         let winit_window = winit_windows.get_window(window.clone()).unwrap();
         let monitor = winit_window.current_monitor().unwrap();
         let monitor_size = monitor.size();
-        let scale = monitor.scale_factor();
 
-        resolution.0 = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32)
-            .with_scale_factor_override(scale as f32);
+        resolution.0 = WindowResolution::new(monitor_size.width as f32, monitor_size.height as f32);
     }
 }
 
