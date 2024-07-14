@@ -24,6 +24,7 @@ pub struct DefaultIcons {
     pub warning: Handle<Image>,
     pub error: Handle<Image>,
     pub check: Handle<Image>,
+    pub remove: Handle<Image>,
 }
 
 fn load_default_icons(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -38,5 +39,6 @@ fn load_default_icons(mut commands: Commands, asset_server: Res<AssetServer>) {
         warning: asset_server.load("icons/warning.png"),
         error: asset_server.load("icons/error.png"),
         check: asset_server.load("icons/check.png"),
+        remove: asset_server.load("icons/remove.png"),
     });
 }
