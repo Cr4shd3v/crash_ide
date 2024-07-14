@@ -5,7 +5,6 @@
 mod serverbound_message;
 mod pluginbound_message;
 mod common;
-#[cfg(target_family = "wasm")]
 mod plugin_main;
 
 pub use serverbound_message::*;
