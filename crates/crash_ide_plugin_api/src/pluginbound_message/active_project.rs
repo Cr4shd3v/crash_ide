@@ -1,8 +1,8 @@
-use bincode::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 use crate::ActiveFile;
 
 /// Message to set a new project as active
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ActiveProject {
     /// If this project was opened or just switched to
     pub opened: bool,

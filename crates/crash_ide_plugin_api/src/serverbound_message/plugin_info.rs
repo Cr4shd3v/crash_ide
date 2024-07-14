@@ -1,9 +1,9 @@
-use bincode::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 
 /// Struct describing the plugin.
 ///
 /// Must be sent as the first message to the IDE.
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PluginInfo {
     /// Technical name of the plugin.
     ///
@@ -11,7 +11,8 @@ pub struct PluginInfo {
     pub technical_name: String,
     /// Name of the plugin that should be displayed
     pub display_name: String,
-    // pub config_fields: Vec<ConfigField>,
+    /// List of all config fields
+    pub config_fields: Vec<ConfigField>,
 }
 
 impl PluginInfo {
@@ -23,7 +24,7 @@ impl PluginInfo {
 }
 
 /// Represents a config field.
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ConfigField {
     /// Name of the config field
     pub name: String,
@@ -45,7 +46,7 @@ impl ConfigField {
 }
 
 /// Field type of the config field.
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum ConfigFieldType {
     /// Will render as checkbox
     Bool,

@@ -1,13 +1,13 @@
 mod active_project;
 mod active_file;
 
-use bincode::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 pub use active_project::*;
 pub use active_file::*;
 use crate::UpdateConfigFields;
 
 /// Messages sent from IDE to plugin
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum PluginboundMessage {
     /// Plugin should exit.
     ///

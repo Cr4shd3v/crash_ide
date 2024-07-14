@@ -9,10 +9,10 @@ fn start() {
     PluginInfo {
         technical_name: "minimal-plugin".to_string(),
         display_name: "Minimal Plugin".to_string(),
-        // config_fields: vec![
-        //     ConfigField::new("test_1", "Test 1 Box", ConfigFieldType::Bool),
-        //     ConfigField::new("test_2", "Test 2 Box", ConfigFieldType::Bool),
-        // ],
+        config_fields: vec![
+            ConfigField::new("test_1", "Test 1 Box", ConfigFieldType::Bool),
+            ConfigField::new("test_2", "Test 2 Box", ConfigFieldType::Bool),
+        ],
     }.register();
 
     loop {

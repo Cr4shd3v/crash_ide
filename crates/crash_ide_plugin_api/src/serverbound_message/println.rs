@@ -1,7 +1,7 @@
-use bincode::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 
 /// Print a message to IDE console
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PrintLn {
     /// Message
     pub text: String,

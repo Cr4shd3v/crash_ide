@@ -43,8 +43,8 @@ fn parse_plugin_info(
 ) {
     'outer: for (entity, instance) in query.iter() {
         while let Ok(bytes) = instance.try_read() {
-            match bincode::decode_from_slice::<ServerboundPluginMessage, _>(&bytes, bincode::config::standard()) {
-                Ok((plugin_message, _)) => {
+            match serde_json::from_slice::<ServerboundPluginMessage>(bytes.as_slice()) {
+                Ok(plugin_message) => {
                     match plugin_message {
                         ServerboundPluginMessage::PluginInfo(info) => {
                             info!("Plugin {} registered", &info.technical_name);
@@ -76,8 +76,8 @@ fn parse_plugin_message(
 ) {
     for (entity, instance, info) in query.iter() {
         while let Ok(bytes) = instance.try_read() {
-            match bincode::decode_from_slice::<ServerboundPluginMessage, _>(&bytes, bincode::config::standard()) {
-                Ok((plugin_message, _)) => {
+            match serde_json::from_slice::<ServerboundPluginMessage>(bytes.as_slice()) {
+                Ok(plugin_message) => {
                     match plugin_message {
                         ServerboundPluginMessage::PluginInfo(_) => {
                             warn!("Plugin {} sent a second plugin info", info.0.technical_name);
@@ -120,7 +120,7 @@ fn send_plugin_messages(
     instances_query: Query<&PluginInstance>,
 ) {
     for event in event_reader.read() {
-        let data = bincode::encode_to_vec(&event.message, bincode::config::standard()).unwrap();
+        let data = serde_json::to_vec(&event.message).unwrap();
 
         if let Some(target) = event.target_plugin {
             instances_query.get(target).unwrap().send(data);

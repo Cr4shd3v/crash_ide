@@ -1,7 +1,7 @@
-use bincode::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 
 /// Message to set the currently active file
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ActiveFile {
     /// Filename
     pub filename: String,

@@ -7,7 +7,7 @@ edition = "2021"
 bevy = { workspace = true }
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
-bincode = { workspace = true }
+serde_json = { workspace = true }
 bytes = { workspace = true }
 async-trait = { workspace = true }
 

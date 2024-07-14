@@ -1,14 +1,13 @@
-use bincode::{Decode, Encode};
-
 mod plugin_info;
 mod println;
 
+use serde::{Deserialize, Serialize};
 pub use plugin_info::*;
 pub use println::*;
 use crate::UpdateConfigFields;
 
 /// Messages sent from plugin to IDE
-#[derive(Encode, Decode, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum ServerboundPluginMessage {
     /// First message to be sent by plugin
     PluginInfo(PluginInfo),
@@ -25,10 +24,7 @@ impl ServerboundPluginMessage {
         use std::io::{stdout, Write};
         let mut out = stdout().lock();
         out.write_all(
-            &bincode::encode_to_vec(
-                self,
-                bincode::config::standard(),
-            ).unwrap(),
+            &serde_json::to_vec(&self).unwrap(),
         ).unwrap();
         out.flush().unwrap();
     }
