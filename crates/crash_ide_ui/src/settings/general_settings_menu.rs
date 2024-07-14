@@ -31,7 +31,7 @@ fn spawn_general_settings_menu(
                     checkbox: Checkbox::from_bool(settings.open_last_project_on_startup),
                     label: CheckboxLabel::End(TextSection::new("Open last opened project on startup", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
-                        font_size: 14.0,
+                        font_size: 18.0,
                         ..default()
                     })),
                     ..default()

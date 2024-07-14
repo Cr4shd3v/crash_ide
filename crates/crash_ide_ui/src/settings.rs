@@ -112,7 +112,7 @@ fn spawn_settings_screen(
                     parent.spawn(TextBundle {
                         text: Text::from_section("Plugins", TextStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
-                            font_size: 12.0,
+                            font_size: 16.0,
                             ..default()
                         }),
                         style: Style {
@@ -163,7 +163,7 @@ fn left_menu_entry(builder: &mut ChildBuilder, menu: SettingsScreen, active_scre
     }, Interaction::None, Button, SettingsLeftMenuEntry(menu), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(title, TextStyle {
-            font_size: 12.0,
+            font_size: 16.0,
             font: DefaultFonts::ROBOTO_REGULAR,
             ..default()
         }));

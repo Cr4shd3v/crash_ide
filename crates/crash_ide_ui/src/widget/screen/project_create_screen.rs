@@ -57,7 +57,7 @@ fn spawn_project_create_screen(
             }).with_children(|parent| {
                 parent.spawn(TextBundle::from_section("Project Path", TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
-                    font_size: 14.0,
+                    font_size: 18.0,
                     ..default()
                 }));
 
@@ -119,7 +119,7 @@ fn spawn_project_create_screen(
                         CreateProjectConfirmButton,
                     )).with_children(|parent| {
                         parent.spawn(TextBundle::from_section("Create", TextStyle {
-                            font_size: 16.0,
+                            font_size: 18.0,
                             font: DefaultFonts::ROBOTO_REGULAR,
                             ..default()
                         }));

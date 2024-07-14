@@ -33,7 +33,7 @@ pub(crate) fn startup_left_menu(builder: &mut ChildBuilder, icons: &Res<DefaultI
             parent.spawn(TextBundle {
                 text: Text::from_section(format!("Crash IDE v{}", env!("CARGO_PKG_VERSION")), TextStyle {
                     font: DefaultFonts::ROBOTO_REGULAR,
-                    font_size: 12.0,
+                    font_size: 16.0,
                     color: DefaultColors::GRAY.with_alpha(0.8),
                 }).with_no_wrap(),
                 ..default()
@@ -79,7 +79,7 @@ fn startup_left_menu_entry(builder: &mut ChildBuilder, next_state: StartupScreen
     }, Interaction::None, Button, StartupLeftMenuEntry::new(next_state), Hoverable::new(DefaultColors::GRAY.with_alpha(0.2)),
     )).with_children(|parent| {
         parent.spawn(TextBundle::from_section(next_state.title(), TextStyle {
-            font_size: 13.0,
+            font_size: 16.0,
             font: DefaultFonts::ROBOTO_REGULAR,
             ..default()
         }));

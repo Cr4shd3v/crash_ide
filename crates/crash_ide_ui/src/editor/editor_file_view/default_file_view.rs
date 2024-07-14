@@ -21,7 +21,7 @@ pub(super) fn spawn_default_file_view(
                 parent.spawn(TextBundle {
                     text: Text::from_section("No File opened", TextStyle {
                         font: DefaultFonts::ROBOTO_REGULAR,
-                        font_size: 16.0,
+                        font_size: 20.0,
                         color: DefaultColors::GRAY.with_alpha(0.5),
                     }),
                     ..default()
