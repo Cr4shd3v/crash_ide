@@ -64,10 +64,7 @@ pub struct WindowData {
 fn initial_window(
     mut commands: Commands,
 ) {
-    commands.spawn((Window {
-        title: String::from("Crash Editor"),
-        ..default()
-    }, StartupWindow));
+    commands.spawn((Window::default(), StartupWindow));
 }
 
 fn set_startup_window_resolution(
@@ -81,6 +78,7 @@ fn set_startup_window_resolution(
             (default_window_resolution.0.height() * 0.75).round() as u32,
         );
         window.position = WindowPosition::Centered(MonitorSelection::Current);
+        window.title = "Crash Editor".to_string();
     }
 }
 
