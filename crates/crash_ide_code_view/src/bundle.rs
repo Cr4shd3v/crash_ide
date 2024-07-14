@@ -42,7 +42,7 @@ impl Default for CodeViewStyle {
             bold_font: Handle::default(),
             italic_font: Handle::default(),
             bold_italic_font: Handle::default(),
-            font_size: 17.0,
+            font_size: 18.0,
         }
     }
 }

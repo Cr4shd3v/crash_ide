@@ -87,20 +87,13 @@ fn spawn_file_view(
             }, Scrollable::default(), Interaction::None)).with_children(|parent| {
                 parent.spawn((
                     CodeViewBundle {
-                        node_bundle: NodeBundle {
-                            style: Style {
-                                width: Val::Percent(100.0),
-                                ..default()
-                            },
-                            ..default()
-                        },
                         content: CodeViewContent::from_string(content),
                         code_view_style: CodeViewStyle {
-                            font_size: 18.0,
                             regular_font: DefaultFonts::JETBRAINS_MONO_REGULAR,
                             bold_font: DefaultFonts::JETBRAINS_MONO_BOLD,
                             italic_font: DefaultFonts::JETBRAINS_MONO_ITALIC,
                             bold_italic_font: DefaultFonts::JETBRAINS_MONO_BOLD_ITALIC,
+                            ..default()
                         },
                         ..default()
                     },
