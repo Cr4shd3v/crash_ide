@@ -66,6 +66,7 @@ wasmtime = "^22.0"
 wasmtime-wasi = "^22.0"
 bytes = "^1.6"
 async-trait = "^0.1"
+ab_glyph = "0.2.28"
 
 crash_ide_state = { path = "crates/crash_ide_state" }
 crash_ide_config = { path = "crates/crash_ide_config" }

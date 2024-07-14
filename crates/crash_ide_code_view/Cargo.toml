@@ -9,3 +9,4 @@ crash_ide_widget = { workspace = true }
 crash_ide_util = { workspace = true }
 crash_ide_clipboard = { workspace = true }
 crash_ide_assets = { workspace = true }
+ab_glyph = { workspace = true }
