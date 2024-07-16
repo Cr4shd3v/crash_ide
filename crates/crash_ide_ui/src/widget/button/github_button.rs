@@ -3,7 +3,7 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct GithubButton;
 
-const URL: &'static str = "https://github.com/Cr4shd3v/editor";
+const URL: &'static str = "https://github.com/Cr4shd3v/crash_ide";
 
 pub(super) fn open_github_link(
     query: Query<&Interaction, (Changed<Interaction>, With<GithubButton>)>,
