@@ -52,7 +52,7 @@ members = ["crates/*", "plugins/*"]
 resolver = "2"
 
 [workspace.dependencies]
-bevy = { version = "0.14.0", default-features = false }
+bevy = { version = "0.14.1", default-features = false }
 serde = "^1.0"
 serde_json = "^1.0"
 homedir = "^0.3"
