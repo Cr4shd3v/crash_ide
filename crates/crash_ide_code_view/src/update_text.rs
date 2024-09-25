@@ -1,6 +1,5 @@
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-use crash_ide_widget::ActiveWindow;
 use crate::{CodeViewContent, CodeViewContentLine, CodeViewCursorPosition, CodeViewLineContainer, CodeViewStyle, CodeViewToken};
 use crate::create::{build_line_command, build_line_count};
 use crate::line_container::GetLineContainer;
@@ -11,7 +10,6 @@ pub(crate) struct UpdateText<'w, 's> {
     text_query: Query<'w, 's, &'static mut Text>,
     get_line_container: GetLineContainer<'w, 's>,
     commands: Commands<'w, 's>,
-    window_query: Query<'w, 's, &'static Window, With<ActiveWindow>>,
 }
 
 impl<'w, 's> UpdateText<'w, 's> {
@@ -62,8 +60,7 @@ impl<'w, 's> UpdateText<'w, 's> {
             }],
         });
 
-        let scale = self.window_query.single().resolution.scale_factor();
-        let line_entity = build_line_command(&mut self.commands, code_view_style, &content.lines[cursor_pos.cursor_pos.y as usize], scale);
+        let line_entity = build_line_command(&mut self.commands, code_view_style, &content.lines[cursor_pos.cursor_pos.y as usize]);
 
         self.commands.entity(lines.line_content_container).insert_children(
             cursor_pos.cursor_pos.y as usize + 1,
@@ -71,7 +68,7 @@ impl<'w, 's> UpdateText<'w, 's> {
         );
 
         self.commands.entity(lines.line_count_container).with_children(|parent| {
-            build_line_count(parent, code_view_style, content.lines.len(), scale);
+            build_line_count(parent, code_view_style, content.lines.len());
         });
     }
 

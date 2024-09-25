@@ -1,19 +1,16 @@
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
 use crash_ide_assets::DefaultColors;
-use crash_ide_widget::ActiveWindow;
 use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewContentLine, CodeViewLineContainer, CodeViewStyle};
 use crate::component::CodeViewLine;
 
 pub(super) fn create_code_view(
     mut commands: Commands,
     mut query: Query<(Entity, &CodeViewStyle, &CodeViewContent, &mut Style), Added<CodeView>>,
-    window: Query<&Window, With<ActiveWindow>>,
 ) {
     for (entity, code_view_style, content, mut style) in query.iter_mut() {
         style.width = Val::Percent(100.0);
         style.flex_direction = FlexDirection::Row;
-        let scale = window.single().resolution.scale_factor();
 
         let line_count_container = commands.spawn(NodeBundle {
             style: Style {
@@ -23,7 +20,7 @@ pub(super) fn create_code_view(
             ..default()
         }).with_children(|parent| {
             for (index, _) in content.lines.iter().enumerate() {
-                build_line_count(parent, code_view_style, index + 1, scale);
+                build_line_count(parent, code_view_style, index + 1);
             }
         }).id();
 
@@ -36,7 +33,7 @@ pub(super) fn create_code_view(
             ..default()
         }, Interaction::None, RelativeCursorPosition::default(), CodeViewContainer)).with_children(|parent| {
             for line in content.lines.iter() {
-                build_line_parent(parent, code_view_style, line, scale);
+                build_line_parent(parent, code_view_style, line);
             }
         }).id();
 
@@ -47,26 +44,26 @@ pub(super) fn create_code_view(
     }
 }
 
-pub(crate) fn build_line_command(commands: &mut Commands, code_view_style: &CodeViewStyle, line: &CodeViewContentLine, scale: f32) -> Entity {
-    commands.spawn(create_line_bundle(code_view_style, scale)).with_children(|parent| {
+pub(crate) fn build_line_command(commands: &mut Commands, code_view_style: &CodeViewStyle, line: &CodeViewContentLine) -> Entity {
+    commands.spawn(create_line_bundle(code_view_style)).with_children(|parent| {
         spawn_lines(parent, code_view_style, line);
     }).id()
 }
 
-pub(crate) fn build_line_parent(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: &CodeViewContentLine, scale: f32) {
-    parent.spawn(create_line_bundle(code_view_style, scale)).with_children(|parent| {
+pub(crate) fn build_line_parent(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: &CodeViewContentLine) {
+    parent.spawn(create_line_bundle(code_view_style)).with_children(|parent| {
         spawn_lines(parent, code_view_style, line);
     });
 }
 
-fn create_line_bundle(code_view_style: &CodeViewStyle, scale: f32) -> impl Bundle {
+fn create_line_bundle(code_view_style: &CodeViewStyle) -> impl Bundle {
     (
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
                 flex_direction: FlexDirection::Row,
                 align_items: AlignItems::Center,
-                height: Val::Px(code_view_style.font_size * scale + 2.0),
+                height: Val::Px(code_view_style.font_size + 2.0),
                 padding: UiRect::left(Val::Px(3.0)),
                 ..default()
             },
@@ -89,7 +86,7 @@ fn spawn_lines(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line:
     }
 }
 
-pub(crate) fn build_line_count(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: usize, scale: f32) {
+pub(crate) fn build_line_count(parent: &mut ChildBuilder, code_view_style: &CodeViewStyle, line: usize) {
     parent.spawn(NodeBundle {
         style: Style {
             border: UiRect::right(Val::Px(1.0)),
@@ -104,8 +101,8 @@ pub(crate) fn build_line_count(parent: &mut ChildBuilder, code_view_style: &Code
             style: Style {
                 flex_direction: FlexDirection::Row,
                 align_items: AlignItems::Center,
-                width: Val::Px(code_view_style.font_size * scale * 1.5),
-                height: Val::Px(code_view_style.font_size * scale + 2.0),
+                width: Val::Px(code_view_style.font_size * 1.5),
+                height: Val::Px(code_view_style.font_size + 2.0),
                 margin: UiRect::new(Val::Px(10.0), Val::Px(15.0), Val::ZERO, Val::ZERO),
                 ..default()
             },
