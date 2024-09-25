@@ -4,7 +4,6 @@ use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
 use crash_ide_assets::DefaultColors;
 use crash_ide_util::FindComponentInParents;
-use crash_ide_widget::ActiveWindow;
 
 use crate::{CodeView, CodeViewContainer, CodeViewContent, CodeViewCursorPosition, CodeViewCursorTimer, CodeViewFocused, CodeViewLineContainer, CodeViewStyle, CursorEntityRef, HighlightedLine, HighlightedLineCount};
 use crate::line_container::GetLineContainer;
@@ -137,7 +136,6 @@ pub(super) fn cursor_to_click(
         &mut CodeViewCursorPosition,
         &CodeViewContent,
     )>,
-    window: Query<&Window, With<ActiveWindow>>,
     font_assets: Res<Assets<bevy::text::Font>>,
 ) {
     for (interaction, relative_cursor_pos, node, parent) in query.iter() {
@@ -152,8 +150,7 @@ pub(super) fn cursor_to_click(
         let cursor_pos_normalized = relative_cursor_pos.normalized.unwrap();
         let font_size = code_style.font_size;
 
-        let scale = window.single().resolution.scale_factor();
-        let cursor_pos_relative = cursor_pos_normalized.mul(node_size) * scale;
+        let cursor_pos_relative = cursor_pos_normalized.mul(node_size);
 
         let scaled_font = font_assets.get(&code_style.regular_font).unwrap().font.as_scaled(code_style.font_size);
         let advance = scaled_font.h_advance(scaled_font.font.glyph_id(' '));
