@@ -1547,6 +1547,7 @@ dependencies = [
  "crash_ide_notification",
  "crash_ide_project",
  "crash_ide_state",
+ "crash_ide_text_input",
  "crash_ide_ui",
  "crash_ide_widget",
 ]
@@ -1596,6 +1597,7 @@ version = "0.1.0-rc.1"
 dependencies = [
  "bevy",
  "crash_ide_assets",
+ "crash_ide_text_input",
  "crash_ide_widget",
 ]
 
@@ -1669,6 +1671,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "crash_ide_text_input"
+version = "0.1.0-rc.1"
+dependencies = [
+ "ab_glyph",
+ "bevy",
+ "crash_ide_assets",
+ "crash_ide_clipboard",
+ "crash_ide_util",
+ "crash_ide_widget",
+]
+
+[[package]]
 name = "crash_ide_ui"
 version = "0.1.0-rc.1"
 dependencies = [
@@ -1682,6 +1696,7 @@ dependencies = [
  "crash_ide_notification",
  "crash_ide_project",
  "crash_ide_state",
+ "crash_ide_text_input",
  "crash_ide_util",
  "crash_ide_widget",
  "open",

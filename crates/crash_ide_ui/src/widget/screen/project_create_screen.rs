@@ -5,10 +5,10 @@ use bevy::color::palettes::css::RED;
 use bevy::prelude::*;
 
 use crash_ide_config::{EditorConfigProjects, HomeDir};
-use crash_ide_widget::{TextInputBundle, TextInputSettings, TextInputTextStyle, TextInputValue};
 
 use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_project::{EditorProject, OpenProjectEvent, ProjectFiles};
+use crash_ide_text_input::{TextInputBundle, TextInputContent, TextInputSettings, TextInputStyle};
 use crate::trigger::Clicked;
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
@@ -64,10 +64,13 @@ fn spawn_project_create_screen(
 
                 parent.spawn((
                     TextInputBundle {
-                        text_input_value: TextInputValue(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
-                        text_input_text_style: TextInputTextStyle::default().with_font(DefaultFonts::ROBOTO_REGULAR),
-                        text_input_settings: TextInputSettings {
-                            input_width: Val::Percent(96.0),
+                        content: TextInputContent::from_string(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
+                        text_style: TextInputStyle {
+                            font: DefaultFonts::ROBOTO_REGULAR,
+                            font_size: 14.0,
+                        },
+                        settings: TextInputSettings {
+                            // input_width: Val::Percent(96.0),
                             ..default()
                         },
                         ..default()
@@ -135,13 +138,13 @@ fn create_project_confirm(
     _: Trigger<Clicked>,
     mut commands: Commands,
     window_query: Query<(Entity, &CreateProjectWindow)>,
-    path_input_query: Query<&TextInputValue, With<ProjectPathInput>>,
+    path_input_query: Query<&TextInputContent, With<ProjectPathInput>>,
     mut projects: ResMut<EditorConfigProjects>,
     mut event_writer: EventWriter<OpenProjectEvent>,
     mut error_text: Query<&mut Text, With<CreateProjectPathErrorText>>,
 ) {
     let (entity, create_project_window) = window_query.single();
-    let path = path_input_query.single().0.clone();
+    let path = path_input_query.single().to_string();
 
     if projects.projects.contains_key(&path) {
         error_text.single_mut().sections[0].value = "A project already exists at this path".to_string();

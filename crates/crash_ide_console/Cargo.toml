@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 bevy = { workspace = true }
 crash_ide_widget = { workspace = true }
+crash_ide_text_input = { workspace = true }
 crash_ide_assets = { workspace = true }

@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 use bevy::prelude::*;
 use crash_ide_assets::DefaultFonts;
-use crash_ide_widget::{Scrollable, ScrollableContent, TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle, TextInputValue};
+use crash_ide_text_input::{TextInputBundle, TextInputContent, TextInputFocused, TextInputSettings, TextInputStyle};
+use crash_ide_widget::{Scrollable, ScrollableContent};
 use crate::RawConsole;
 
 pub struct CrashIDEConsolePlugin;
@@ -68,12 +69,14 @@ fn create_console(
             },
             ..default()
         }, TextInputBundle {
-            text_input_settings: TextInputSettings {
-                with_border: false,
+            settings: TextInputSettings {
                 multiline: true,
                 ..default()
             },
-            text_input_text_style: TextInputTextStyle::default().with_font(DefaultFonts::JETBRAINS_MONO_REGULAR),
+            text_style: TextInputStyle {
+                font: DefaultFonts::JETBRAINS_MONO_REGULAR,
+                font_size: 14.0,
+            },
             ..default()
         }, ConsoleTextInput)).id();
 
@@ -108,7 +111,7 @@ fn console_stdout(
 }
 
 fn console_input(
-    mut query: Query<(&Parent, &mut TextInputValue), (Changed<TextInputValue>, With<TextInputFocused>, With<ConsoleTextInput>)>,
+    mut query: Query<(&Parent, &mut TextInputContent), (Changed<TextInputContent>, With<TextInputFocused>, With<ConsoleTextInput>)>,
     keys: Res<ButtonInput<KeyCode>>,
     parent_query: Query<&Parent>,
     mut console_query: Query<&mut ConsoleInstance>,
@@ -117,7 +120,8 @@ fn console_input(
     if keys.just_pressed(KeyCode::Enter) {
         for (parent, mut value) in query.iter_mut() {
             let mut console = console_query.get_mut(parent_query.get(parent.get()).unwrap().get()).unwrap();
-            let input = value.0.drain(..).as_str().to_string();
+            let input = value.to_string();
+            value.lines.clear();
             text_query.get_mut(console.console_output).unwrap().sections[0].value.push_str(&*input);
             console.raw_console.execute_command(format!("{} ; echo $PWD$\n", input.trim()));
         }

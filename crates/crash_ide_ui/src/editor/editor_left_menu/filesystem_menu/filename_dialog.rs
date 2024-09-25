@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 
 use crash_ide_assets::DefaultFonts;
-use crash_ide_widget::{TextInputBundle, TextInputFocused, TextInputSettings, TextInputTextStyle, TextInputValue};
-
+use crash_ide_text_input::{TextInputBundle, TextInputContent, TextInputFocused, TextInputSettings, TextInputStyle};
 use crate::widget::context_menu::ContextMenu;
 
 /// Marker component for a context menu for changing/creating filenames.
@@ -40,12 +39,15 @@ impl FilenameDialog {
 
                 parent.spawn((
                     TextInputBundle {
-                        text_input_text_style: TextInputTextStyle::default().with_font(DefaultFonts::ROBOTO_REGULAR),
-                        text_input_settings: TextInputSettings {
+                        text_style: TextInputStyle {
+                            font: DefaultFonts::ROBOTO_REGULAR,
+                            font_size: 14.0,
+                        },
+                        settings: TextInputSettings {
                             submittable: true,
                             ..default()
                         },
-                        text_input_value: TextInputValue(init_value),
+                        content: TextInputContent::from_string(init_value),
                         ..default()
                     },
                     TextInputFocused,
