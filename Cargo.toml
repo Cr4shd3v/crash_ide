@@ -42,28 +42,25 @@ crash_ide_project = { workspace = true }
 crash_ide_notification = { workspace = true }
 crash_ide_clipboard = { workspace = true }
 crash_ide_file_watcher = { workspace = true }
-crash_ide_plugin_manager = { workspace = true }
 crash_ide_code_view = { workspace = true }
 
 crash_ide_discord_rpc = { workspace = true }
 
 [workspace]
-members = ["crates/*", "plugins/*"]
+members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
-bevy = { version = "0.14.0", default-features = false }
+bevy = { version = "0.14.2", default-features = false }
 serde = "^1.0"
 serde_json = "^1.0"
 homedir = "^0.3"
 open = "^5.3"
 image = "^0.25"
-rfd = "^0.14"
+rfd = "^0.15"
 discord-presence = "^1.2"
 arboard = { version = "^3.4", default-features = false }
 notify = "^6.1"
-wasmtime = "^22.0"
-wasmtime-wasi = "^22.0"
 bytes = "^1.6"
 async-trait = "^0.1"
 ab_glyph = "0.2.28"
@@ -81,11 +78,9 @@ crash_ide_project = { path = "crates/crash_ide_project" }
 crash_ide_notification = { path = "crates/crash_ide_notification" }
 crash_ide_clipboard = { path = "crates/crash_ide_clipboard" }
 crash_ide_file_watcher = { path = "crates/crash_ide_file_watcher" }
-crash_ide_plugin_manager = { path = "crates/crash_ide_plugin_manager" }
-crash_ide_plugin_api = { path = "crates/crash_ide_plugin_api" }
 crash_ide_code_view = { path = "crates/crash_ide_code_view" }
 
-crash_ide_discord_rpc = { path = "plugins/crash_ide_discord_rpc" }
+crash_ide_discord_rpc = { path = "crates/crash_ide_discord_rpc" }
 
 [profile.dev]
 opt-level = 1

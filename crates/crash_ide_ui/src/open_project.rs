@@ -1,6 +1,4 @@
 use bevy::prelude::*;
-use crash_ide_plugin_api::{ActiveProject, PluginboundMessage};
-use crash_ide_plugin_manager::SendPluginMessage;
 use crash_ide_project::{LoadedEditorProject, OpenProjectEvent};
 use crate::widget::screen::CreateProjectWindow;
 use crate::window::{DefaultWindowResolution, ProjectWindow, StartupWindow};
@@ -20,16 +18,8 @@ fn on_open_project(
     mut event_reader: EventReader<OpenProjectEvent>,
     mut window_query_resize: Query<&mut Window>,
     default_window_resolution: Res<DefaultWindowResolution>,
-    mut plugin_ew: EventWriter<SendPluginMessage>,
 ) {
     for open_project_event in event_reader.read() {
-        plugin_ew.send(SendPluginMessage::new(PluginboundMessage::ActiveProject(ActiveProject {
-            name: open_project_event.crash_ide_project.name.clone(),
-            path: open_project_event.crash_ide_project.path.clone(),
-            opened: true,
-            active_file: None,
-        }), None));
-
         let project = commands.spawn(LoadedEditorProject {
             crash_ide_project: open_project_event.crash_ide_project.clone(),
         }).id();
