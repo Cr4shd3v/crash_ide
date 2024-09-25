@@ -1,5 +1,4 @@
 use std::ops::Mul;
-use bevy::asset::load_internal_binary_asset;
 use bevy::color::palettes::css::GRAY;
 use bevy::ecs::system::SystemParam;
 use bevy::input::keyboard::{Key, KeyboardInput};
@@ -7,8 +6,8 @@ use bevy::prelude::*;
 use bevy::text::BreakLineOn;
 use bevy::ui::RelativeCursorPosition;
 use crash_ide_clipboard::Clipboard;
-use crate::ActiveWindow;
 use crate::cursor::SetCursorEvent;
+use ab_glyph::{Font, ScaleFont};
 
 const INNER_TEXT_MARGIN: f32 = 5.0;
 
@@ -16,15 +15,6 @@ pub(super) struct TextInputPlugin;
 
 impl Plugin for TextInputPlugin {
     fn build(&self, app: &mut App) {
-        load_internal_binary_asset!(
-            app,
-            CURSOR_HANDLE,
-            "../../assets/fonts/Cursor.ttf",
-            |bytes: &[u8], _path: String| {
-                Font::try_from_bytes(bytes.to_vec()).unwrap()
-            }
-        );
-
         app
             .add_systems(PreUpdate, keyboard)
             .add_systems(Update, (
@@ -39,8 +29,6 @@ impl Plugin for TextInputPlugin {
         ;
     }
 }
-
-const CURSOR_HANDLE: Handle<Font> = Handle::weak_from_u128(0x20e04b82bf39401aaf9ae6a01a7a11b7);
 
 /// Bundle representing a text input.
 ///
@@ -71,7 +59,9 @@ pub struct TextInputBundle {
 
 /// Value of the text input
 #[derive(Component, Default)]
-pub struct TextInputValue(pub String);
+pub struct TextInputValue {
+    pub lines: Vec<String>,
+}
 
 /// Placeholder of the text input
 #[derive(Component, Default)]
@@ -107,7 +97,7 @@ impl Default for TextInputTextStyle {
 
 impl TextInputTextStyle {
     /// Helper method to use a custom font for this text field
-    pub fn with_font(mut self, font: Handle<Font>) -> Self {
+    pub fn with_font(mut self, font: Handle<bevy::text::Font>) -> Self {
         self.0.font = font;
         self
     }
@@ -660,9 +650,9 @@ fn focus_text_input(
         &mut TextInputCursorPos,
     ), (Changed<Interaction>, With<TextInputValue>)>,
     current_focus: Query<Entity, With<TextInputFocused>>,
-    window: Query<&Window, With<ActiveWindow>>,
     buttons: Res<ButtonInput<MouseButton>>,
     mut cursor_writer: EventWriter<SetCursorEvent>,
+    font_assets: Res<Assets<bevy::text::Font>>,
 ) {
     let current_focus_entity = current_focus.get_single();
     let mut click_on_text = false;
@@ -686,11 +676,13 @@ fn focus_text_input(
         let cursor_pos_normalized = relative_cursor_pos.normalized.unwrap();
         let font_size = text_style.0.font_size;
 
-        let scale = window.single().resolution.scale_factor();
-        let cursor_pos_relative = cursor_pos_normalized.mul(node_size) * scale;
+        let cursor_pos_relative = cursor_pos_normalized.mul(node_size);
+
+        let scaled_font = font_assets.get(&text_style.0.font).unwrap().font.as_scaled(font_size);
+        let advance = scaled_font.h_advance(scaled_font.font.glyph_id(' '));
 
         let calculated_line = (cursor_pos_relative.y / font_size).round() as usize;
-        let calculated_column = (cursor_pos_relative.x / (font_size * 0.455)).floor() as usize;
+        let calculated_column = ((cursor_pos_relative.x / advance).round() as usize).max(0);
 
         let lines = value.0.split("\n")
             .take(calculated_line)
@@ -729,20 +721,6 @@ fn focus_text_input(
         if let Ok(current_focus_entity) = current_focus_entity {
             commands.entity(current_focus_entity).remove::<TextInputFocused>();
         }
-    }
-}
-
-fn set_section_values(value: &str, cursor_pos: usize, sections: &mut [TextSection]) {
-    let before = value.chars().take(cursor_pos).collect();
-    let after = value.chars().skip(cursor_pos).collect();
-
-    sections[0].value = before;
-    sections[2].value = after;
-
-    if cursor_pos >= value.chars().count() {
-        sections[1].value = "}".to_string();
-    } else {
-        sections[1].value = "|".to_string();
     }
 }
 

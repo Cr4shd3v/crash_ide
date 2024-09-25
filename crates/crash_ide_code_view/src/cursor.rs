@@ -152,7 +152,7 @@ pub(super) fn cursor_to_click(
 
         let cursor_pos_relative = cursor_pos_normalized.mul(node_size);
 
-        let scaled_font = font_assets.get(&code_style.regular_font).unwrap().font.as_scaled(code_style.font_size);
+        let scaled_font = font_assets.get(&code_style.regular_font).unwrap().font.as_scaled(font_size);
         let advance = scaled_font.h_advance(scaled_font.font.glyph_id(' '));
 
         let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as u32;

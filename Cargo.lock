@@ -1698,6 +1698,7 @@ dependencies = [
 name = "crash_ide_widget"
 version = "0.1.0-rc.1"
 dependencies = [
+ "ab_glyph",
  "bevy",
  "crash_ide_clipboard",
 ]
