@@ -62,13 +62,14 @@ fn create_console(
             ..default()
         }).id();
 
-        let console_input = commands.spawn((NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
+        let console_input = commands.spawn((TextInputBundle {
+            node_bundle: NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    ..default()
+                },
                 ..default()
             },
-            ..default()
-        }, TextInputBundle {
             settings: TextInputSettings {
                 multiline: true,
                 ..default()

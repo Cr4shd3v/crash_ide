@@ -1,24 +1,27 @@
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use crash_ide_clipboard::Clipboard;
-use crate::{TextInputContent, TextInputCursorPosition, TextInputCursorTimer, TextInputFocused, TextInputLineContainer, TextInputStyle};
+use crate::{TextInputContent, TextInputCursorPosition, TextInputCursorTimer, TextInputFocused, TextInputLineContainer, TextInputSettings, TextInputStyle, TextInputSubmitted};
 use crate::update_text::UpdateText;
 
 pub(super) fn keyboard_input(
     mut query: Query<(
+        Entity,
         &TextInputLineContainer,
         &TextInputStyle,
         &mut TextInputCursorPosition,
         &mut TextInputContent,
         &mut TextInputCursorTimer,
+        &TextInputSettings,
     ), With<TextInputFocused>>,
     mut events: EventReader<KeyboardInput>,
     keys: Res<ButtonInput<KeyCode>>,
     clipboard: Res<Clipboard>,
     mut update_text: UpdateText,
+    mut commands: Commands,
 ) {
-    for (lines, code_view_style, mut cursor_pos,
-        mut content, mut timer) in query.iter_mut() {
+    for (entity, lines, code_view_style, mut cursor_pos,
+        mut content, mut timer, settings) in query.iter_mut() {
         for event in events.read() {
             if !event.state.is_pressed() {
                 continue;
@@ -45,6 +48,9 @@ pub(super) fn keyboard_input(
                     continue;
                 }
                 KeyCode::ArrowUp => {
+                    if !settings.multiline {
+                        continue;
+                    }
                     cursor_pos.cursor_pos.y -= 1;
                     let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
                     if cursor_pos.cursor_pos.x > line_len {
@@ -54,6 +60,9 @@ pub(super) fn keyboard_input(
                     continue;
                 }
                 KeyCode::ArrowDown => {
+                    if !settings.multiline {
+                        continue;
+                    }
                     cursor_pos.cursor_pos.y += 1;
                     let line_len = content.get_line_length(cursor_pos.cursor_pos.y as usize).unwrap() as u32;
                     if cursor_pos.cursor_pos.x > line_len {
@@ -69,8 +78,14 @@ pub(super) fn keyboard_input(
                     continue;
                 }
                 KeyCode::Enter => {
-                    update_text.insert_new_line(content.as_mut(), cursor_pos.as_mut(), lines, code_view_style);
-                    timer.reset = true;
+                    if settings.multiline {
+                        update_text.insert_new_line(content.as_mut(), cursor_pos.as_mut(), lines, code_view_style);
+                        timer.reset = true;
+                    } else if settings.submittable {
+                        commands.trigger_targets(TextInputSubmitted {
+                            content: content.to_string(),
+                        }, entity);
+                    }
 
                     continue;
                 }

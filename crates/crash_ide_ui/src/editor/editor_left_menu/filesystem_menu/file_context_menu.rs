@@ -4,6 +4,7 @@ use bevy::prelude::*;
 
 use crash_ide_assets::DefaultIcons;
 use crash_ide_notification::{Notification, NotificationIcon};
+use crash_ide_text_input::TextInputSubmitted;
 use crash_ide_util::FindComponentInParents;
 use crash_ide_widget::{ActiveWindow, RightClicked};
 
@@ -19,8 +20,7 @@ impl Plugin for FileContextMenuPlugin {
         app
             .add_systems(Update, (
                 handle_file_delete, handle_create_file,
-                create_file_submenu, handle_create_file_submit, handle_file_rename,
-                handle_rename_file_submit,
+                create_file_submenu, handle_file_rename,
             ))
         ;
     }
@@ -152,41 +152,39 @@ fn handle_file_rename(
                 (RenameFileFilenameInput, file_context.clone()),
                 if file_display.is_file { "Rename File" } else { "Rename Folder" },
                 file_display.filename.clone(),
+                handle_rename_file_submit,
             );
         });
     }
 }
 
 fn handle_rename_file_submit(
+    trigger: Trigger<TextInputSubmitted>,
     mut commands: Commands,
-    query: Query<(Entity, &TextInputSubmitted, &FileContextRef), (With<RenameFileFilenameInput>, Changed<TextInputSubmitted>)>,
+    query: Query<&FileContextRef>,
     find_context_menu: FindComponentInParents<FilenameDialog>,
     file_path: FilePath,
     file_display: Query<&FileDisplay>,
     window: Query<Entity, With<ActiveWindow>>,
 ) {
-    for (entity, text_submitted, file_context) in query.iter() {
-        let Some(text) = text_submitted.0.as_ref() else {
-            continue;
-        };
+    let entity = trigger.entity();
+    let file_context = query.get(entity).unwrap();
+    commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
 
-        commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
+    let base_path = file_path.get_directory(file_context.0);
+    let file_display = file_display.get(file_context.0).unwrap();
+    let old_full_path = format!("{}/{}", base_path, file_display.filename);
+    let new_full_path = format!("{}/{}", base_path, trigger.event().content);
 
-        let base_path = file_path.get_directory(file_context.0);
-        let file_display = file_display.get(file_context.0).unwrap();
-        let old_full_path = format!("{}/{}", base_path, file_display.filename);
-        let new_full_path = format!("{}/{}", base_path, text);
+    let result = fs::rename(&old_full_path, &new_full_path);
 
-        let result = fs::rename(&old_full_path, &new_full_path);
-
-        if let Err(e) = result {
-            commands.spawn(Notification::new(
-                window.single(),
-                "Error while renaming file".to_string(),
-                format!("Could not rename file from {} to {}: {}", old_full_path, new_full_path, e),
-                NotificationIcon::Error,
-            ));
-        }
+    if let Err(e) = result {
+        commands.spawn(Notification::new(
+            window.single(),
+            "Error while renaming file".to_string(),
+            format!("Could not rename file from {} to {}: {}", old_full_path, new_full_path, e),
+            NotificationIcon::Error,
+        ));
     }
 }
 
@@ -269,41 +267,39 @@ fn handle_create_file(
                 (CreateFileFilenameInput, file_context.clone(), CreateContext { is_file }),
                 if is_file { "Create File" } else { "Create Folder" },
                 String::new(),
+                handle_create_file_submit,
             );
         });
     }
 }
 
 fn handle_create_file_submit(
+    trigger: Trigger<TextInputSubmitted>,
     mut commands: Commands,
-    query: Query<(Entity, &TextInputSubmitted, &FileContextRef, &CreateContext), (With<CreateFileFilenameInput>, Changed<TextInputSubmitted>)>,
+    query: Query<(&FileContextRef, &CreateContext)>,
     find_context_menu: FindComponentInParents<FilenameDialog>,
     file_path: FilePath,
     window: Query<Entity, With<ActiveWindow>>,
 ) {
-    for (entity, text_submitted, file_context, create_context) in query.iter() {
-        let Some(text) = text_submitted.0.as_ref() else {
-            continue;
-        };
+    let entity = trigger.entity();
+    commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
+    let (file_context, create_context) = query.get(entity).unwrap();
 
-        commands.entity(find_context_menu.find_entity(entity).unwrap()).despawn_recursive();
+    let base_path = file_path.get_full_path(file_context.0);
+    let full_path = format!("{}/{}", base_path, trigger.event().content);
 
-        let base_path = file_path.get_full_path(file_context.0);
-        let full_path = format!("{}/{}", base_path, text);
+    let result = if create_context.is_file {
+        fs::write(full_path, "")
+    } else {
+        fs::create_dir_all(full_path)
+    };
 
-        let result = if create_context.is_file {
-            fs::write(full_path, "")
-        } else {
-            fs::create_dir_all(full_path)
-        };
-
-        if let Err(e) = result {
-            commands.spawn(Notification::new(
-                window.single(),
-                "Error while creating file".to_string(),
-                format!("Could not create file: {}", e),
-                NotificationIcon::Error,
-            ));
-        }
+    if let Err(e) = result {
+        commands.spawn(Notification::new(
+            window.single(),
+            "Error while creating file".to_string(),
+            format!("Could not create file: {}", e),
+            NotificationIcon::Error,
+        ));
     }
 }

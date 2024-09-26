@@ -64,6 +64,14 @@ fn spawn_project_create_screen(
 
                 parent.spawn((
                     TextInputBundle {
+                        node_bundle: NodeBundle {
+                            style: Style {
+                                width: Val::Vw(80.0),
+                                justify_content: JustifyContent::SpaceBetween,
+                                ..default()
+                            },
+                            ..default()
+                        },
                         content: TextInputContent::from_string(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
                         text_style: TextInputStyle {
                             font: DefaultFonts::ROBOTO_REGULAR,
@@ -71,14 +79,6 @@ fn spawn_project_create_screen(
                         },
                         settings: TextInputSettings {
                             // input_width: Val::Percent(96.0),
-                            ..default()
-                        },
-                        ..default()
-                    },
-                    NodeBundle {
-                        style: Style {
-                            width: Val::Vw(80.0),
-                            justify_content: JustifyContent::SpaceBetween,
                             ..default()
                         },
                         ..default()

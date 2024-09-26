@@ -10,11 +10,13 @@ mod keyboard;
 mod update_text;
 mod line_container;
 mod content;
+mod event;
 
 use bevy::prelude::*;
 pub use bundle::*;
 pub use component::*;
 pub use content::*;
+pub use event::*;
 use crate::create::create_code_view;
 use crate::cursor::{cursor_blinking, cursor_to_click, init_cursor, update_cursor_pos};
 use crate::focus::focus_code_view;
