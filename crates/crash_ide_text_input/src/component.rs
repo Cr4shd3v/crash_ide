@@ -4,10 +4,6 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct TextInputLine;
 
-/// Marker component for the active line
-#[derive(Component)]
-pub struct HighlightedLine;
-
 /// Component holding information of the cursor entity of a code view.
 #[derive(Component)]
 pub struct CursorEntityRef(pub Entity);

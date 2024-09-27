@@ -1,12 +1,10 @@
-use std::ops::Mul;
 use ab_glyph::{Font, ScaleFont};
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
-use crash_ide_assets::DefaultColors;
 use crash_ide_util::FindComponentInParents;
+use std::ops::Mul;
 
-use crate::{TextInputContainer, TextInputFocused, TextInputLineContainer, TextInputStyle, CursorEntityRef, HighlightedLine, TextInput, TextInputCursorPosition, TextInputCursorTimer, TextInputContent};
-use crate::line_container::GetLineContainer;
+use crate::{CursorEntityRef, TextInput, TextInputContainer, TextInputContent, TextInputCursorPosition, TextInputCursorTimer, TextInputFocused, TextInputStyle};
 
 pub(super) fn init_cursor(
     mut commands: Commands,
@@ -43,23 +41,17 @@ pub(super) fn init_cursor(
 }
 
 pub(super) fn update_cursor_pos(
-    mut commands: Commands,
     mut query: Query<(
         &TextInputCursorPosition,
         &CursorEntityRef,
         &TextInputStyle,
         &mut TextInputCursorTimer,
-        &TextInputLineContainer,
     ), Changed<TextInputCursorPosition>>,
     mut style_query: Query<&mut Style>,
-    mut background_query: Query<&mut BackgroundColor>,
-    get_line_container: GetLineContainer,
-    highlighted_line_query: Query<Entity, With<HighlightedLine>>,
-    children_query: Query<&Children>,
     font_assets: Res<Assets<bevy::text::Font>>,
 ) {
     for (cursor, cursor_entity,
-        code_style, mut timer, lines) in query.iter_mut() {
+        code_style, mut timer) in query.iter_mut() {
         let mut style = style_query.get_mut(cursor_entity.0).unwrap();
 
         let scaled_font = font_assets.get(&code_style.font).unwrap().font.as_scaled(code_style.font_size);
@@ -68,16 +60,6 @@ pub(super) fn update_cursor_pos(
         style.top = Val::Px(((code_style.font_size + 2.0) * cursor.cursor_pos.y as f32) + 1.0);
         style.left = Val::Px(advance * cursor.cursor_pos.x as f32);
         timer.reset = true;
-
-        let line_children = children_query.get(lines.line_content_container).unwrap();
-        for line_entity in highlighted_line_query.iter_many(line_children) {
-            background_query.get_mut(line_entity).unwrap().0 = Color::NONE;
-            commands.entity(line_entity).remove::<HighlightedLine>();
-        }
-
-        let line_content = get_line_container.get_line(lines, cursor.cursor_pos.y as usize);
-        background_query.get_mut(line_content).unwrap().0 = DefaultColors::GRAY.with_alpha(0.1);
-        commands.entity(line_content).insert(HighlightedLine);
     }
 }
 

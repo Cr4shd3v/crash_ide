@@ -48,7 +48,7 @@ impl FilenameDialog {
                             ..default()
                         },
                         text_style: TextInputStyle {
-                            font: DefaultFonts::ROBOTO_REGULAR,
+                            font: DefaultFonts::JETBRAINS_MONO_REGULAR,
                             font_size: 14.0,
                         },
                         settings: TextInputSettings {

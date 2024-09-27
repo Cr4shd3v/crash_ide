@@ -74,7 +74,7 @@ fn spawn_project_create_screen(
                         },
                         content: TextInputContent::from_string(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
                         text_style: TextInputStyle {
-                            font: DefaultFonts::ROBOTO_REGULAR,
+                            font: DefaultFonts::JETBRAINS_MONO_REGULAR,
                             font_size: 14.0,
                         },
                         settings: TextInputSettings {
