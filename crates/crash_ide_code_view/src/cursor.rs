@@ -156,7 +156,7 @@ pub(super) fn cursor_to_click(
         let advance = scaled_font.h_advance(scaled_font.font.glyph_id(' '));
 
         let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as u32;
-        let mut calculated_column = ((cursor_pos_relative.x / advance).round() as u32).max(0);
+        let mut calculated_column = ((cursor_pos_relative.x / advance).floor() as u32).max(0);
 
         if let Some(length) = content.get_line_length(calculated_line as usize) {
             if calculated_column > length as u32 {

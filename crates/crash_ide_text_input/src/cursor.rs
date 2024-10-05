@@ -10,15 +10,17 @@ pub(super) fn init_cursor(
     mut commands: Commands,
     query: Query<(Entity, &Parent), Added<TextInputContainer>>,
     find_code_view: FindComponentInParents<TextInput>,
-    view_query: Query<(&TextInputCursorPosition, &TextInputStyle)>,
+    mut view_query: Query<(&mut TextInputCursorPosition, &TextInputStyle, &TextInputContent)>,
     font_assets: Res<Assets<bevy::text::Font>>,
 ) {
     for (container_entity, parent) in query.iter() {
         let code_view_entity = find_code_view.find_entity(parent.get()).unwrap();
-        let (cursor, style) = view_query.get(code_view_entity).unwrap();
+        let (mut cursor, style, content) = view_query.get_mut(code_view_entity).unwrap();
 
         let scaled_font = font_assets.get(&style.font).unwrap().font.as_scaled(style.font_size);
         let advance = scaled_font.h_advance(scaled_font.font.glyph_id(' '));
+
+        cursor.reset_to_init(content);
 
         let cursor_id = commands.spawn(NodeBundle {
             style: Style {
@@ -128,8 +130,13 @@ pub(super) fn cursor_to_click(
         let scaled_font = font_assets.get(&code_style.font).unwrap().font.as_scaled(font_size);
         let advance = scaled_font.h_advance(scaled_font.font.glyph_id(' '));
 
-        let calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as u32;
-        let mut calculated_column = ((cursor_pos_relative.x / advance).round() as u32).max(0);
+        let mut calculated_line = (cursor_pos_relative.y / (font_size + 2.0)).floor() as u32;
+        let mut calculated_column = ((cursor_pos_relative.x / advance).floor() as u32).max(0);
+
+        let available_lines = content.lines.len() as u32;
+        if available_lines <= calculated_line {
+            calculated_line = available_lines;
+        }
 
         if let Some(length) = content.get_line_length(calculated_line as usize) {
             if calculated_column > length as u32 {

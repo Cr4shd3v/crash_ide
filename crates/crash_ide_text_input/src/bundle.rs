@@ -51,6 +51,27 @@ pub struct TextInputCursorPosition {
     ///
     /// X = Column, Y = Line
     pub cursor_pos: UVec2,
+    /// Where the cursor should initialize
+    pub init: TextInputInitCursorPos,
+}
+
+impl TextInputCursorPosition {
+    /// Resets the cursor position to the default
+    pub fn reset_to_init(&mut self, content: &TextInputContent) {
+        match self.init {
+            TextInputInitCursorPos::Start => {
+                self.cursor_pos = UVec2::ZERO;
+            }
+            TextInputInitCursorPos::End => {
+                let line = content.lines.len() as u32 - 1;
+                self.cursor_pos.y = line;
+                self.cursor_pos.x = content.get_line_length(line as usize).unwrap_or(0) as u32;
+            }
+            TextInputInitCursorPos::At(pos) => {
+                self.cursor_pos = pos.clone();
+            }
+        }
+    }
 }
 
 /// Contains the timer for blinking cursor
@@ -78,4 +99,16 @@ pub struct TextInputSettings {
     pub multiline: bool,
     /// Whether this text input can be submitted or not
     pub submittable: bool,
+}
+
+/// Determines where the cursor will be initialized
+#[derive(Default)]
+pub enum TextInputInitCursorPos {
+    /// Cursor starts at the beginning
+    Start,
+    /// Cursor starts at the end (default)
+    #[default]
+    End,
+    /// Cursor starts at a specific position
+    At(UVec2),
 }

@@ -8,7 +8,7 @@ use crash_ide_config::{EditorConfigProjects, HomeDir};
 
 use crash_ide_assets::{DefaultColors, DefaultFonts};
 use crash_ide_project::{EditorProject, OpenProjectEvent, ProjectFiles};
-use crash_ide_text_input::{TextInputBundle, TextInputContent, TextInputSettings, TextInputStyle};
+use crash_ide_text_input::{TextInputBundle, TextInputContent, TextInputStyle};
 use crate::trigger::Clicked;
 use crate::widget::folder_input::FolderInput;
 use crate::window::AllWindows;
@@ -68,18 +68,17 @@ fn spawn_project_create_screen(
                             style: Style {
                                 width: Val::Vw(80.0),
                                 justify_content: JustifyContent::SpaceBetween,
+                                border: UiRect::all(Val::Px(1.0)),
+                                padding: UiRect::all(Val::Px(3.0)),
                                 ..default()
                             },
+                            border_color: BorderColor(DefaultColors::GRAY),
                             ..default()
                         },
                         content: TextInputContent::from_string(home_dir.projects_path.join(DEFAULT_NEW_PROJECT_NAME).to_str().unwrap().to_string()),
                         text_style: TextInputStyle {
                             font: DefaultFonts::JETBRAINS_MONO_REGULAR,
-                            font_size: 14.0,
-                        },
-                        settings: TextInputSettings {
-                            // input_width: Val::Percent(96.0),
-                            ..default()
+                            font_size: 16.0,
                         },
                         ..default()
                     },

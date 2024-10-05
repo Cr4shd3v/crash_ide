@@ -16,8 +16,7 @@ pub(super) fn focus_code_view(
     mut cursor_writer: EventWriter<SetCursorEvent>,
     mut background_query: Query<&mut BackgroundColor>,
 ) {
-    let current_focus_entity = current_focus.get_single();
-    let mut click_on_code = false;
+    let mut click_on_input = false;
 
     for (entity, focused, interaction) in query.iter_mut() {
         if *interaction == Interaction::None {
@@ -30,13 +29,13 @@ pub(super) fn focus_code_view(
             continue;
         }
 
-        click_on_code = true;
+        click_on_input = true;
 
         if focused.is_some() {
             continue;
         }
 
-        if let Ok(current_focus_entity) = current_focus_entity {
+        if let Ok(current_focus_entity) = current_focus.get_single() {
             commands.entity(current_focus_entity).remove::<TextInputFocused>();
             background_query.get_mut(current_focus_entity).unwrap().0 = Color::NONE;
         }
@@ -45,9 +44,10 @@ pub(super) fn focus_code_view(
         background_query.get_mut(entity).unwrap().0 = DefaultColors::GRAY.with_alpha(0.1);
     }
 
-    if !click_on_code && buttons.any_just_pressed([MouseButton::Left, MouseButton::Right, MouseButton::Middle]) {
-        if let Ok(current_focus_entity) = current_focus_entity {
+    if !click_on_input && buttons.any_just_pressed([MouseButton::Left, MouseButton::Right, MouseButton::Middle]) {
+        if let Ok(current_focus_entity) = current_focus.get_single() {
             commands.entity(current_focus_entity).remove::<TextInputFocused>();
+            background_query.get_mut(current_focus_entity).unwrap().0 = Color::NONE;
         }
     }
 }
