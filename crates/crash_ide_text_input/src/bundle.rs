@@ -63,7 +63,7 @@ impl TextInputCursorPosition {
                 self.cursor_pos = UVec2::ZERO;
             }
             TextInputInitCursorPos::End => {
-                let line = content.lines.len() as u32 - 1;
+                let line = (content.lines.len() as u32).checked_sub(1).unwrap_or(0);
                 self.cursor_pos.y = line;
                 self.cursor_pos.x = content.get_line_length(line as usize).unwrap_or(0) as u32;
             }
